@@ -16,3 +16,4 @@ Una decisión nueva o un cambio a una existente se registra aquí **antes** de i
 | [0009](0009-campos-por-tipo.md) | Campos por tipo de persona; empresa obligatoria; sin «tipo de visita» | spec §7 | APROBADO |
 | [0010](0010-despliegue.md) | Un contenedor con API y web; migraciones al arrancar | spec §6, §30 | APROBADO |
 | [0011](0011-sistema-de-diseno.md) | Sistema de diseño: tokens, Inter, íconos propios y «Ingreso y salida» a pantalla completa | rediseño UI | APROBADO |
+| [0012](0012-rol-de-base-de-datos.md) | La API opera con un rol de BD sin privilegios; migraciones aparte con el dueño de las tablas | SEC-02 | APROBADO |

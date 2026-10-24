@@ -150,6 +150,28 @@ describe('Autenticación y autorización (HTTP)', () => {
       const raw = (response.headers['set-cookie'] as unknown as string[]).join(';');
       expect(raw).toMatch(new RegExp(`${SESSION_COOKIE}=;`));
     });
+
+    it('SEC-01: tras cerrar sesión, una copia de la cookie ya no sirve', async () => {
+      const cookie = sessionCookieOf(await login('seguridad@cedi.test'));
+      await request(app.getHttpServer()).post('/api/auth/logout').set('Cookie', cookie).expect(204);
+      const response = await request(app.getHttpServer())
+        .get('/api/auth/me')
+        .set('Cookie', cookie)
+        .expect(401);
+      expect(response.body.code).toBe(ErrorCode.UNAUTHENTICATED);
+      // Y se puede volver a iniciar sesión con normalidad.
+      const again = sessionCookieOf(await login('seguridad@cedi.test').expect(200));
+      await request(app.getHttpServer()).get('/api/auth/me').set('Cookie', again).expect(200);
+    });
+
+    it('SEC-01: cerrar sesión con una cookie inválida responde 204 sin revocar nada', async () => {
+      const cookie = sessionCookieOf(await login('admin@cedi.test'));
+      await request(app.getHttpServer())
+        .post('/api/auth/logout')
+        .set('Cookie', `${SESSION_COOKIE}=token.falso.firmado`)
+        .expect(204);
+      await request(app.getHttpServer()).get('/api/auth/me').set('Cookie', cookie).expect(200);
+    });
   });
 
   describe('autorización por rol', () => {

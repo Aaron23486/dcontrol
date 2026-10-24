@@ -63,3 +63,6 @@ Las pruebas de integración y E2E necesitan `npm run db:up`. Usan la base `cedi_
 | Accesibilidad (spec §28) | E2E `3-accessibility` (axe WCAG 2.1 A/AA en todas las pantallas), `4-responsive-and-keyboard` |
 | Responsive (spec §27) | E2E `4-responsive-and-keyboard` (tablet sin desbordes, controles ≥ 40 px) |
 | «Ingreso y salida» sin scroll de página en escritorio y actividad con scroll interno (spec §14, ADR 0011) | E2E `4-responsive-and-keyboard` «escritorio (1280 × 720)» y «(1920 × 1080)» |
+| SEC-01: cerrar sesión invalida la sesión en el servidor | `auth.http.spec` «SEC-01» (copia de la cookie → 401; cookie inválida no revoca) |
+| SEC-02: la API opera sin privilegios de administración (ADR 0012) | `privileges.int-spec` (permisos concedidos y negados, usuario de la API); E2E con la API conectada como usuario sin privilegios |
+| SEC-03: cierre manual solo de visitas de días anteriores | `visits.http.int-spec` «SEC-03» (visita de hoy → 409 sin cambios; día según la hora del CEDI) |

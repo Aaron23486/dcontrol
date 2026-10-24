@@ -329,6 +329,32 @@ describe('Ingreso y salida por cédula (HTTP contra PostgreSQL)', () => {
     });
   });
 
+  describe('SEC-03: el cierre manual es solo para visitas de días anteriores', () => {
+    it('una visita de hoy no se cierra a mano ni con una hora pasada', async () => {
+      clock.set('2026-10-23T14:00:00Z'); // 08:00 del 23 en Ciudad de México
+      await registerNew(PersonType.CONTRACTOR);
+      clock.set('2026-10-23T20:00:00Z'); // 14:00 del mismo día
+      const visit = await prisma.visit.findFirstOrThrow({ where: { exitAt: null } });
+
+      const response = await closeVisit(visit.id, '2026-10-23T09:00:00-06:00').expect(409);
+      expect(response.body).toEqual({
+        code: ErrorCode.CONFLICT,
+        message:
+          'Solo se cierran a mano las visitas de días anteriores. Para registrar la salida de hoy, ingresa su cédula.',
+      });
+      expect((await prisma.visit.findUniqueOrThrow({ where: { id: visit.id } })).exitAt).toBeNull();
+      expect(await prisma.auditLog.count({ where: { action: 'VISIT_CLOSED_MANUALLY' } })).toBe(0);
+    });
+
+    it('cuenta el día en la hora del CEDI: entrar a las 23:30 permite cerrarla a las 00:15', async () => {
+      clock.set('2026-10-23T05:30:00Z'); // 23:30 del 22 en Ciudad de México
+      await registerNew(PersonType.VISITOR);
+      clock.set('2026-10-23T06:15:00Z'); // 00:15 del 23
+      const visit = await prisma.visit.findFirstOrThrow({ where: { exitAt: null } });
+      await closeVisit(visit.id, '2026-10-22T23:50:00-06:00').expect(200);
+    });
+  });
+
   describe('D3 y D6: el día se cuenta en la hora del CEDI, no en UTC', () => {
     it('entrar a las 23:30 y pasar a las 00:15 es una visita del día anterior', async () => {
       clock.set('2026-10-23T05:30:00Z'); // 23:30 del 22 en Ciudad de México

@@ -54,6 +54,17 @@ export class InMemoryUsersRepository extends UsersRepository {
     return Promise.resolve();
   }
 
+  revokeSessions(id: string): Promise<void> {
+    const user = this.users.get(id);
+    if (user) {
+      this.users.set(id, {
+        ...user,
+        sessionsValidFrom: new Date(user.sessionsValidFrom.getTime() + 1),
+      });
+    }
+    return Promise.resolve();
+  }
+
   countActiveAdmins(): Promise<number> {
     return Promise.resolve(
       [...this.users.values()].filter((u) => u.role === Role.ADMIN && u.isActive).length,

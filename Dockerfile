@@ -36,6 +36,8 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
   CMD wget -qO- "http://127.0.0.1:${PORT}/api/health" > /dev/null || exit 1
 
-# Aplica las migraciones pendientes (idempotente) y arranca la API.
+# Solo arranca la API, con el usuario sin privilegios de DATABASE_URL (ADR 0012).
+# Las migraciones van aparte, con el dueño de las tablas: `npm run db:deploy`
+# (en docker-compose.prod.yml, el servicio `migrate`).
 WORKDIR /app/apps/api
-CMD ["sh", "-c", "npx prisma migrate deploy && exec node dist/main.js"]
+CMD ["node", "dist/main.js"]

@@ -27,14 +27,11 @@ async function main(): Promise<void> {
     databaseUrl: databaseUrlSchema.parse(process.env.DATABASE_URL),
   });
   try {
-    for (const name of DEMO_COMPANIES) {
-      const nameNormalized = normalizeCompanyName(name);
-      await prisma.company.upsert({
-        where: { nameNormalized },
-        update: {},
-        create: { name, nameNormalized },
-      });
-    }
+    // Solo inserta (sin UPDATE): el usuario de la API no puede modificar empresas (ADR 0012).
+    await prisma.company.createMany({
+      data: DEMO_COMPANIES.map((name) => ({ name, nameNormalized: normalizeCompanyName(name) })),
+      skipDuplicates: true,
+    });
     console.log(`Seed completado: ${DEMO_COMPANIES.length} empresas de demostración.`);
   } finally {
     await prisma.$disconnect();

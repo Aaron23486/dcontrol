@@ -12,12 +12,13 @@ export default function setup(): void {
   if (!url) {
     throw new Error('Define DATABASE_URL_TEST en .env para las pruebas de integración.');
   }
-  if (url === process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL_TEST no puede ser la misma base que DATABASE_URL.');
+  if (url === process.env.DATABASE_URL || url === process.env.MIGRATION_DATABASE_URL) {
+    throw new Error('DATABASE_URL_TEST no puede ser la misma base que la de desarrollo.');
   }
   execSync('npx prisma migrate deploy', {
     cwd: resolve(__dirname, '../..'),
-    env: { ...process.env, DATABASE_URL: url },
+    // Las dos variables: prisma.config.ts prefiere MIGRATION_DATABASE_URL (ADR 0012).
+    env: { ...process.env, DATABASE_URL: url, MIGRATION_DATABASE_URL: url },
     stdio: 'inherit',
   });
 }

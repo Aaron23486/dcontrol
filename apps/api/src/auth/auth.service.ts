@@ -73,4 +73,15 @@ export class AuthService {
     }
     return toAuthUser(user);
   }
+
+  /**
+   * SEC-01: cerrar sesión la invalida también en el servidor, no solo en el navegador.
+   * Revoca todas las sesiones del usuario (p. ej. la de otra caseta con la misma cuenta).
+   * Con un token ausente o ya inválido no hay nada que revocar.
+   */
+  async logout(token: string | undefined): Promise<void> {
+    if (!token) return;
+    const user = await this.authenticate(token).catch(() => null);
+    if (user) await this.users.revokeSessions(user.id);
+  }
 }
