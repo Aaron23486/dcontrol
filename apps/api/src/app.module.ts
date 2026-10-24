@@ -12,6 +12,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { HealthModule } from './health/health.module';
 import { PersonsModule } from './persons/persons.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SecurityModule } from './security/security-events';
 import { VisitsModule } from './visits/visits.module';
 
 const LOG_LEVEL: Record<AppConfig['nodeEnv'], string> = {
@@ -38,6 +39,7 @@ const LOG_LEVEL: Record<AppConfig['nodeEnv'], string> = {
     }),
     PrismaModule,
     ClockModule,
+    SecurityModule,
     AuthModule,
     CompaniesModule,
     PersonsModule,

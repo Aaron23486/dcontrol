@@ -66,3 +66,7 @@ Las pruebas de integración y E2E necesitan `npm run db:up`. Usan la base `cedi_
 | SEC-01: cerrar sesión invalida la sesión en el servidor | `auth.http.spec` «SEC-01» (copia de la cookie → 401; cookie inválida no revoca) |
 | SEC-02: la API opera sin privilegios de administración (ADR 0012) | `privileges.int-spec` (permisos concedidos y negados, usuario de la API); E2E con la API conectada como usuario sin privilegios |
 | SEC-03: cierre manual solo de visitas de días anteriores | `visits.http.int-spec` «SEC-03» (visita de hoy → 409 sin cambios; día según la hora del CEDI) |
+| SEC-04: eventos de seguridad sin datos sensibles y alerta por volumen de fallos | `security-events.spec`; `security.http.spec` «SEC-04» (login fallido y correcto, logout, acceso denegado, sesión rechazada) |
+| SEC-05: bloqueo temporal por correo, también para correos inexistentes | `login-attempts.spec`; `security.http.spec` «SEC-05» |
+| SEC-06: 413 ante un cuerpo demasiado grande y 400 ante JSON mal formado | `security.http.spec` «SEC-06» |
+| SEC-12: en producción se rechazan los secretos de ejemplo; `e2e:prepare` no corre en producción | `app-config.spec` «SEC-12» |

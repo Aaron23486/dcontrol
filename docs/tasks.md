@@ -151,12 +151,20 @@ Alcance aprobado el 2026-10-23: **revisión al salir**. Descartado por ahora: he
 - [x] Capturas del README regeneradas (`npm run screenshots`)
 - [x] Revisión final del responsable: rediseño aprobado
 
-## Fase 13 — Remediación de seguridad, Etapa 1  🔄 EN REVISIÓN
+## Fase 13 — Remediación de seguridad, Etapa 1  ✅ APROBADA (2026-10-24)
 Hallazgos de la auditoría de seguridad del 2026-10-24 (4 medios, 9 bajos, 8 informativos; sin críticos ni altos).
 - [x] SEC-01: cerrar sesión revoca la sesión en el servidor (`sessions_valid_from`); una copia de la cookie deja de valer
 - [x] SEC-02: rol `cedi_app` sin DELETE, TRUNCATE ni DDL; usuario de la API creado por `npm run db:deploy`; migraciones aparte con el dueño de las tablas; la imagen ya no migra al arrancar (ADR 0012)
 - [x] SEC-03: el cierre manual solo aplica a visitas de días anteriores (D3); la salida de hoy se registra escaneando
 - [x] Tests: SEC-01 (HTTP), SEC-02 (permisos y usuario de la API, integración; E2E con usuario sin privilegios), SEC-03 (integración)
 - [x] **Probado en Docker** (proyecto aislado): `migrate` aplica las 6 migraciones y crea el usuario de la API; la app solo recibe ese usuario; `create-admin` dentro del contenedor; login con cookie `Secure`; logout invalida la copia de la cookie; el usuario de la API no puede borrar la auditoría; repetir `migrate` no falla
+- [x] Revisión del responsable: aprobada y unida a `main` (pull request #2)
+
+## Fase 14 — Remediación de seguridad, Etapa 2  🔄 EN REVISIÓN
+- [x] SEC-04: eventos de seguridad en el log estructurado (logins, bloqueos, logout, sesiones rechazadas, accesos denegados, límites) y alerta `security.alert` por volumen de fallos (ADR 0013)
+- [x] SEC-05: bloqueo temporal por correo tras 5 fallos seguidos (15 min), también para correos inexistentes (ADR 0013)
+- [x] SEC-06: 413 ante un cuerpo demasiado grande y 400 ante JSON mal formado, en lugar de 500
+- [x] SEC-12: la API se niega a arrancar en producción con los secretos de ejemplo; `e2e:prepare` se niega en producción; guía de secretos de producción en `docs/security.md`
+- [x] SEC-12 en desarrollo: cuentas de prueba desactivadas, variables `DEV_*` eliminadas y rotados `JWT_SECRET` y la contraseña del dueño de PostgreSQL (2026-10-24)
 - [ ] Revisión del responsable
-- Pendiente: Etapa 2 (SEC-04 a SEC-06 y SEC-12) y Etapa 3 (endurecimiento)
+- Pendiente: Etapa 3 (endurecimiento: SEC-07 a SEC-11, SEC-13 e informativos)

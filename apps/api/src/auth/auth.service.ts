@@ -3,12 +3,19 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthUser, ErrorCode, LoginInput } from '@cedi/shared';
 import { AppException } from '../common/errors/app.exception';
 import { UserRecord, UsersRepository } from '../users/users.repository';
+import { SecurityEvents } from '../security/security-events';
+import { LoginAttempts } from './login-attempts';
 import { PasswordHasher } from './password-hasher';
 
 interface SessionPayload {
   sub: string;
   /** `sessionsValidFrom` del usuario al emitir la sesión; si cambió, la sesión fue revocada. */
   ver?: number;
+}
+
+/** Dónde se originó la petición, para los eventos de seguridad (SEC-04). */
+export interface RequestContext {
+  ip?: string;
 }
 
 export interface LoginResult {
@@ -27,24 +34,49 @@ export class AuthService {
     private readonly users: UsersRepository,
     private readonly hasher: PasswordHasher,
     private readonly jwt: JwtService,
+    private readonly attempts: LoginAttempts,
+    private readonly events: SecurityEvents,
   ) {
     this.timingHash = hasher.hash('timing-equalizer-not-a-real-password');
   }
 
-  async login({ email, password }: LoginInput): Promise<LoginResult> {
+  async login({ email, password }: LoginInput, { ip }: RequestContext = {}): Promise<LoginResult> {
+    // SEC-05: un correo bloqueado no se verifica, ni siquiera con la contraseña correcta.
+    if (this.attempts.isLocked(email)) {
+      this.events.record({ event: 'auth.login_blocked', level: 'warn', email, ip });
+      throw new AppException(
+        ErrorCode.TOO_MANY_REQUESTS,
+        'Demasiados intentos fallidos con este correo. Espera unos minutos y vuelve a intentarlo.',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
     const user = await this.users.findByEmail(email);
     const passwordMatches = await this.hasher.verify(
       user?.passwordHash ?? (await this.timingHash),
       password,
     );
     if (!user || !passwordMatches) {
+      const reason = user ? 'wrong_password' : 'unknown_email';
+      this.events.record({ event: 'auth.login_failed', level: 'warn', email, ip, reason });
+      if (this.attempts.recordFailure(email)) {
+        this.events.record({ event: 'auth.account_locked', level: 'error', email, ip });
+      }
       throw new AppException(
         ErrorCode.INVALID_CREDENTIALS,
         'Correo o contraseña incorrectos.',
         HttpStatus.UNAUTHORIZED,
       );
     }
+    this.attempts.reset(email);
     if (!user.isActive) {
+      this.events.record({
+        event: 'auth.login_failed',
+        level: 'warn',
+        email,
+        ip,
+        userId: user.id,
+        reason: 'inactive',
+      });
       throw new AppException(
         ErrorCode.USER_INACTIVE,
         'Tu usuario está desactivado. Contacta a un administrador.',
@@ -55,6 +87,7 @@ export class AuthService {
       sub: user.id,
       ver: user.sessionsValidFrom.getTime(),
     } satisfies SessionPayload);
+    this.events.record({ event: 'auth.login_succeeded', level: 'info', userId: user.id, ip });
     return { user: toAuthUser(user), token };
   }
 
@@ -79,9 +112,11 @@ export class AuthService {
    * Revoca todas las sesiones del usuario (p. ej. la de otra caseta con la misma cuenta).
    * Con un token ausente o ya inválido no hay nada que revocar.
    */
-  async logout(token: string | undefined): Promise<void> {
+  async logout(token: string | undefined, { ip }: RequestContext = {}): Promise<void> {
     if (!token) return;
     const user = await this.authenticate(token).catch(() => null);
-    if (user) await this.users.revokeSessions(user.id);
+    if (!user) return;
+    await this.users.revokeSessions(user.id);
+    this.events.record({ event: 'auth.logout', level: 'info', userId: user.id, ip });
   }
 }

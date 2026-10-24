@@ -36,6 +36,12 @@ const envSchema = z.object({
     .string({ error: 'CEDI_TIMEZONE es obligatoria.' })
     .refine(isValidTimeZone, 'CEDI_TIMEZONE no es una zona horaria IANA válida.'),
   LOGIN_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(5),
+  /** SEC-05 (ADR 0013): intentos fallidos seguidos con un mismo correo antes de bloquearlo. */
+  LOGIN_MAX_FAILURES_PER_ACCOUNT: z.coerce.number().int().min(3).default(5),
+  /** Minutos que dura el bloqueo de un correo (y la ventana en que se cuentan sus fallos). */
+  LOGIN_LOCKOUT_MINUTES: z.coerce.number().int().min(1).max(1440).default(15),
+  /** SEC-04: logins fallidos en 10 minutos (todo el sistema) que disparan una alerta. */
+  SECURITY_ALERT_FAILED_LOGINS: z.coerce.number().int().min(1).default(20),
   /** Carpeta con la web compilada que la API sirve en producción (ADR 0010). */
   WEB_DIST_DIR: optional(z.string()),
   /** `true` detrás de un proxy con HTTPS: IP real del cliente y cookie Secure. */
@@ -44,6 +50,9 @@ const envSchema = z.object({
     .default('false')
     .transform((value) => value === 'true'),
 });
+
+/** Valores de ejemplo de `.env.example`: nunca deben llegar a producción (SEC-12). */
+const PLACEHOLDER = /cambia-esta|change-me|changeme/i;
 
 export interface AppConfig {
   nodeEnv: (typeof NODE_ENVS)[number];
@@ -55,6 +64,9 @@ export interface AppConfig {
   webOrigin: string;
   timezone: string;
   loginRateLimitPerMinute: number;
+  loginMaxFailuresPerAccount: number;
+  loginLockoutMinutes: number;
+  securityAlertFailedLogins: number;
   webDistDir?: string;
   trustProxy: boolean;
 }
@@ -69,6 +81,14 @@ export function loadAppConfig(env: NodeJS.ProcessEnv): AppConfig {
     throw new Error(`Configuración inválida. Revisa tu archivo .env:\n${details}`);
   }
   const e = result.data;
+  if (
+    e.NODE_ENV === 'production' &&
+    (PLACEHOLDER.test(e.DATABASE_URL) || PLACEHOLDER.test(e.JWT_SECRET))
+  ) {
+    throw new Error(
+      'Configuración inválida: DATABASE_URL o JWT_SECRET usan un valor de ejemplo. Genera secretos propios para producción.',
+    );
+  }
   return {
     nodeEnv: e.NODE_ENV,
     isProduction: e.NODE_ENV === 'production',
@@ -79,6 +99,9 @@ export function loadAppConfig(env: NodeJS.ProcessEnv): AppConfig {
     webOrigin: e.WEB_ORIGIN,
     timezone: e.CEDI_TIMEZONE,
     loginRateLimitPerMinute: e.LOGIN_RATE_LIMIT_PER_MINUTE,
+    loginMaxFailuresPerAccount: e.LOGIN_MAX_FAILURES_PER_ACCOUNT,
+    loginLockoutMinutes: e.LOGIN_LOCKOUT_MINUTES,
+    securityAlertFailedLogins: e.SECURITY_ALERT_FAILED_LOGINS,
     webDistDir: e.WEB_DIST_DIR,
     trustProxy: e.TRUST_PROXY,
   };
