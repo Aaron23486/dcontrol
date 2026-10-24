@@ -8,6 +8,7 @@ import {
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Alert } from '../../components/atoms/Alert';
 import { Button } from '../../components/atoms/Button';
+import { Icon } from '../../components/atoms/Icon';
 import { Input } from '../../components/atoms/Input';
 import { FormField } from '../../components/molecules/FormField';
 import { toVisitDetailsInput, type VisitDetailsFormValues } from './visit-details-input';
@@ -60,24 +61,29 @@ export function VisitDetailsForm({
   };
 
   return (
-    <form noValidate className="space-y-4" onSubmit={handleSubmit(submit)}>
+    <form noValidate className="@container space-y-4" onSubmit={handleSubmit(submit)}>
       {error && <Alert>{error}</Alert>}
       {fields.includes('purpose') && (
-        <FormField label="Motivo" error={errors.purpose?.message}>
-          <Input autoComplete="off" autoFocus {...register('purpose')} />
-        </FormField>
+        <p className="text-xs text-ink-muted">Motivo y área son obligatorios.</p>
       )}
-      {fields.includes('area') && (
-        <FormField
-          label={personType === PersonType.VISITOR ? 'Área que visita' : 'Área'}
-          error={errors.area?.message}
-        >
-          <Input autoComplete="off" {...register('area')} />
-        </FormField>
-      )}
+      <div className="grid gap-4 @lg:grid-cols-2">
+        {fields.includes('purpose') && (
+          <FormField label="Motivo" error={errors.purpose?.message}>
+            <Input autoComplete="off" autoFocus {...register('purpose')} />
+          </FormField>
+        )}
+        {fields.includes('area') && (
+          <FormField
+            label={personType === PersonType.VISITOR ? 'Área que visita' : 'Área'}
+            error={errors.area?.message}
+          >
+            <Input autoComplete="off" {...register('area')} />
+          </FormField>
+        )}
+      </div>
       {fields.includes('tools') && (
-        <fieldset className="space-y-2">
-          <legend className="text-sm font-medium text-slate-700">
+        <fieldset className="space-y-2 rounded-lg border border-line p-4">
+          <legend className="px-1 text-sm font-semibold text-ink-soft">
             Herramientas o equipos (opcional)
           </legend>
           {tools.fields.map((field, index) => (
@@ -101,24 +107,26 @@ export function VisitDetailsForm({
               <Button
                 variant="secondary"
                 aria-label={`Quitar herramienta ${index + 1}`}
+                className="px-3"
                 onClick={() => tools.remove(index)}
               >
-                ✕
+                <Icon name="close" className="h-4 w-4" />
               </Button>
             </div>
           ))}
           {errors.root?.tools?.message && (
-            <p className="text-sm text-red-700">{errors.root.tools.message}</p>
+            <p className="text-sm text-danger-strong">{errors.root.tools.message}</p>
           )}
           <Button
             variant="secondary"
             onClick={() => tools.append({ name: '', description: '', quantity: '' })}
           >
+            <Icon name="plus" className="h-4 w-4" />
             Agregar herramienta
           </Button>
         </fieldset>
       )}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2 pt-1">
         <Button type="submit" disabled={pending} autoFocus={fields.length === 0}>
           {pending ? 'Registrando…' : submitLabel}
         </Button>

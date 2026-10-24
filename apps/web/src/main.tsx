@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router';
 import { createQueryClient } from './app/query-client';
 import { router } from './app/router';
+import '@fontsource-variable/inter';
 import './index.css';
 
 const queryClient = createQueryClient();

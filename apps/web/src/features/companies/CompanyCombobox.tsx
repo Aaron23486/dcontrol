@@ -76,7 +76,7 @@ export function CompanyCombobox({ value, onChange, invalid, ...aria }: CompanyCo
         onKeyDown={onKeyDown}
       />
       {open && isStale && (
-        <p className="absolute z-10 mt-1 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-500 shadow-lg">
+        <p className="absolute z-10 mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink-muted shadow-lg">
           Buscando…
         </p>
       )}
@@ -84,7 +84,7 @@ export function CompanyCombobox({ value, onChange, invalid, ...aria }: CompanyCo
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-slate-200 bg-white py-1 text-sm shadow-lg"
+          className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-line bg-surface py-1 text-sm text-ink shadow-lg"
         >
           {options.map((option, index) => (
             <li
@@ -97,7 +97,7 @@ export function CompanyCombobox({ value, onChange, invalid, ...aria }: CompanyCo
                 event.preventDefault();
                 void choose(option);
               }}
-              className={`cursor-pointer px-3 py-2 ${index === active ? 'bg-slate-100' : ''}`}
+              className={`cursor-pointer px-3 py-2 ${index === active ? 'bg-primary-soft text-primary-strong' : ''}`}
             >
               {option.kind === 'company' ? option.company.name : `Crear empresa «${option.name}»`}
             </li>
@@ -105,7 +105,7 @@ export function CompanyCombobox({ value, onChange, invalid, ...aria }: CompanyCo
         </ul>
       )}
       {createCompany.error && (
-        <p className="mt-1 text-sm text-red-700">{createCompany.error.message}</p>
+        <p className="mt-1 text-sm text-danger-strong">{createCompany.error.message}</p>
       )}
     </div>
   );

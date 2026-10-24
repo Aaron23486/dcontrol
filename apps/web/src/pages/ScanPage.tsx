@@ -1,5 +1,6 @@
 import { PersonType } from '@cedi/shared';
 import { Button } from '../components/atoms/Button';
+import { Icon } from '../components/atoms/Icon';
 import { ConfirmDialog } from '../components/molecules/ConfirmDialog';
 import { DashboardPanels } from '../features/dashboard/DashboardPanels';
 import { ManualEntryScanner } from '../features/scan/ManualEntryScanner';
@@ -7,6 +8,7 @@ import { NewPersonEntryPanel } from '../features/scan/NewPersonEntryPanel';
 import { PersonCard } from '../features/scan/PersonCard';
 import { PreviousDayVisitPanel } from '../features/scan/PreviousDayVisitPanel';
 import { ScanFeedbackBanner } from '../features/scan/ScanFeedbackBanner';
+import { ScanIllustration } from '../features/scan/ScanIllustration';
 import { VisitDetailsForm } from '../features/scan/VisitDetailsForm';
 import { useScanSound } from '../features/scan/scan-sound';
 import { useScanFlow } from '../features/scan/use-scan-flow';
@@ -15,7 +17,8 @@ import { useDocumentTitle } from '../lib/use-document-title';
 
 /**
  * Pantalla principal de la caseta: ingresar la cédula es la acción central (spec §14, §25)
- * y debajo el resumen del día, quién está dentro y la actividad reciente.
+ * y debajo el resumen del día, quién está dentro y la actividad reciente. En escritorio ocupa
+ * justo la ventana; si se abre un formulario del flujo, la página puede desplazarse (ADR 0011).
  */
 export function ScanPage() {
   useDocumentTitle('Ingreso y salida');
@@ -25,14 +28,20 @@ export function ScanPage() {
   const panelOpen = step.kind !== 'idle' && step.kind !== 'confirm';
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <section className="mx-auto max-w-2xl space-y-6">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h1 className="text-xl font-semibold">Ingreso y salida</h1>
-            <Button variant="secondary" aria-pressed={sound.enabled} onClick={sound.toggle}>
-              <span aria-hidden="true">{sound.enabled ? '🔊' : '🔇'}</span>
-              <span className="ml-1">Sonido {sound.enabled ? 'activado' : 'desactivado'}</span>
+    <div className="flex flex-col gap-4 lg:min-h-main">
+      <section
+        aria-labelledby="scan-title"
+        className="relative shrink-0 overflow-hidden rounded-card border border-line bg-surface shadow-card"
+      >
+        <ScanIllustration className="absolute inset-y-0 right-0 hidden h-full w-[28%] lg:block" />
+        <div className="relative p-5 lg:w-[72%] lg:px-10">
+          <div className="mb-1 flex flex-wrap items-center justify-between gap-3">
+            <h1 id="scan-title" className="text-2xl font-bold tracking-tight text-ink">
+              Ingreso y salida
+            </h1>
+            <Button variant="soft" aria-pressed={sound.enabled} onClick={sound.toggle}>
+              <Icon name={sound.enabled ? 'volume' : 'volumeOff'} className="h-4 w-4" />
+              Sonido {sound.enabled ? 'activado' : 'desactivado'}
             </Button>
           </div>
           <ManualEntryScanner
@@ -40,11 +49,13 @@ export function ScanPage() {
             disabled={flow.busy || panelOpen || step.kind === 'confirm'}
           />
         </div>
+      </section>
 
-        {flow.feedback && <ScanFeedbackBanner feedback={flow.feedback} />}
+      {flow.feedback && <ScanFeedbackBanner feedback={flow.feedback} />}
 
-        {panelOpen && (
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      {panelOpen && (
+        <div className="shrink-0 rounded-card border border-line bg-surface p-6 shadow-card">
+          <div className="max-w-3xl">
             {step.kind === 'entry' && (
               <div className="space-y-4">
                 <PersonCard person={step.person} />
@@ -88,32 +99,32 @@ export function ScanPage() {
               />
             )}
           </div>
-        )}
+        </div>
+      )}
 
-        <ConfirmDialog
-          open={step.kind === 'confirm'}
-          title={
-            step.kind === 'confirm' && step.pendingAction === 'EXIT'
-              ? '¿Registrar la SALIDA?'
-              : '¿Registrar una nueva ENTRADA?'
-          }
-          confirmLabel={
-            step.kind === 'confirm' && step.pendingAction === 'EXIT' ? 'Sí, salida' : 'Sí, entrada'
-          }
-          onCancel={flow.cancel}
-          onConfirm={() =>
-            step.kind === 'confirm' && flow.submitCode(step.person.identification, true)
-          }
-        >
-          {step.kind === 'confirm' && (
-            <>
-              <strong>{step.person.fullName}</strong> registró su{' '}
-              {step.pendingAction === 'EXIT' ? 'entrada' : 'salida'} hace menos de un minuto (
-              {formatDateTime(step.lastOperationAt)}). ¿Fue un escaneo repetido por error?
-            </>
-          )}
-        </ConfirmDialog>
-      </section>
+      <ConfirmDialog
+        open={step.kind === 'confirm'}
+        title={
+          step.kind === 'confirm' && step.pendingAction === 'EXIT'
+            ? '¿Registrar la SALIDA?'
+            : '¿Registrar una nueva ENTRADA?'
+        }
+        confirmLabel={
+          step.kind === 'confirm' && step.pendingAction === 'EXIT' ? 'Sí, salida' : 'Sí, entrada'
+        }
+        onCancel={flow.cancel}
+        onConfirm={() =>
+          step.kind === 'confirm' && flow.submitCode(step.person.identification, true)
+        }
+      >
+        {step.kind === 'confirm' && (
+          <>
+            <strong>{step.person.fullName}</strong> registró su{' '}
+            {step.pendingAction === 'EXIT' ? 'entrada' : 'salida'} hace menos de un minuto (
+            {formatDateTime(step.lastOperationAt)}). ¿Fue un escaneo repetido por error?
+          </>
+        )}
+      </ConfirmDialog>
 
       <DashboardPanels />
     </div>

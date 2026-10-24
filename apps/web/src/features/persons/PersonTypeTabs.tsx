@@ -6,24 +6,26 @@ interface PersonTypeTabsProps {
   basePath: string;
   /** Parámetros a conservar al cambiar de pestaña (p. ej. los filtros de fecha). */
   search?: string;
+  /** Margen interior, p. ej. para alinear las pestañas con el contenido de una tarjeta. */
+  className?: string;
 }
 
 /** Una pestaña por tipo de persona, para no mezclar información (spec §15, ADR 0009). */
-export function PersonTypeTabs({ basePath, search = '' }: PersonTypeTabsProps) {
+export function PersonTypeTabs({ basePath, search = '', className = '' }: PersonTypeTabsProps) {
   return (
     <nav
       aria-label="Tipos de persona"
-      className="flex gap-1 overflow-x-auto border-b border-slate-200"
+      className={`flex gap-6 overflow-x-auto border-b border-line ${className}`}
     >
       {PERSON_SECTIONS.map((section) => (
         <NavLink
           key={section.slug}
           to={`${basePath}/${section.slug}${search}`}
           className={({ isActive }) =>
-            `whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium ${
+            `flex min-h-12 items-center whitespace-nowrap border-b-2 text-sm ${
               isActive
-                ? 'border-slate-900 text-slate-900'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-primary font-semibold text-primary-strong'
+                : 'border-transparent font-medium text-ink-soft hover:text-ink'
             }`
           }
         >

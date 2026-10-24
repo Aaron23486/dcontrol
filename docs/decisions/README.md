@@ -14,3 +14,5 @@ Una decisión nueva o un cambio a una existente se registra aquí **antes** de i
 | [0007](0007-gafete-y-catalogos.md) | Área, tipo y motivo como texto libre (la parte del gafete fue sustituida por 0008) | D7, D8 | APROBADO (enmendada) |
 | [0008](0008-cedula-sin-gafete.md) | Identificación por cédula, sin gafete; historial con empresa y tipo por visita; usuarios por terminal | spec §5, §7, §9 | APROBADO |
 | [0009](0009-campos-por-tipo.md) | Campos por tipo de persona; empresa obligatoria; sin «tipo de visita» | spec §7 | APROBADO |
+| [0010](0010-despliegue.md) | Un contenedor con API y web; migraciones al arrancar | spec §6, §30 | APROBADO |
+| [0011](0011-sistema-de-diseno.md) | Sistema de diseño: tokens, Inter, íconos propios y «Ingreso y salida» a pantalla completa | rediseño UI | APROBADO |

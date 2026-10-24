@@ -1,34 +1,41 @@
+import { Icon, type IconName } from '../../components/atoms/Icon';
 import { formatDateTime, formatToolLabel } from '../../lib/format';
 import type { ScanFeedback } from './use-scan-flow';
 
-const STYLES = {
-  entry: 'border-emerald-300 bg-emerald-50 text-emerald-900',
-  exit: 'border-sky-300 bg-sky-50 text-sky-900',
-  error: 'border-red-300 bg-red-50 text-red-900',
-} as const;
+const STYLES: Record<ScanFeedback['kind'], { box: string; icon: IconName }> = {
+  entry: { box: 'border-success/40 bg-success-soft text-success-strong', icon: 'enter' },
+  exit: { box: 'border-primary/30 bg-primary-soft text-primary-strong', icon: 'exit' },
+  error: { box: 'border-danger/30 bg-danger-soft text-danger-strong', icon: 'alert' },
+};
 
 /** Mensaje grande y claro de lo que se registró (spec §25). */
 export function ScanFeedbackBanner({ feedback }: { feedback: ScanFeedback }) {
+  const style = STYLES[feedback.kind];
   return (
     <div
       role={feedback.kind === 'error' ? 'alert' : 'status'}
-      className={`rounded-lg border-2 px-5 py-4 ${STYLES[feedback.kind]}`}
+      className={`flex items-start gap-3 rounded-card border-2 px-5 py-3 ${style.box}`}
     >
-      {feedback.kind === 'error' ? (
-        <p className="font-medium">{feedback.message}</p>
-      ) : (
-        <>
-          <p className="text-2xl font-bold tracking-wide">
-            {feedback.kind === 'entry' ? 'ENTRADA registrada' : 'SALIDA registrada'}
-          </p>
-          <p className="mt-1">
-            {feedback.personName} · {formatDateTime(feedback.at)}
-          </p>
-          {feedback.kind === 'exit' && feedback.tools.length > 0 && (
-            <ExitToolsCheck tools={feedback.tools} />
-          )}
-        </>
-      )}
+      <Icon name={style.icon} className="mt-0.5 h-7 w-7" />
+      <div className="min-w-0 flex-1">
+        {feedback.kind === 'error' ? (
+          <p className="py-0.5 font-semibold">{feedback.message}</p>
+        ) : (
+          <>
+            <p className="flex flex-wrap items-baseline gap-x-3">
+              <span className="text-xl font-bold tracking-wide">
+                {feedback.kind === 'entry' ? 'ENTRADA registrada' : 'SALIDA registrada'}
+              </span>
+              <span className="text-ink">
+                {feedback.personName} · {formatDateTime(feedback.at)}
+              </span>
+            </p>
+            {feedback.kind === 'exit' && feedback.tools.length > 0 && (
+              <ExitToolsCheck tools={feedback.tools} />
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -36,12 +43,12 @@ export function ScanFeedbackBanner({ feedback }: { feedback: ScanFeedback }) {
 /** Fase 7: herramientas con que entró el técnico, para verificar que salgan con él. */
 function ExitToolsCheck({ tools }: { tools: Parameters<typeof formatToolLabel>[0][] }) {
   return (
-    <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950">
+    <div className="mt-2 rounded-lg border border-warning/40 bg-warning-soft px-4 py-2.5 text-warning-strong">
       <p className="flex items-center gap-2 font-semibold">
-        <span aria-hidden="true">⚠</span>
+        <Icon name="alert" className="h-4 w-4" />
         Verifica que salga con las herramientas que ingresó:
       </p>
-      <ul className="mt-2 list-disc space-y-0.5 pl-6">
+      <ul className="mt-1 list-disc space-y-0.5 pl-6 text-ink">
         {tools.map((tool, index) => (
           <li key={index}>{formatToolLabel(tool)}</li>
         ))}

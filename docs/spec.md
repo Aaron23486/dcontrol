@@ -422,6 +422,8 @@ El escaneo debe ser el elemento principal de la interfaz.
 
 No convertir el dashboard en una pantalla llena de gráficos innecesarios.
 
+En escritorio (≥ 1024 px de ancho, a partir de 1280 × 720) la pantalla «Ingreso y salida» se ve completa sin desplazar la página: escaneo, los cuatro indicadores, «Personas dentro» y «Actividad reciente». La actividad reciente se desplaza dentro de su panel. Mientras el guarda completa un formulario del flujo, la página puede desplazarse (ADR 0011).
+
 ---
 
 # 15. PERSONAS
@@ -733,6 +735,8 @@ La aplicación debe funcionar correctamente en:
 La interfaz principal debe estar optimizada para el entorno operativo de un CEDI.
 
 Priorizar desktop/tablet sobre móvil, pero mantener una experiencia responsive.
+
+Todas las pantallas comparten el sistema de diseño de la ADR 0011 (colores, tipografía, íconos, tarjetas, tablas y estados). Ninguna pantalla se desborda a lo ancho.
 
 ---
 

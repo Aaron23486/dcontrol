@@ -2,6 +2,7 @@ import type { PersonSummary, VisitSummary } from '@cedi/shared';
 import { useState } from 'react';
 import { Alert } from '../../components/atoms/Alert';
 import { Button } from '../../components/atoms/Button';
+import { Icon } from '../../components/atoms/Icon';
 import { Input } from '../../components/atoms/Input';
 import { FormField } from '../../components/molecules/FormField';
 import { formatDateTime, toDateTimeLocal } from '../../lib/format';
@@ -32,32 +33,37 @@ export function PreviousDayVisitPanel({
   return (
     <div className="space-y-4">
       <PersonCard person={person} />
-      <div className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        Tiene una visita abierta desde el <strong>{formatDateTime(visit.entryAt)}</strong>. Es
-        probable que no se haya registrado su salida.
+      <div className="flex items-start gap-2 rounded-lg border border-warning/40 bg-warning-soft px-4 py-3 text-sm text-warning-strong">
+        <Icon name="alert" className="mt-0.5 h-4 w-4" />
+        <p>
+          Tiene una visita abierta desde el <strong>{formatDateTime(visit.entryAt)}</strong>. Es
+          probable que no se haya registrado su salida.
+        </p>
       </div>
       {error && <Alert>{error}</Alert>}
       <form
-        className="space-y-3"
+        className="flex flex-wrap items-end gap-3"
         onSubmit={(event) => {
           event.preventDefault();
           onCloseAndEnter(new Date(exitAt).toISOString());
         }}
       >
-        <FormField label="Hora real en que salió esa vez">
-          <Input
-            type="datetime-local"
-            value={exitAt}
-            min={toDateTimeLocal(visit.entryAt)}
-            onChange={(event) => setExitAt(event.target.value)}
-            required
-          />
-        </FormField>
+        <div className="w-full sm:w-64">
+          <FormField label="Hora real en que salió esa vez">
+            <Input
+              type="datetime-local"
+              value={exitAt}
+              min={toDateTimeLocal(visit.entryAt)}
+              onChange={(event) => setExitAt(event.target.value)}
+              required
+            />
+          </FormField>
+        </div>
         <Button type="submit" disabled={pending || !exitAt}>
           Cerrar esa visita y registrar nueva entrada
         </Button>
       </form>
-      <div className="flex flex-wrap gap-2 border-t border-slate-200 pt-4">
+      <div className="flex flex-wrap gap-2 border-t border-line pt-4">
         <Button variant="secondary" disabled={pending} onClick={onExitNow}>
           No, está saliendo ahora: registrar salida
         </Button>
