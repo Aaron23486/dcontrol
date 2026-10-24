@@ -8,7 +8,7 @@ Revisión de la Fase 11. Cada medida indica dónde está y qué prueba la cubre 
 |---|---|---|
 | Contraseñas | argon2id con sal; mínimo 12 y máximo 128 caracteres (evita hashear entradas enormes) | `password-hasher.ts`, `shared/auth.ts` · `password-hasher.spec`, `shared/auth.test` |
 | Login | Mensaje genérico para correo o contraseña incorrectos y mismo tiempo de respuesta aunque el correo no exista (evita descubrir cuentas) | `auth.service.ts` · `auth.http.spec` |
-| Fuerza bruta | Límite de intentos de login por IP y minuto (`LOGIN_RATE_LIMIT_PER_MINUTE`, 5 por defecto); IP real detrás de un proxy con `TRUST_PROXY` | `auth.module.ts`, `app.setup.ts` · `auth.http.spec` |
+| Fuerza bruta | Límite de intentos de login por IP y minuto (`LOGIN_RATE_LIMIT_PER_MINUTE`, 5 por defecto); IP real detrás de un proxy con `TRUST_PROXY`. Además, bloqueo temporal por correo tras 5 fallos seguidos (15 min), también para correos inexistentes (SEC-05, ADR 0013) | `auth.module.ts`, `login-attempts.ts` · `auth.http.spec`, `login-attempts.spec`, `security.http.spec` |
 | Sesión | JWT firmado en cookie `httpOnly` (inaccesible desde JavaScript), `SameSite=Strict` (CSRF) y `Secure` en producción; dura un turno (12 h) | `session-cookie.ts` · `auth.http.spec` |
 | Revocación | Cada petición relee usuario, rol y estado en la BD: desactivar corta el acceso al instante (R14). Cambiar la contraseña, desactivar la cuenta o **cerrar sesión** invalida las sesiones abiertas en el servidor (`sessions_valid_from`, SEC-01): una copia de la cookie deja de valer | `auth.service.ts` · `accounts.int-spec`, `auth.http.spec` «SEC-01» |
 | Autorización | Guard global: todo exige sesión salvo login, logout y health. Roles con `@Roles` (la auditoría es solo para Admin). Nombre y cédula solo los corrige Admin | `session.guard.ts`, `roles.guard.ts` · `auth.http.spec`, `audit.http.int-spec`, `persons.http.int-spec`, E2E |
@@ -16,11 +16,12 @@ Revisión de la Fase 11. Cada medida indica dónde está y qué prueba la cubre 
 | SQL | Prisma con consultas parametrizadas; no hay SQL construido con texto del usuario | revisión del código |
 | Integridad | Reglas críticas garantizadas también en la BD (índice parcial, `CHECK`, únicos). El cierre manual con hora indicada por el guarda solo aplica a visitas de días anteriores (D3, SEC-03) | migraciones · `database-constraints.int-spec`, `visits.http.int-spec` «SEC-03» |
 | Base de datos | La API usa un usuario sin privilegios (rol `cedi_app`): sin DELETE, TRUNCATE ni DDL; la auditoría y la entrada de cada visita son inmutables para ella. Las migraciones las aplica el dueño de las tablas por separado (ADR 0012, SEC-02) | migración `rol_de_aplicacion` · `privileges.int-spec`, E2E con el usuario sin privilegios |
-| Errores | Formato `{ code, message }` sin detalles internos ni trazas; los errores 500 se registran en el servidor, no se envían | `api-exception.filter.ts` · `auth.http.spec` |
+| Errores | Formato `{ code, message }` sin detalles internos ni trazas; los errores 500 se registran en el servidor, no se envían. Un cuerpo demasiado grande responde 413 y uno mal formado 400, sin registrarse como error (SEC-06) | `api-exception.filter.ts` · `auth.http.spec`, `security.http.spec` |
+| Eventos de seguridad | Log estructurado `security`: logins correctos y fallidos, bloqueos, cierres de sesión, sesiones rechazadas, accesos denegados y límites alcanzados, sin contraseñas, tokens ni la cadena de búsqueda; alerta `security.alert` ante muchos fallos en 10 min (SEC-04, ADR 0013) | `security-events.ts`, `api-exception.filter.ts` · `security-events.spec`, `security.http.spec` |
 | Cabeceras | helmet: CSP `default-src 'self'`, HSTS, `nosniff`, `frame-ancestors 'self'`, sin `X-Powered-By` | `app.setup.ts` · `production.http.spec` |
 | CORS | Solo el origen de la web (`WEB_ORIGIN`); en producción web y API comparten origen (ADR 0010) | `app.setup.ts` |
 | Registros | Logs estructurados (pino) sin cookies ni cuerpos de petición; la auditoría guarda nombres de campos, nunca valores (D12) | `app.module.ts` · `audit.http.int-spec` |
-| Secretos | Variables de entorno validadas al arrancar (`JWT_SECRET` ≥ 32 caracteres); `.env` fuera del repositorio; `.env.example` sin valores reales | `app-config.ts` · `app-config.spec` |
+| Secretos | Variables de entorno validadas al arrancar (`JWT_SECRET` ≥ 32 caracteres); en producción se rechazan los valores de ejemplo de `.env.example` (SEC-12); `.env` fuera del repositorio; `.env.example` sin valores reales | `app-config.ts` · `app-config.spec` |
 | Interfaz | Cerrar sesión o una sesión vencida descartan los datos en memoria y llevan al login | `session-state.ts` · E2E |
 | Contenedor | Imagen multi-etapa, sin dependencias de desarrollo, ejecutada como usuario sin privilegios (`node`) | `Dockerfile` |
 | Dependencias | `npm audit`: 0 vulnerabilidades; `overrides.multer` fuerza una versión corregida | `package.json` |
@@ -29,7 +30,8 @@ Revisión de la Fase 11. Cada medida indica dónde está y qué prueba la cubre 
 
 - **Cerrar sesión cierra todas las sesiones de esa cuenta** (SEC-01), también las de otra caseta que use la misma cuenta. Es el precio de revocar sin guardar cada sesión en la base; con cuentas por guarda no afecta.
 - **El superusuario de PostgreSQL sigue existiendo** dentro del contenedor de la base: lo usan solo las migraciones (ADR 0012). No publiques el puerto de la base en producción.
-- **El rate limit vive en memoria de cada instancia.** Con varias réplicas, cada una cuenta por separado; para escalar horizontalmente habría que usar un almacén compartido (por ejemplo Redis).
+- **El rate limit, el bloqueo por correo y la alerta viven en memoria de cada instancia.** Se reinician con la API y, con varias réplicas, cada una cuenta por separado; para escalar horizontalmente habría que usar un almacén compartido (por ejemplo Redis).
+- **El bloqueo por correo se puede provocar a propósito:** quien conozca el correo de un guarda puede dejarlo 15 minutos sin poder entrar. Queda registrado (`auth.account_locked`) y vence solo (ADR 0013).
 - **Los cambios de cuentas por terminal (`npm run users`) no quedan en la auditoría de la app,** porque no los hace un usuario de la app (ADR 0008). Quedan en el historial de la terminal del servidor.
 
 ## Al desplegar
@@ -37,6 +39,7 @@ Revisión de la Fase 11. Cada medida indica dónde está y qué prueba la cubre 
 1. Servir siempre con **HTTPS** y poner `TRUST_PROXY=true` si hay un proxy delante (necesario para la cookie `Secure` y la IP real).
 2. Generar `JWT_SECRET` aleatorio (≥ 32 caracteres) y una contraseña fuerte para PostgreSQL. Cambiar `JWT_SECRET` cierra todas las sesiones.
 3. Crear el primer administrador con `npm run create-admin` dentro del servidor y no reutilizar contraseñas.
-4. Usar contraseñas distintas y generadas para `POSTGRES_PASSWORD` (dueño de las tablas) y `APP_DB_PASSWORD` (usuario de la API), y aplicar las migraciones con `npm run db:deploy` (servicio `migrate`), nunca con el usuario de la API.
+4. Generar **todos** los secretos de producción nuevos (no reutilizar los de desarrollo ni guardarlos en carpetas sincronizadas como OneDrive) y usar contraseñas distintas y generadas para `POSTGRES_PASSWORD` (dueño de las tablas) y `APP_DB_PASSWORD` (usuario de la API), y aplicar las migraciones con `npm run db:deploy` (servicio `migrate`), nunca con el usuario de la API.
 5. Configurar copias de seguridad de la base de datos.
-6. No ejecutar el seed de demostración (se niega en producción) ni exponer el puerto de PostgreSQL a Internet.
+6. No ejecutar el seed de demostración ni `e2e:prepare` (ambos se niegan en producción) ni exponer el puerto de PostgreSQL a Internet.
+7. Configurar una alerta del monitoreo sobre los eventos `security.alert` y `auth.account_locked` del log (ADR 0013).

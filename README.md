@@ -125,6 +125,8 @@ Todas las variables están documentadas en [`.env.example`](.env.example). La AP
 | `WEB_ORIGIN`                                                         | URL de la web (CORS)                                                                                                                   |
 | `CEDI_TIMEZONE`                                                      | Zona horaria IANA del CEDI: define qué es «hoy»                                                                                        |
 | `LOGIN_RATE_LIMIT_PER_MINUTE`                                        | Intentos de login por IP y minuto                                                                                                      |
+| `LOGIN_MAX_FAILURES_PER_ACCOUNT`, `LOGIN_LOCKOUT_MINUTES`            | Bloqueo temporal de un correo tras varios intentos fallidos seguidos (ADR 0013)                                                        |
+| `SECURITY_ALERT_FAILED_LOGINS`                                       | Logins fallidos en 10 minutos que generan el evento `security.alert` en el log (ADR 0013)                                              |
 | `API_PORT` / `PORT`                                                  | Puerto de la API                                                                                                                       |
 | `WEB_DIST_DIR`, `TRUST_PROXY`                                        | Producción: carpeta de la web compilada y uso detrás de un proxy HTTPS                                                                 |
 | `E2E_BROWSER_CHANNEL`                                                | Opcional: `chrome` o `msedge` para usar el navegador instalado en las E2E                                                              |

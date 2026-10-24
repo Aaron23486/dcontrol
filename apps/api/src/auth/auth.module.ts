@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RolesGuard } from './guards/roles.guard';
 import { SessionGuard } from './guards/session.guard';
+import { LoginAttempts } from './login-attempts';
 import { PasswordHasher } from './password-hasher';
 
 const ONE_MINUTE_MS = 60_000;
@@ -33,6 +34,7 @@ const ONE_MINUTE_MS = 60_000;
   controllers: [AuthController],
   providers: [
     AuthService,
+    LoginAttempts,
     PasswordHasher,
     // El orden importa: primero se resuelve la sesión y después el rol.
     { provide: APP_GUARD, useClass: SessionGuard },

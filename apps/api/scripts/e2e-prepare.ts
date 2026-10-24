@@ -24,6 +24,9 @@ async function main(): Promise<void> {
   const url = process.env.DATABASE_URL_TEST;
   const password = process.env.E2E_PASSWORD;
   const timezone = process.env.CEDI_TIMEZONE ?? 'America/Mexico_City';
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('e2e:prepare vacía la base: nunca se ejecuta en producción.');
+  }
   if (!url) throw new Error('Falta DATABASE_URL_TEST.');
   if (!password && !process.argv.includes('--clean')) throw new Error('Falta E2E_PASSWORD.');
   if (url === process.env.DATABASE_URL || url === process.env.MIGRATION_DATABASE_URL) {
