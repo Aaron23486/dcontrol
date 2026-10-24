@@ -34,6 +34,40 @@ test.describe('tablet (768 × 1024)', () => {
   });
 });
 
+/** ADR 0011: en escritorio «Ingreso y salida» cabe en la ventana y la actividad se desplaza por dentro. */
+for (const viewport of [
+  { width: 1280, height: 720 },
+  { width: 1920, height: 1080 },
+]) {
+  test.describe(`escritorio (${viewport.width} × ${viewport.height})`, () => {
+    test.use({ viewport });
+
+    test('«Ingreso y salida» se ve completa sin desplazar la página', async ({ page }) => {
+      await login(page, 'guard');
+      await expect(page.getByRole('heading', { name: 'Actividad reciente' })).toBeVisible();
+      await page.waitForLoadState('networkidle');
+      const layout = await page.evaluate(() => {
+        const list = document.querySelector('ol[aria-label="Últimos movimientos"]');
+        return {
+          pageScrolls: document.documentElement.scrollHeight > window.innerHeight,
+          listScrollsInside: list ? getComputedStyle(list).overflowY === 'auto' : null,
+          listBottom: list ? list.getBoundingClientRect().bottom : null,
+        };
+      });
+      expect(layout.pageScrolls, 'la página no debe tener scroll vertical').toBe(false);
+      if (layout.listBottom !== null) {
+        expect(layout.listScrollsInside).toBe(true);
+        expect(layout.listBottom).toBeLessThanOrEqual(viewport.height);
+      }
+      for (const name of ['Ingreso y salida', 'Personas dentro', 'Actividad reciente']) {
+        await expect(page.getByRole('heading', { name })).toBeInViewport();
+      }
+      await expect(page.getByText('Visitas sin salida de días anteriores')).toBeInViewport();
+      await expectFitsAndTouchable(page, 'ingreso y salida');
+    });
+  });
+}
+
 test('teclado: «Saltar al contenido» es lo primero y lleva al contenido', async ({ page }) => {
   await login(page, 'guard');
   await page.goto('/historial');

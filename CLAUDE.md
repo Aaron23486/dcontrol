@@ -12,14 +12,14 @@ Si hay conflicto o falta información: pregunta. No asumas requisitos.
 
 ## Estado
 Fase 1 (análisis) **aprobada** el 2026-10-23: D1-D14, R11-R16 y el stack de `docs/plan.md` están APROBADOS.
-Fase 2 (base del proyecto) **aprobada** el 2026-10-23. Cada decisión importante tiene su ADR en `docs/decisions/`. Fase 3 (personas) **aprobada** el 2026-10-23. Fase 4 (ingreso y salida) **aprobada** el 2026-10-23. Fase 5 (dashboard) **aprobada** el 2026-10-23. Fase 6 (historial) **aprobada** el 2026-10-23. Fase 7 (herramientas) **aprobada** el 2026-10-23. Fase 8 (auditoría) **aprobada** el 2026-10-23. Fase 9 (testing) **aprobada** el 2026-10-23. Fase 10 (UI/UX) **aprobada** el 2026-10-23. Fase 11 (producción) **aprobada** el 2026-10-23: **el desarrollo planificado está completo**. Cambios nuevos: documentar primero en spec, plan o ADR y agregar sus pruebas a `docs/testing.md`.
+Fase 2 (base del proyecto) **aprobada** el 2026-10-23. Cada decisión importante tiene su ADR en `docs/decisions/`. Fase 3 (personas) **aprobada** el 2026-10-23. Fase 4 (ingreso y salida) **aprobada** el 2026-10-23. Fase 5 (dashboard) **aprobada** el 2026-10-23. Fase 6 (historial) **aprobada** el 2026-10-23. Fase 7 (herramientas) **aprobada** el 2026-10-23. Fase 8 (auditoría) **aprobada** el 2026-10-23. Fase 9 (testing) **aprobada** el 2026-10-23. Fase 10 (UI/UX) **aprobada** el 2026-10-23. Fase 11 (producción) **aprobada** el 2026-10-23: **el desarrollo planificado está completo**. Fase 12 (rediseño de la interfaz, ADR 0011) **aprobada** el 2026-10-23. Cambios nuevos: documentar primero en spec, plan o ADR y agregar sus pruebas a `docs/testing.md`.
 
 ## Reglas críticas (nunca violar)
 - El campo «Persona que autoriza» NO existe en ninguna parte: ni formularios, ni API, ni BD, ni filtros, ni reportes. No sustituirlo por otro campo equivalente sin consultar.
 - Solo dos roles (`SECURITY`, `ADMIN`). Sin registro público, sin OAuth. Sin pantalla de usuarios: se gestionan con `npm run users` (ADR 0008).
 - No existe gafete: la persona se identifica por su cédula (spec §9, ADR 0008).
 - Los datos que se piden y guardan dependen del tipo de persona (tabla de spec §7, ADR 0009). No pedir ni guardar campos que no correspondan al tipo. La empresa es obligatoria para todos.
-- Sin lógica de negocio en componentes de UI.
+- Sin lógica de negocio en componentes de UI. Colores, radios y sombras solo con los tokens de `apps/web/src/index.css` (ADR 0011); nada de colores sueltos.
 - Toda regla de negocio lleva su test. Una persona nunca puede tener dos visitas abiertas (garantizado también en BD).
 - No guardar secretos ni credenciales en el repo.
 

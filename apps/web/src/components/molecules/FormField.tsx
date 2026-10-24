@@ -11,8 +11,8 @@ export function FormField({ label, error, children }: FormFieldProps) {
   const id = useId();
   const errorId = `${id}-error`;
   return (
-    <div className="space-y-1">
-      <label htmlFor={id} className="block text-sm font-medium text-slate-700">
+    <div className="space-y-1.5">
+      <label htmlFor={id} className="block text-sm font-medium text-ink-soft">
         {label}
       </label>
       {cloneElement(children, {
@@ -21,7 +21,7 @@ export function FormField({ label, error, children }: FormFieldProps) {
         invalid: Boolean(error),
       })}
       {error && (
-        <p id={errorId} className="text-sm text-red-700">
+        <p id={errorId} className="text-sm text-danger-strong">
           {error}
         </p>
       )}

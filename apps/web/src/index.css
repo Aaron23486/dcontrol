@@ -1,7 +1,56 @@
 @import 'tailwindcss';
 
+/*
+ * Sistema de diseño (ADR 0011). Los componentes usan estos nombres (bg-surface, text-primary…),
+ * nunca un color suelto: cambiar la paleta es cambiar este bloque. Los pares de texto sobre su
+ * fondo cumplen contraste AA.
+ */
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
+
+  --color-canvas: #f4f8fb;
+  --color-surface: #ffffff;
+  --color-line: #e2e8f0;
+  --color-line-soft: #edf2f7;
+
+  --color-ink: #0f172a;
+  --color-ink-soft: #334155;
+  --color-ink-muted: #5b6b80;
+
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-strong: #1d4ed8;
+  --color-primary-soft: #ebf3fe;
+
+  --color-success: #059669;
+  --color-success-strong: #047857;
+  --color-success-soft: #e3f8ee;
+
+  --color-danger: #dc2626;
+  --color-danger-strong: #b91c1c;
+  --color-danger-soft: #fdeeee;
+
+  --color-warning: #d97706;
+  --color-warning-strong: #92400e;
+  --color-warning-soft: #fef7e6;
+
+  --radius-card: 0.75rem;
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.04);
+}
+
+/* Medidas del marco de la app, compartidas por la barra superior y la pantalla de ingreso. */
+:root {
+  --header-height: 3.5rem;
+  --page-py: 1.25rem;
+}
+
+/* Alto de la ventana menos la barra superior y el margen vertical de la página (ADR 0011). */
+@utility min-h-main {
+  min-height: calc(100dvh - var(--header-height) - 2 * var(--page-py));
+}
+
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-canvas font-sans text-ink antialiased;
   }
 }

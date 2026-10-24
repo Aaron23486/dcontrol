@@ -130,3 +130,23 @@ Alcance aprobado el 2026-10-23: **revisión al salir**. Descartado por ahora: he
 - [x] CI construye también la imagen Docker
 - [x] Tests: web servida por la API, rutas /api, caché, health 503/200, cabeceras, revocación de sesiones, variables vacías
 - Pendiente del responsable: crear el repositorio git, publicarlo en GitHub y elegir la plataforma de despliegue (la imagen sirve para cualquiera que acepte Docker)
+
+## Fase 12 — Rediseño de la interfaz (ADR 0011)  ✅ APROBADA (2026-10-23)
+- [x] ADR 0011 y spec §14, §27: sistema de diseño y «Ingreso y salida» a pantalla completa en escritorio
+- [x] Tokens de color, radios y sombras en `index.css`; Inter autoalojada; íconos SVG propios
+- [x] Componentes base restilizados (`Button`, `Badge`, `Input`, `Select`, `Alert`, `StatTile`, estados, diálogo, filtros de fecha) y nuevo `Card`
+- [x] Barra superior horizontal con marca, pestaña activa subrayada y usuario real de la sesión
+- [x] «Ingreso y salida» según la imagen aprobada: escaneo con ilustración, 4 indicadores con ícono, «Personas dentro» y «Actividad reciente» con scroll interno; sin scroll de página en 1280 × 720, 1366 × 768 y 1920 × 1080
+- [x] **Corregido:** el nuevo fondo dejaba el gris `slate-500` bajo contraste AA (pestañas del historial); se usa el token `ink-muted`
+- [x] Tests: e2e sin scroll de página en 1280 × 720 y 1920 × 1080 (19 en total)
+- [x] «Ingreso y salida» aprobada por el responsable
+- [x] Componentes compartidos nuevos: `PageHeader`, `SegmentedControl`, `SearchInput` y `DataTable` (`Th`, `Td`)
+- [x] Dentro: encabezado, filtro por tipo con conteos, búsqueda con lupa y tabla compartida dentro de una tarjeta; «Cerrar visita» sin cambios
+- [x] Historial: pestañas por tipo, filtros (fechas, estado, búsqueda) en una barra compacta, tabla compartida y paginación; detalle de visita con tarjetas
+- [x] Dentro e Historial aprobados por el responsable
+- [x] Personas: encabezado con «Registrar persona», pestañas, búsqueda y tabla compartida; ficha con tarjetas «Datos» y «Visitas recientes»; registro en tarjeta
+- [x] Formularios: aviso de campos obligatorios, dos columnas cuando hay espacio (consulta de contenedor), errores bajo cada campo; flujo de persona nueva con «Paso 1 de 2» y «Paso 2 de 2»; visita olvidada con aviso ámbar e ícono. Campos sin cambios
+- [x] Auditoría: barra de filtros (fechas, acción, usuario) y tabla compartida; cada acción con ícono y su texto
+- [x] Login, «Página no encontrada», error general y aviso de permiso con el mismo sistema; no queda ningún color fuera de los tokens
+- [x] Capturas del README regeneradas (`npm run screenshots`)
+- [x] Revisión final del responsable: rediseño aprobado

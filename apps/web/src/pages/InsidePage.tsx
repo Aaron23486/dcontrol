@@ -1,6 +1,9 @@
 import { PERSON_TYPE_LABEL, PERSON_TYPES, type InsideVisit } from '@cedi/shared';
 import { useState } from 'react';
-import { Input } from '../components/atoms/Input';
+import { Card } from '../components/molecules/Card';
+import { PageHeader } from '../components/molecules/PageHeader';
+import { SearchInput } from '../components/molecules/SearchInput';
+import { SegmentedControl } from '../components/molecules/SegmentedControl';
 import { CloseVisitDialog } from '../features/dashboard/CloseVisitDialog';
 import { InsideList } from '../features/dashboard/InsideList';
 import {
@@ -31,44 +34,45 @@ export function InsidePage() {
   const shown = filterInside(visits, type, query);
 
   return (
-    <section className="mx-auto max-w-6xl space-y-4">
-      <h1 className="text-xl font-semibold">Personas dentro del CEDI</h1>
-      <div role="group" aria-label="Filtrar por tipo" className="flex flex-wrap gap-2">
-        {FILTERS.map((filter) => (
-          <button
-            key={filter.value}
-            type="button"
-            aria-pressed={type === filter.value}
-            onClick={() => setType(filter.value)}
-            className={`min-h-10 rounded-full border px-4 py-1 text-sm ${
-              type === filter.value
-                ? 'border-slate-900 bg-slate-900 text-white'
-                : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            {filter.label} ({counts[filter.value] ?? 0})
-          </button>
-        ))}
-      </div>
-      <Input
-        type="search"
-        aria-label="Buscar por nombre o cédula"
-        placeholder="Buscar por nombre o cédula"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        className="max-w-md"
+    <div className="space-y-4">
+      <PageHeader
+        title="Personas dentro del CEDI"
+        description="Se actualiza sola cada 10 segundos."
+        icon="users"
       />
-      {inside.error && (
-        <ErrorState message={inside.error.message} onRetry={() => void inside.refetch()} />
-      )}
-      {inside.isPending && <LoadingState />}
-      {inside.data && shown.length === 0 && (
-        <EmptyState>
-          {visits.length === 0 ? 'No hay nadie dentro del CEDI.' : 'Nadie coincide con el filtro.'}
-        </EmptyState>
-      )}
-      {shown.length > 0 && <InsideList visits={shown} onClose={setClosing} />}
+      <Card bodyClassName="space-y-4 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <SegmentedControl
+            label="Filtrar por tipo"
+            value={type}
+            onChange={setType}
+            options={FILTERS.map((filter) => ({
+              value: filter.value,
+              label: `${filter.label} (${counts[filter.value] ?? 0})`,
+            }))}
+          />
+          <SearchInput
+            aria-label="Buscar por nombre o cédula"
+            placeholder="Buscar por nombre o cédula"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            className="w-full sm:w-80"
+          />
+        </div>
+        {inside.error && (
+          <ErrorState message={inside.error.message} onRetry={() => void inside.refetch()} />
+        )}
+        {inside.isPending && <LoadingState />}
+        {inside.data && shown.length === 0 && (
+          <EmptyState>
+            {visits.length === 0
+              ? 'No hay nadie dentro del CEDI.'
+              : 'Nadie coincide con el filtro.'}
+          </EmptyState>
+        )}
+        {shown.length > 0 && <InsideList visits={shown} onClose={setClosing} />}
+      </Card>
       <CloseVisitDialog visit={closing} onDone={() => setClosing(null)} />
-    </section>
+    </div>
   );
 }

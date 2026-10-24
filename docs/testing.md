@@ -62,3 +62,4 @@ Las pruebas de integración y E2E necesitan `npm run db:up`. Usan la base `cedi_
 | Sesión vencida (R14 en la interfaz) | `web/query-client.test`; E2E «si la sesión vence a mitad del turno» |
 | Accesibilidad (spec §28) | E2E `3-accessibility` (axe WCAG 2.1 A/AA en todas las pantallas), `4-responsive-and-keyboard` |
 | Responsive (spec §27) | E2E `4-responsive-and-keyboard` (tablet sin desbordes, controles ≥ 40 px) |
+| «Ingreso y salida» sin scroll de página en escritorio y actividad con scroll interno (spec §14, ADR 0011) | E2E `4-responsive-and-keyboard` «escritorio (1280 × 720)» y «(1920 × 1080)» |

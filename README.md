@@ -205,6 +205,7 @@ Se regeneran con `npm run screenshots`, usando datos de prueba.
 - **Escáner detrás de una interfaz:** hoy teclado o lector tipo teclado; mañana cámara, sin rediseñar ([ADR 0006](docs/decisions/0006-escaner.md)).
 - **Sondeo cada 10 s** en lugar de WebSockets: suficiente para una caseta y sin infraestructura extra ([ADR 0005](docs/decisions/0005-tiempo-real-polling.md)).
 - **Un solo contenedor en producción** ([ADR 0010](docs/decisions/0010-despliegue.md)).
+- **Sistema de diseño propio:** colores, radios y sombras como tokens en un solo archivo, tipografía Inter autoalojada e íconos SVG propios, sin librería de componentes. En escritorio, «Ingreso y salida» cabe completa en la ventana ([ADR 0011](docs/decisions/0011-sistema-de-diseno.md)).
 
 ## Seguridad
 

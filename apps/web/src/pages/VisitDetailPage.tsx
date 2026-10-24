@@ -2,6 +2,9 @@ import { PERSON_TYPE_LABEL } from '@cedi/shared';
 import type { ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Badge } from '../components/atoms/Badge';
+import { Icon } from '../components/atoms/Icon';
+import { BackLink } from '../components/molecules/BackLink';
+import { Card } from '../components/molecules/Card';
 import { useVisitDetail } from '../features/history/use-history';
 import { sectionByType, visitColumnsFor } from '../features/persons/person-sections';
 import { formatDateTime, formatDuration } from '../lib/format';
@@ -13,8 +16,8 @@ import { useDocumentTitle } from '../lib/use-document-title';
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</dt>
-      <dd className="mt-0.5">{children}</dd>
+      <dt className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">{label}</dt>
+      <dd className="mt-1 text-ink">{children}</dd>
     </div>
   );
 }
@@ -36,73 +39,76 @@ export function VisitDetailPage() {
   const section = sectionByType(visit.personType);
 
   return (
-    <section className="mx-auto max-w-3xl space-y-6">
-      <button
-        type="button"
-        onClick={() => navigate(-1)}
-        className="text-sm text-slate-600 hover:underline"
-      >
-        ← Volver
-      </button>
-      <header className="flex flex-wrap items-center gap-3">
-        <h1 className="text-xl font-semibold">Visita de {visit.person.fullName}</h1>
+    <div className="mx-auto max-w-4xl space-y-4">
+      <BackLink onClick={() => navigate(-1)}>Volver</BackLink>
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="text-2xl font-bold tracking-tight text-ink">
+          Visita de {visit.person.fullName}
+        </h1>
         {visit.exitAt ? <Badge>Salida registrada</Badge> : <Badge tone="success">Dentro</Badge>}
-      </header>
+      </div>
 
-      <dl className="grid gap-4 rounded-lg border border-slate-200 bg-white p-6 text-sm sm:grid-cols-2">
-        <Field label="Persona">
-          <Link to={`/personas/detalle/${visit.person.id}`} className="hover:underline">
-            {visit.person.fullName}
-          </Link>{' '}
-          <span className="font-mono text-slate-500">{visit.person.identification}</span>
-        </Field>
-        <Field label="Tipo y empresa en esa visita">
-          {PERSON_TYPE_LABEL[visit.personType]} · {visit.company.name}
-        </Field>
-        <Field label="Entrada">
-          {formatDateTime(visit.entryAt)} · registró {visit.entryBy.name}
-        </Field>
-        <Field label="Salida">
-          {visit.exitAt
-            ? `${formatDateTime(visit.exitAt)} · registró ${visit.exitBy?.name ?? '—'}`
-            : 'Sin salida registrada'}
-        </Field>
-        <Field label={visit.exitAt ? 'Duración' : 'Tiempo dentro'}>
-          {formatDuration(visit.entryAt, visit.exitAt ? new Date(visit.exitAt) : now)}
-        </Field>
-        {columns.purpose && <Field label="Motivo">{visit.purpose}</Field>}
-        {columns.area && <Field label="Área">{visit.area}</Field>}
-      </dl>
+      <Card bodyClassName="p-5">
+        <dl className="grid gap-5 text-sm sm:grid-cols-2">
+          <Field label="Persona">
+            <Link
+              to={`/personas/detalle/${visit.person.id}`}
+              className="font-semibold text-primary-strong hover:underline"
+            >
+              {visit.person.fullName}
+            </Link>{' '}
+            <span className="text-ink-muted">{visit.person.identification}</span>
+          </Field>
+          <Field label="Tipo y empresa en esa visita">
+            {PERSON_TYPE_LABEL[visit.personType]} · {visit.company.name}
+          </Field>
+          <Field label="Entrada">
+            {formatDateTime(visit.entryAt)} · registró {visit.entryBy.name}
+          </Field>
+          <Field label="Salida">
+            {visit.exitAt
+              ? `${formatDateTime(visit.exitAt)} · registró ${visit.exitBy?.name ?? '—'}`
+              : 'Sin salida registrada'}
+          </Field>
+          <Field label={visit.exitAt ? 'Duración' : 'Tiempo dentro'}>
+            {formatDuration(visit.entryAt, visit.exitAt ? new Date(visit.exitAt) : now)}
+          </Field>
+          {columns.purpose && <Field label="Motivo">{visit.purpose}</Field>}
+          {columns.area && <Field label="Área">{visit.area}</Field>}
+        </dl>
+      </Card>
 
       {columns.tools && (
-        <div className="space-y-2">
-          <h2 className="font-semibold">Herramientas o equipos</h2>
+        <Card title="Herramientas o equipos" bodyClassName="px-4 pb-4">
           {visit.tools.length === 0 ? (
-            <p className="text-sm text-slate-500">No registró herramientas en esta visita.</p>
+            <p className="text-sm text-ink-muted">No registró herramientas en esta visita.</p>
           ) : (
-            <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white text-sm">
+            <ul className="divide-y divide-line-soft rounded-lg border border-line text-sm">
               {visit.tools.map((tool, index) => (
-                <li key={index} className="flex justify-between gap-3 px-4 py-2">
+                <li key={index} className="flex justify-between gap-3 px-4 py-2.5">
                   <span>
-                    <span className="font-medium">{tool.name}</span>
+                    <span className="font-semibold text-ink">{tool.name}</span>
                     {tool.description && (
-                      <span className="text-slate-500"> · {tool.description}</span>
+                      <span className="text-ink-muted"> · {tool.description}</span>
                     )}
                   </span>
-                  {tool.quantity && <span className="text-slate-600">× {tool.quantity}</span>}
+                  {tool.quantity && (
+                    <span className="tabular-nums text-ink-soft">× {tool.quantity}</span>
+                  )}
                 </li>
               ))}
             </ul>
           )}
-        </div>
+        </Card>
       )}
 
       <Link
         to={`/historial/${section.slug}?range=all&q=${visit.person.identification}`}
-        className="inline-block text-sm text-slate-600 hover:underline"
+        className="inline-flex min-h-10 items-center gap-1 text-sm font-semibold text-primary-strong hover:underline"
       >
         Ver todas las visitas de {visit.person.fullName}
+        <Icon name="arrowRight" className="h-4 w-4" />
       </Link>
-    </section>
+    </div>
   );
 }

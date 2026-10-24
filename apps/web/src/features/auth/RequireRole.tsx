@@ -1,5 +1,6 @@
 import type { Role } from '@cedi/shared';
 import type { ReactNode } from 'react';
+import { EmptyState } from '../../components/molecules/EmptyState';
 import { useSession } from './use-session';
 
 /**
@@ -10,9 +11,9 @@ export function RequireRole({ roles, children }: { roles: Role[]; children: Reac
   const { data: user } = useSession();
   if (!user || !roles.includes(user.role)) {
     return (
-      <p className="mx-auto max-w-xl rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-600">
-        No tienes permiso para ver esta sección.
-      </p>
+      <div className="mx-auto max-w-xl">
+        <EmptyState>No tienes permiso para ver esta sección.</EmptyState>
+      </div>
     );
   }
   return <>{children}</>;
