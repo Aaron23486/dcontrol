@@ -1,0 +1,141 @@
+// Modelo de datos de CEDI Control. Ver docs/plan.md §3 y docs/decisions/.
+// Lo que Prisma no puede expresar (índice único parcial, CHECK, extensión pg_trgm)
+// está en SQL dentro de las migraciones; no lo borres al generar una nueva.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Debe coincidir con `Role` de @cedi/shared (lo verifica una prueba).
+enum Role {
+  SECURITY
+  ADMIN
+}
+
+/// Debe coincidir con `PersonType` de @cedi/shared (lo verifica una prueba).
+enum PersonType {
+  EXTERNAL_WORKER
+  CONTRACTOR
+  MAINTENANCE_TECHNICIAN
+  VISITOR
+}
+
+model User {
+  id                String   @id @default(uuid(7)) @db.Uuid
+  name              String   @db.VarChar(120)
+  email             String   @unique @db.VarChar(254)
+  passwordHash      String   @map("password_hash")
+  role              Role
+  isActive          Boolean  @default(true) @map("is_active")
+  /// Las sesiones emitidas antes de este instante dejan de valer (al cambiar la contraseña o desactivar).
+  sessionsValidFrom DateTime @default(now()) @map("sessions_valid_from") @db.Timestamptz(3)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  visitsEntered Visit[]    @relation("VisitEntryBy")
+  visitsExited  Visit[]    @relation("VisitExitBy")
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+model Company {
+  id             String @id @default(uuid(7)) @db.Uuid
+  name           String @db.VarChar(150)
+  /// Nombre normalizado (D9): evita duplicados como "Acme S.A." y "ACME SA".
+  nameNormalized String @unique @map("name_normalized") @db.VarChar(150)
+
+  persons Person[]
+  visits  Visit[]
+
+  @@index([nameNormalized(ops: raw("gin_trgm_ops"))], type: Gin, map: "companies_name_normalized_trgm_idx")
+  @@map("companies")
+}
+
+model Person {
+  id             String     @id @default(uuid(7)) @db.Uuid
+  fullName       String     @map("full_name") @db.VarChar(150)
+  /// Nombre sin tildes ni puntuación, en mayúsculas, para buscar (D15). Lo calcula la API.
+  nameNormalized String     @map("name_normalized") @db.VarChar(150)
+  /// Cédula normalizada (D10, ADR 0008): identifica a la persona y no cambia.
+  identification String     @unique @db.VarChar(20)
+  type           PersonType
+  /// Empresa vigente; obligatoria para todos los tipos (D9).
+  companyId      String     @map("company_id") @db.Uuid
+  createdAt      DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  visits  Visit[]
+
+  @@index([companyId])
+  @@index([type])
+  @@index([nameNormalized(ops: raw("gin_trgm_ops"))], type: Gin, map: "persons_name_normalized_trgm_idx")
+  @@map("persons")
+}
+
+/// Cada ingreso de una persona. DENTRO equivale a `exit_at IS NULL` (D5).
+model Visit {
+  id         String     @id @default(uuid(7)) @db.Uuid
+  personId   String     @map("person_id") @db.Uuid
+  /// Tipo vigente al entrar (R17): el historial no cambia si luego se edita la persona.
+  personType PersonType @map("person_type")
+  /// Empresa vigente al entrar (R17); obligatoria (D9).
+  companyId  String     @map("company_id") @db.Uuid
+  entryAt    DateTime   @default(now()) @map("entry_at") @db.Timestamptz(3)
+  exitAt     DateTime?  @map("exit_at") @db.Timestamptz(3)
+  entryById  String     @map("entry_by") @db.Uuid
+  exitById   String?    @map("exit_by") @db.Uuid
+  /// Motivo y área: obligatorios salvo para trabajador externo, que no los lleva (R18, CHECK).
+  purpose    String?    @db.VarChar(255)
+  area       String?    @db.VarChar(120)
+
+  person  Person      @relation(fields: [personId], references: [id], onDelete: Restrict)
+  company Company     @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  entryBy User        @relation("VisitEntryBy", fields: [entryById], references: [id], onDelete: Restrict)
+  exitBy  User?       @relation("VisitExitBy", fields: [exitById], references: [id], onDelete: Restrict)
+  tools   VisitTool[]
+
+  @@index([personId, entryAt(sort: Desc)])
+  @@index([entryAt])
+  @@index([companyId])
+  @@map("visits")
+}
+
+/// Herramientas o equipos que ingresa un técnico de mantenimiento (R16).
+model VisitTool {
+  id          String  @id @default(uuid(7)) @db.Uuid
+  visitId     String  @map("visit_id") @db.Uuid
+  name        String  @db.VarChar(120)
+  description String? @db.VarChar(255)
+  quantity    Int?
+
+  visit Visit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+
+  @@index([visitId])
+  @@map("visit_tools")
+}
+
+/// Auditoría (D12): nombres de campos modificados, nunca sus valores.
+model AuditLog {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  action        String   @db.VarChar(50)
+  entity        String   @db.VarChar(50)
+  entityId      String   @map("entity_id") @db.Uuid
+  changedFields String[] @map("changed_fields") @db.VarChar(64)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@index([userId])
+  @@map("audit_logs")
+}

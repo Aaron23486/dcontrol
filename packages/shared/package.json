@@ -1,0 +1,20 @@
+{
+  "name": "@cedi/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tipos, enums, códigos de error y esquemas Zod compartidos por API y web",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "zod": "^4.1.0"
+  }
+}
