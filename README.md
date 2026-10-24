@@ -105,7 +105,7 @@ cd cedi-control
 cp .env.example .env      # y completa los valores (ver Configuración)
 npm install               # también compila el paquete compartido y genera el cliente de Prisma
 npm run db:up             # PostgreSQL en Docker (crea también la base de pruebas)
-npm run db:deploy         # aplica las migraciones
+npm run db:deploy         # aplica las migraciones y crea el usuario de la API (sin privilegios)
 npm run create-admin      # crea el primer administrador
 npm run dev               # API en :3000 y web en http://localhost:5173
 ```
@@ -117,7 +117,8 @@ Todas las variables están documentadas en [`.env.example`](.env.example). La AP
 | Variable                                                             | Para qué                                                                                                                               |
 | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` | Base de datos de docker-compose                                                                                                        |
-| `DATABASE_URL`                                                       | Conexión de la API a PostgreSQL                                                                                                        |
+| `DATABASE_URL`                                                       | Conexión de la API a PostgreSQL, con un usuario sin privilegios que crea `db:deploy` (ADR 0012)                                        |
+| `MIGRATION_DATABASE_URL`                                             | El dueño de las tablas: solo para aplicar migraciones (`db:deploy`, `db:migrate`)                                                      |
 | `DATABASE_URL_TEST`                                                  | Base exclusiva para pruebas de integración y E2E (se vacía)                                                                            |
 | `JWT_SECRET`                                                         | Firma de la sesión, mínimo 32 caracteres. Generar con `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"` |
 | `SESSION_TTL_HOURS`                                                  | Duración de la sesión (12 h, un turno)                                                                                                 |
@@ -133,7 +134,7 @@ Nunca subas `.env` al repositorio.
 ## Migraciones
 
 ```bash
-npm run db:deploy    # aplica las migraciones pendientes (desarrollo y producción)
+npm run db:deploy    # migraciones pendientes + usuario de la API (desarrollo y producción)
 npm run db:migrate   # crea una migración nueva tras cambiar schema.prisma (solo desarrollo)
 npm run db:seed      # empresas de demostración (no crea usuarios; se niega en producción)
 ```
@@ -182,7 +183,7 @@ docker compose -f docker-compose.prod.yml --env-file .env up -d --build
 docker compose -f docker-compose.prod.yml exec app npm run create-admin
 ```
 
-La app queda en `http://localhost:8080` (`APP_PORT`). Al arrancar aplica las migraciones y expone `GET /api/health` para los chequeos de salud. En un servidor real, sírvela detrás de HTTPS con `TRUST_PROXY=true`. La imagen funciona en cualquier plataforma que acepte Docker.
+La app queda en `http://localhost:8080` (`APP_PORT`). Antes de arrancarla, el servicio `migrate` aplica las migraciones con el dueño de las tablas y crea el usuario de la API (`APP_DB_USER`, `APP_DB_PASSWORD`), que no tiene privilegios de administración (ADR 0012). La app expone `GET /api/health` para los chequeos de salud. En otra plataforma, configura `npm run db:deploy` como paso previo al despliegue. En un servidor real, sírvela detrás de HTTPS con `TRUST_PROXY=true`. La imagen funciona en cualquier plataforma que acepte Docker.
 
 ## Capturas
 

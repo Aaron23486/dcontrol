@@ -1,7 +1,15 @@
-# Producción o demostración completa: PostgreSQL + la app (API que sirve la web).
+# Producción o demostración completa: PostgreSQL + migraciones + la app (API que sirve la web).
 #   docker compose -f docker-compose.prod.yml --env-file .env up -d --build
-# Variables necesarias en .env: POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, JWT_SECRET,
-# WEB_ORIGIN (la URL pública), CEDI_TIMEZONE. Detrás de un proxy HTTPS: TRUST_PROXY=true.
+# Variables necesarias en .env: POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, APP_DB_USER,
+# APP_DB_PASSWORD, JWT_SECRET, WEB_ORIGIN (la URL pública), CEDI_TIMEZONE.
+# Detrás de un proxy HTTPS: TRUST_PROXY=true.
+#
+# ADR 0012: `migrate` aplica las migraciones con el dueño de las tablas y crea el usuario de la
+# API; `app` solo recibe ese usuario, sin privilegios de administración de la base.
+x-app-image: &app-image
+  build: .
+  image: cedi-control:prod
+
 services:
   db:
     image: postgres:17-alpine
@@ -18,14 +26,25 @@ services:
       timeout: 3s
       retries: 10
 
-  app:
-    build: .
-    restart: unless-stopped
+  migrate:
+    <<: *app-image
+    restart: 'no'
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      MIGRATION_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${APP_DB_USER:?Define APP_DB_USER en .env}:${APP_DB_PASSWORD:?Define APP_DB_PASSWORD en .env}@db:5432/${POSTGRES_DB}
+    command: ['npm', 'run', 'db:deploy']
+
+  app:
+    <<: *app-image
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://${APP_DB_USER}:${APP_DB_PASSWORD}@db:5432/${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en .env}
       WEB_ORIGIN: ${WEB_ORIGIN:?Define WEB_ORIGIN en .env}
       CEDI_TIMEZONE: ${CEDI_TIMEZONE:?Define CEDI_TIMEZONE en .env}

@@ -13,7 +13,7 @@ import { CompaniesRepository } from '../companies/companies.repository';
 import { APP_CONFIG, AppConfig } from '../config/app-config';
 import { ensureCompanyExists, guardIdentification, personNotFound } from '../persons/person-guards';
 import { PersonsRepository } from '../persons/persons.repository';
-import { Clock } from '../common/time/clock';
+import { Clock, calendarDate } from '../common/time/clock';
 import { AlreadyInsideError, VisitsRepository } from './visits.repository';
 
 const conflict = (message: string) =>
@@ -83,20 +83,32 @@ export class VisitsService {
     return visit ?? this.throwAlreadyClosed();
   }
 
-  /** D3: cierra una visita olvidada con la hora real de salida que indica el guarda. */
+  /**
+   * D3: cierra una visita olvidada con la hora real de salida que indica el guarda.
+   * Solo visitas de un día anterior (SEC-03): la salida de hoy se registra escaneando la cédula,
+   * con la hora del servidor, para que nadie pueda fijar a mano una salida más temprana.
+   */
   async closeManually(visitId: string, exitAtIso: string, actor: AuthUser): Promise<VisitSummary> {
     const visit = await this.visits.findRecord(visitId);
     if (!visit) {
       throw new AppException(ErrorCode.NOT_FOUND, 'La visita no existe.', HttpStatus.NOT_FOUND);
     }
     if (visit.exitAt) this.throwAlreadyClosed();
+    const now = this.clock.now();
+    if (
+      calendarDate(visit.entryAt, this.config.timezone) >= calendarDate(now, this.config.timezone)
+    ) {
+      throw conflict(
+        'Solo se cierran a mano las visitas de días anteriores. Para registrar la salida de hoy, ingresa su cédula.',
+      );
+    }
     const exitAt = new Date(exitAtIso);
     if (exitAt < visit.entryAt) {
       throw AppException.validation(
         `La hora de salida no puede ser anterior a la entrada (${this.formatLocal(visit.entryAt)}).`,
       );
     }
-    if (exitAt > this.clock.now()) {
+    if (exitAt > now) {
       throw AppException.validation('La hora de salida no puede estar en el futuro.');
     }
     const closed = await this.visits.close(

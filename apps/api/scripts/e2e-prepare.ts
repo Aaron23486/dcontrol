@@ -15,6 +15,7 @@ import { loadEnvFile } from '../src/config/load-env-file';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { UserAccountsService } from '../src/users/user-accounts.service';
 import { PrismaUsersRepository } from '../src/users/users.repository';
+import { disableAppDbUser, ensureAppDbUser } from './lib/app-db-user';
 
 const HOUR = 60 * 60 * 1000;
 
@@ -25,16 +26,19 @@ async function main(): Promise<void> {
   const timezone = process.env.CEDI_TIMEZONE ?? 'America/Mexico_City';
   if (!url) throw new Error('Falta DATABASE_URL_TEST.');
   if (!password && !process.argv.includes('--clean')) throw new Error('Falta E2E_PASSWORD.');
-  if (url === process.env.DATABASE_URL) {
+  if (url === process.env.DATABASE_URL || url === process.env.MIGRATION_DATABASE_URL) {
     throw new Error('DATABASE_URL_TEST no puede ser la base de desarrollo.');
   }
 
+  // Las dos variables: prisma.config.ts prefiere MIGRATION_DATABASE_URL (ADR 0012).
   execSync('npx prisma migrate deploy', {
     cwd: resolve(__dirname, '..'),
-    env: { ...process.env, DATABASE_URL: url },
+    env: { ...process.env, DATABASE_URL: url, MIGRATION_DATABASE_URL: url },
     stdio: 'inherit',
   });
 
+  // La API de las pruebas e2e opera con un usuario sin privilegios, como en producción (SEC-02).
+  const appUrl = process.env.E2E_APP_DATABASE_URL;
   const prisma = new PrismaService({ databaseUrl: url });
   try {
     await prisma.$executeRawUnsafe(
@@ -42,9 +46,12 @@ async function main(): Promise<void> {
     );
     // Datos sobrantes en la base de pruebas pueden hacer fallar una migración futura.
     if (process.argv.includes('--clean')) {
+      // El usuario e2e tiene una contraseña conocida: al terminar ya no puede iniciar sesión.
+      if (appUrl) await disableAppDbUser(prisma, appUrl);
       console.log('Base de pruebas e2e vaciada.');
       return;
     }
+    if (appUrl) await ensureAppDbUser(prisma, appUrl);
     const accounts = new UserAccountsService(
       new PrismaUsersRepository(prisma),
       new PasswordHasher(),

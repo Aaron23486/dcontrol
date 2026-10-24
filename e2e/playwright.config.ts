@@ -21,6 +21,16 @@ process.env.CEDI_TIMEZONE = TIMEZONE;
 const databaseUrl = process.env.DATABASE_URL_TEST;
 if (!databaseUrl) throw new Error('Define DATABASE_URL_TEST para las pruebas e2e.');
 
+/**
+ * La API de las pruebas se conecta con un usuario sin privilegios, como en producción
+ * (SEC-02, ADR 0012): si a una migración le falta un GRANT, los escenarios fallan.
+ * e2e:prepare lo crea antes de las pruebas y le quita el inicio de sesión al terminar.
+ */
+const appDatabaseUrl = new URL(databaseUrl);
+appDatabaseUrl.username = 'cedi_e2e_app';
+appDatabaseUrl.password = encodeURIComponent(process.env.E2E_PASSWORD);
+process.env.E2E_APP_DATABASE_URL = appDatabaseUrl.toString();
+
 export default defineConfig({
   testDir: './tests',
   // Los escenarios comparten la base preparada: se ejecutan en orden, uno a la vez.
@@ -57,7 +67,7 @@ export default defineConfig({
         ...process.env,
         NODE_ENV: 'test',
         API_PORT: String(API_PORT),
-        DATABASE_URL: databaseUrl,
+        DATABASE_URL: process.env.E2E_APP_DATABASE_URL,
         WEB_ORIGIN: `http://localhost:${WEB_PORT}`,
         CEDI_TIMEZONE: TIMEZONE,
         LOGIN_RATE_LIMIT_PER_MINUTE: '1000',

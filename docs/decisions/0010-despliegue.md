@@ -8,7 +8,7 @@ La app debe poder desplegarse y también clonarse y ejecutarse con facilidad (sp
 ## Decisión
 - **Un solo contenedor** con la API, que en producción sirve también la web compilada (`WEB_DIST_DIR`): mismo origen, sin CORS entre dominios y un único servicio que operar, más PostgreSQL.
 - **Imagen Docker multi-etapa** (`node:22-alpine`): compila `shared`, API y web, y deja solo lo necesario para ejecutar. Corre como usuario sin privilegios.
-- **Migraciones al arrancar** (`prisma migrate deploy`): son versionadas e idempotentes. El seed de demostración nunca corre en producción.
+- ~~**Migraciones al arrancar**~~ → sustituido por la ADR 0012: las migraciones se aplican aparte (`npm run db:deploy`, servicio `migrate`) con el dueño de las tablas, y la API opera con un usuario sin privilegios. El seed de demostración nunca corre en producción.
 - **`GET /api/health`** (público) comprueba que la base de datos responde, para los chequeos de salud de la plataforma.
 - **Detrás de un proxy con HTTPS** (`TRUST_PROXY=true`): Express toma la IP real del cliente (rate limit del login) y la cookie `Secure` funciona.
 - El puerto se toma de `API_PORT` o, si no está, de `PORT` (la convención de la mayoría de las plataformas).

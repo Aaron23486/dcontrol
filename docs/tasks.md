@@ -150,3 +150,13 @@ Alcance aprobado el 2026-10-23: **revisión al salir**. Descartado por ahora: he
 - [x] Login, «Página no encontrada», error general y aviso de permiso con el mismo sistema; no queda ningún color fuera de los tokens
 - [x] Capturas del README regeneradas (`npm run screenshots`)
 - [x] Revisión final del responsable: rediseño aprobado
+
+## Fase 13 — Remediación de seguridad, Etapa 1  🔄 EN REVISIÓN
+Hallazgos de la auditoría de seguridad del 2026-10-24 (4 medios, 9 bajos, 8 informativos; sin críticos ni altos).
+- [x] SEC-01: cerrar sesión revoca la sesión en el servidor (`sessions_valid_from`); una copia de la cookie deja de valer
+- [x] SEC-02: rol `cedi_app` sin DELETE, TRUNCATE ni DDL; usuario de la API creado por `npm run db:deploy`; migraciones aparte con el dueño de las tablas; la imagen ya no migra al arrancar (ADR 0012)
+- [x] SEC-03: el cierre manual solo aplica a visitas de días anteriores (D3); la salida de hoy se registra escaneando
+- [x] Tests: SEC-01 (HTTP), SEC-02 (permisos y usuario de la API, integración; E2E con usuario sin privilegios), SEC-03 (integración)
+- [x] **Probado en Docker** (proyecto aislado): `migrate` aplica las 6 migraciones y crea el usuario de la API; la app solo recibe ese usuario; `create-admin` dentro del contenedor; login con cookie `Secure`; logout invalida la copia de la cookie; el usuario de la API no puede borrar la auditoría; repetir `migrate` no falla
+- [ ] Revisión del responsable
+- Pendiente: Etapa 2 (SEC-04 a SEC-06 y SEC-12) y Etapa 3 (endurecimiento)

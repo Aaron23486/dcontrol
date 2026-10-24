@@ -30,6 +30,8 @@ export abstract class UsersRepository {
   abstract setActive(id: string, isActive: boolean): Promise<void>;
   /** Cambiar la contraseña revoca las sesiones abiertas. */
   abstract updatePasswordHash(id: string, passwordHash: string): Promise<void>;
+  /** Cierra todas las sesiones emitidas hasta ahora (SEC-01: al cerrar sesión). */
+  abstract revokeSessions(id: string): Promise<void>;
   abstract countActiveAdmins(): Promise<number>;
 }
 
@@ -77,6 +79,10 @@ export class PrismaUsersRepository extends UsersRepository {
       where: { id },
       data: { passwordHash, sessionsValidFrom: new Date() },
     });
+  }
+
+  async revokeSessions(id: string): Promise<void> {
+    await this.prisma.user.update({ where: { id }, data: { sessionsValidFrom: new Date() } });
   }
 
   countActiveAdmins(): Promise<number> {

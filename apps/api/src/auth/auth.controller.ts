@@ -6,12 +6,13 @@ import {
   HttpStatus,
   Inject,
   Post,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { AuthUser, LoginInput, loginSchema } from '@cedi/shared';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { ZodValidationPipe } from '../common/validation/zod-validation.pipe';
 import { APP_CONFIG, AppConfig } from '../config/app-config';
 import { AuthService } from './auth.service';
@@ -46,7 +47,12 @@ export class AuthController {
   @Public()
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  logout(@Res({ passthrough: true }) response: Response): void {
+  async logout(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    const token: unknown = request.cookies?.[SESSION_COOKIE];
+    await this.auth.logout(typeof token === 'string' ? token : undefined);
     response.clearCookie(SESSION_COOKIE, sessionCookieOptions(this.config));
   }
 

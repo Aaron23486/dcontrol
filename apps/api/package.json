@@ -12,7 +12,7 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "prisma:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
+    "db:deploy": "prisma migrate deploy && tsx scripts/db-app-user.ts",
     "db:seed": "tsx prisma/seed.ts",
     "create-admin": "tsx scripts/users.ts create --role ADMIN",
     "users": "tsx scripts/users.ts",

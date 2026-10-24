@@ -12,7 +12,7 @@ Si hay conflicto o falta información: pregunta. No asumas requisitos.
 
 ## Estado
 Fase 1 (análisis) **aprobada** el 2026-10-23: D1-D14, R11-R16 y el stack de `docs/plan.md` están APROBADOS.
-Fase 2 (base del proyecto) **aprobada** el 2026-10-23. Cada decisión importante tiene su ADR en `docs/decisions/`. Fase 3 (personas) **aprobada** el 2026-10-23. Fase 4 (ingreso y salida) **aprobada** el 2026-10-23. Fase 5 (dashboard) **aprobada** el 2026-10-23. Fase 6 (historial) **aprobada** el 2026-10-23. Fase 7 (herramientas) **aprobada** el 2026-10-23. Fase 8 (auditoría) **aprobada** el 2026-10-23. Fase 9 (testing) **aprobada** el 2026-10-23. Fase 10 (UI/UX) **aprobada** el 2026-10-23. Fase 11 (producción) **aprobada** el 2026-10-23: **el desarrollo planificado está completo**. Fase 12 (rediseño de la interfaz, ADR 0011) **aprobada** el 2026-10-23. Cambios nuevos: documentar primero en spec, plan o ADR y agregar sus pruebas a `docs/testing.md`.
+Fase 2 (base del proyecto) **aprobada** el 2026-10-23. Cada decisión importante tiene su ADR en `docs/decisions/`. Fase 3 (personas) **aprobada** el 2026-10-23. Fase 4 (ingreso y salida) **aprobada** el 2026-10-23. Fase 5 (dashboard) **aprobada** el 2026-10-23. Fase 6 (historial) **aprobada** el 2026-10-23. Fase 7 (herramientas) **aprobada** el 2026-10-23. Fase 8 (auditoría) **aprobada** el 2026-10-23. Fase 9 (testing) **aprobada** el 2026-10-23. Fase 10 (UI/UX) **aprobada** el 2026-10-23. Fase 11 (producción) **aprobada** el 2026-10-23: **el desarrollo planificado está completo**. Fase 12 (rediseño de la interfaz, ADR 0011) **aprobada** el 2026-10-23. Fase 13 (remediación de seguridad, Etapa 1: SEC-01 a SEC-03, ADR 0012) **en revisión**. Cambios nuevos: documentar primero en spec, plan o ADR y agregar sus pruebas a `docs/testing.md`.
 
 ## Reglas críticas (nunca violar)
 - El campo «Persona que autoriza» NO existe en ninguna parte: ni formularios, ni API, ni BD, ni filtros, ni reportes. No sustituirlo por otro campo equivalente sin consultar.
@@ -34,7 +34,7 @@ Monorepo con npm workspaces (`packages/shared`, `apps/api`, `apps/web`). Node �
 cp .env.example .env          # completar JWT_SECRET y contraseñas
 npm install                   # también compila shared y genera el cliente Prisma
 npm run db:up                 # PostgreSQL en Docker (crea también la BD <db>_test)
-npm run db:deploy             # aplica migraciones   (db:migrate = crear una nueva en desarrollo)
+npm run db:deploy             # migraciones + usuario de la API sin privilegios (ADR 0012); db:migrate = crear una nueva
 npm run create-admin          # primer ADMIN (pregunta datos o usa ADMIN_* del .env)
 npm run users -- list         # cuentas: list | create [--role SECURITY|ADMIN] | activate <correo>
                               #          | deactivate <correo> | reset-password <correo>
@@ -49,6 +49,7 @@ docker compose -f docker-compose.prod.yml --env-file .env up -d --build   # prod
 ```
 
 - Cambios al esquema: editar `apps/api/prisma/schema.prisma` y ejecutar `npm run db:migrate`. Las secciones «Manual» de las migraciones (índice parcial, CHECK, pg_trgm) se conservan siempre. Prisma no usa transacciones: envuelve en `BEGIN; … COMMIT;` las migraciones que cambian datos o restricciones.
+- La API opera con el rol `cedi_app`, sin DELETE ni DDL (ADR 0012). Toda tabla o columna nueva que la API escriba necesita su `GRANT` a `cedi_app` en la misma migración; las E2E fallan si falta. Las migraciones usan `MIGRATION_DATABASE_URL` (dueño de las tablas), la API `DATABASE_URL`.
 - Enums en Prisma y en `@cedi/shared`: deben coincidir (lo verifica `enum-parity.spec.ts`).
 - Seguridad (medidas, limitaciones, despliegue): `docs/security.md`. Despliegue: ADR 0010 y README.
 - Qué prueba cubre cada regla: `docs/testing.md`. Toda regla nueva se agrega ahí con su prueba.
