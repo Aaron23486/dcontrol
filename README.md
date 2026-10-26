@@ -125,6 +125,7 @@ Todas las variables están documentadas en [`.env.example`](.env.example). La AP
 | `WEB_ORIGIN`                                                         | URL de la web (CORS)                                                                                                                   |
 | `CEDI_TIMEZONE`                                                      | Zona horaria IANA del CEDI: define qué es «hoy»                                                                                        |
 | `LOGIN_RATE_LIMIT_PER_MINUTE`                                        | Intentos de login por IP y minuto                                                                                                      |
+| `API_RATE_LIMIT_PER_MINUTE`                                          | Peticiones por minuto a toda la API, por usuario (o por IP sin sesión) (ADR 0014)                                                      |
 | `LOGIN_MAX_FAILURES_PER_ACCOUNT`, `LOGIN_LOCKOUT_MINUTES`            | Bloqueo temporal de un correo tras varios intentos fallidos seguidos (ADR 0013)                                                        |
 | `SECURITY_ALERT_FAILED_LOGINS`                                       | Logins fallidos en 10 minutos que generan el evento `security.alert` en el log (ADR 0013)                                              |
 | `API_PORT` / `PORT`                                                  | Puerto de la API                                                                                                                       |

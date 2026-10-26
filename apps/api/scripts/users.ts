@@ -52,7 +52,7 @@ async function run(accounts: UserAccountsService): Promise<void> {
       const env = role === Role.ADMIN ? process.env : {};
       const name = await askValid(userNameSchema, 'Nombre: ', { envValue: env.ADMIN_NAME });
       const email = await askValid(emailSchema, 'Correo: ', { envValue: env.ADMIN_EMAIL });
-      const password = await askNewPassword(newPasswordSchema, env.ADMIN_PASSWORD);
+      const password = await askNewPassword(newPasswordSchema({ email, name }), env.ADMIN_PASSWORD);
       console.log(
         `Usuario creado: ${describeUser(await accounts.create({ name, email, password, role }))}`,
       );
@@ -66,7 +66,7 @@ async function run(accounts: UserAccountsService): Promise<void> {
     }
     case 'reset-password': {
       const email = emailFromArg();
-      await accounts.resetPassword(email, await askNewPassword(newPasswordSchema));
+      await accounts.resetPassword(email, await askNewPassword(newPasswordSchema({ email })));
       console.log(`Contraseña actualizada para ${email}.`);
       return;
     }

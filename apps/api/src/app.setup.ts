@@ -12,7 +12,14 @@ export function configureApp(app: INestApplication, config: AppConfig): void {
   // Detrás de un proxy con HTTPS: IP real del cliente (rate limit) y cookie Secure (ADR 0010).
   if (config.trustProxy) server.set('trust proxy', 1);
   app.setGlobalPrefix('api');
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        // I3: la web compilada solo usa hojas de estilo y fuentes propias, sin estilos en línea.
+        directives: { 'style-src': ["'self'"], 'font-src': ["'self'"] },
+      },
+    }),
+  );
   app.use(cookieParser());
   app.enableCors({ origin: config.webOrigin, credentials: true });
   if (config.webDistDir) serveWeb(server, resolve(config.webDistDir));

@@ -4,6 +4,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { ApiExceptionFilter } from './common/errors/api-exception.filter';
+import { requestLogSerializer } from './common/logging/request-log';
 import { ClockModule } from './common/time/clock';
 import { CompaniesModule } from './companies/companies.module';
 import { APP_CONFIG, AppConfig } from './config/app-config';
@@ -32,8 +33,9 @@ const LOG_LEVEL: Record<AppConfig['nodeEnv'], string> = {
         pinoHttp: {
           level: LOG_LEVEL[config.nodeEnv],
           transport: config.nodeEnv === 'development' ? { target: 'pino-pretty' } : undefined,
+          serializers: { req: requestLogSerializer },
           // Nunca registrar la cookie de sesión.
-          redact: ['req.headers.cookie', 'res.headers["set-cookie"]'],
+          redact: ['res.headers["set-cookie"]'],
         },
       }),
     }),
