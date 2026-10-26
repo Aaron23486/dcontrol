@@ -160,11 +160,22 @@ Hallazgos de la auditoría de seguridad del 2026-10-24 (4 medios, 9 bajos, 8 inf
 - [x] **Probado en Docker** (proyecto aislado): `migrate` aplica las 6 migraciones y crea el usuario de la API; la app solo recibe ese usuario; `create-admin` dentro del contenedor; login con cookie `Secure`; logout invalida la copia de la cookie; el usuario de la API no puede borrar la auditoría; repetir `migrate` no falla
 - [x] Revisión del responsable: aprobada y unida a `main` (pull request #2)
 
-## Fase 14 — Remediación de seguridad, Etapa 2  🔄 EN REVISIÓN
+## Fase 14 — Remediación de seguridad, Etapa 2  ✅ APROBADA (2026-10-25)
 - [x] SEC-04: eventos de seguridad en el log estructurado (logins, bloqueos, logout, sesiones rechazadas, accesos denegados, límites) y alerta `security.alert` por volumen de fallos (ADR 0013)
 - [x] SEC-05: bloqueo temporal por correo tras 5 fallos seguidos (15 min), también para correos inexistentes (ADR 0013)
 - [x] SEC-06: 413 ante un cuerpo demasiado grande y 400 ante JSON mal formado, en lugar de 500
 - [x] SEC-12: la API se niega a arrancar en producción con los secretos de ejemplo; `e2e:prepare` se niega en producción; guía de secretos de producción en `docs/security.md`
 - [x] SEC-12 en desarrollo: cuentas de prueba desactivadas, variables `DEV_*` eliminadas y rotados `JWT_SECRET` y la contraseña del dueño de PostgreSQL (2026-10-24)
+- [x] Revisión del responsable: aprobada y unida a `main` (pull request #3)
+
+## Fase 15 — Remediación de seguridad, Etapa 3  🔄 EN REVISIÓN
+Primera unidad del plan PSES 2.0 (aprobado el 2026-10-25). Decisiones en ADR 0014.
+- [x] SEC-07: límite de peticiones a toda la API por usuario (o por IP sin sesión); el de login sigue aparte
+- [x] SEC-08: rechazo de contraseñas fáciles de adivinar en `npm run users` y `create-admin`
+- [x] SEC-09: riesgo aceptado y documentado (sin expiración por inactividad; ver ADR 0014)
+- [x] SEC-10: PostgreSQL de desarrollo solo en `127.0.0.1`
+- [x] SEC-13: logs de petición sin cadena de búsqueda, parámetros ni encabezados
+- [x] I1: token HS256 con emisor y audiencia exigidos
+- [x] I3: CSP sin `unsafe-inline`
 - [ ] Revisión del responsable
-- Pendiente: Etapa 3 (endurecimiento: SEC-07 a SEC-11, SEC-13 e informativos)
+- Pendiente: SEC-11 (auditoría de dependencias y escaneo de secretos en CI), en su propia unidad

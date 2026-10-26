@@ -70,3 +70,8 @@ Las pruebas de integración y E2E necesitan `npm run db:up`. Usan la base `cedi_
 | SEC-05: bloqueo temporal por correo, también para correos inexistentes | `login-attempts.spec`; `security.http.spec` «SEC-05» |
 | SEC-06: 413 ante un cuerpo demasiado grande y 400 ante JSON mal formado | `security.http.spec` «SEC-06» |
 | SEC-12: en producción se rechazan los secretos de ejemplo; `e2e:prepare` no corre en producción | `app-config.spec` «SEC-12» |
+| SEC-07: límite de peticiones por usuario; otra caseta en la misma IP no se ve afectada; el límite de login no se aplica fuera del login | `security.http.spec` «SEC-07» |
+| SEC-08: se rechazan contraseñas comunes (aunque lleven números o símbolos), de solo números, repetitivas o con el nombre o correo | `shared/auth.test` «SEC-08» |
+| SEC-13: los logs de petición no guardan la cadena de búsqueda, parámetros ni encabezados | `request-log.spec` |
+| I1: solo tokens HS256 con el emisor y la audiencia de la app | `security.http.spec` «I1» (otra audiencia, otro emisor, sin ellos, HS512 → 401) |
+| I3: CSP sin `unsafe-inline`; estilos y fuentes solo propios | `production.http.spec` «cabeceras de seguridad»; web compilada revisada en el navegador sin errores de CSP |
