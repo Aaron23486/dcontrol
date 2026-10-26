@@ -25,7 +25,8 @@ Revisión de la Fase 11. Cada medida indica dónde está y qué prueba la cubre 
 | Secretos | Variables de entorno validadas al arrancar (`JWT_SECRET` ≥ 32 caracteres); en producción se rechazan los valores de ejemplo de `.env.example` (SEC-12); `.env` fuera del repositorio; `.env.example` sin valores reales | `app-config.ts` · `app-config.spec` |
 | Interfaz | Cerrar sesión o una sesión vencida descartan los datos en memoria y llevan al login | `session-state.ts` · E2E |
 | Contenedor | Imagen multi-etapa, sin dependencias de desarrollo, ejecutada como usuario sin privilegios (`node`). En desarrollo, PostgreSQL solo escucha en `127.0.0.1` (SEC-10) | `Dockerfile`, `docker-compose.yml` |
-| Dependencias | `npm audit`: 0 vulnerabilidades; `overrides.multer` fuerza una versión corregida | `package.json` |
+| Dependencias | `npm audit`: 0 vulnerabilidades; `overrides.multer` fuerza una versión corregida. Instalaciones reproducibles desde `package-lock.json` (`npm ci` en CI y en la imagen). El CI falla ante vulnerabilidades altas o críticas, y Dependabot propone actualizaciones semanales como PR revisables (SEC-11, ADR 0015) | `package.json`, `.github/workflows/ci.yml` «supply-chain», `.github/dependabot.yml` |
+| Secretos en Git | gitleaks revisa **todo el historial** en cada push y PR, sin mostrar valores (`--redact`); las acciones de GitHub están fijadas por commit y el workflow solo tiene permiso de lectura (SEC-11, ADR 0015) | `.github/workflows/ci.yml` «supply-chain» |
 
 ## Limitaciones conocidas
 

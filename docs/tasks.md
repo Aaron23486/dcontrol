@@ -168,7 +168,7 @@ Hallazgos de la auditoría de seguridad del 2026-10-24 (4 medios, 9 bajos, 8 inf
 - [x] SEC-12 en desarrollo: cuentas de prueba desactivadas, variables `DEV_*` eliminadas y rotados `JWT_SECRET` y la contraseña del dueño de PostgreSQL (2026-10-24)
 - [x] Revisión del responsable: aprobada y unida a `main` (pull request #3)
 
-## Fase 15 — Remediación de seguridad, Etapa 3  🔄 EN REVISIÓN
+## Fase 15 — Remediación de seguridad, Etapa 3  ✅ APROBADA (2026-10-26)
 Primera unidad del plan PSES 2.0 (aprobado el 2026-10-25). Decisiones en ADR 0014.
 - [x] SEC-07: límite de peticiones a toda la API por usuario (o por IP sin sesión); el de login sigue aparte
 - [x] SEC-08: rechazo de contraseñas fáciles de adivinar en `npm run users` y `create-admin`
@@ -177,5 +177,13 @@ Primera unidad del plan PSES 2.0 (aprobado el 2026-10-25). Decisiones en ADR 001
 - [x] SEC-13: logs de petición sin cadena de búsqueda, parámetros ni encabezados
 - [x] I1: token HS256 con emisor y audiencia exigidos
 - [x] I3: CSP sin `unsafe-inline`
-- [ ] Revisión del responsable
-- Pendiente: SEC-11 (auditoría de dependencias y escaneo de secretos en CI), en su propia unidad
+- [x] Revisión del responsable: aprobada y unida a `main` (pull request #4)
+
+## Fase 16 — Cadena de suministro en CI (SEC-11)  🔄 EN REVISIÓN
+Segunda unidad del plan PSES 2.0. Decisiones en ADR 0015.
+- [x] Job `supply-chain`: `npm audit --audit-level=high` y gitleaks sobre todo el historial (0 hallazgos en los 10 commits actuales)
+- [x] Acciones de GitHub fijadas por commit y `permissions: contents: read`
+- [x] Dependabot semanal (npm y acciones) que solo propone PR
+- [x] Workflow validado con actionlint
+- [ ] Revisión del responsable (incluye ver el CI en verde en el PR)
+- Recomendado al responsable: activar en GitHub «Secret scanning» y «Push protection» (Settings → Code security)
