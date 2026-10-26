@@ -4,16 +4,13 @@ import { ButtonLink } from '../components/atoms/Button';
 import { Icon } from '../components/atoms/Icon';
 import { Card } from '../components/molecules/Card';
 import { PageHeader } from '../components/molecules/PageHeader';
-import { Pagination } from '../components/molecules/Pagination';
 import { SearchInput } from '../components/molecules/SearchInput';
+import { PaginatedResults } from '../components/organisms/PaginatedResults';
 import { PersonTypeTabs } from '../features/persons/PersonTypeTabs';
 import { PersonsTable } from '../features/persons/PersonsTable';
 import { DEFAULT_SECTION, sectionBySlug } from '../features/persons/person-sections';
 import { usePersonList } from '../features/persons/use-persons';
 import { useDebouncedValue } from '../lib/use-debounced-value';
-import { EmptyState } from '../components/molecules/EmptyState';
-import { ErrorState } from '../components/molecules/ErrorState';
-import { LoadingState } from '../components/molecules/LoadingState';
 import { useDocumentTitle } from '../lib/use-document-title';
 
 /** Personas separadas por tipo; búsqueda y página viven en la URL para poder volver atrás. */
@@ -62,31 +59,18 @@ export function PersonsPage() {
           />
         </div>
         <div className="space-y-3 p-4">
-          {list.error && (
-            <ErrorState message={list.error.message} onRetry={() => void list.refetch()} />
-          )}
-          {list.isPending && <LoadingState />}
-          {list.data && list.data.items.length === 0 && (
-            <EmptyState>
-              {q
+          <PaginatedResults
+            query={list}
+            noun={{ one: 'persona', other: 'personas' }}
+            empty={
+              q
                 ? `No hay resultados para «${q}» en ${section.title}.`
-                : `Aún no hay ${section.title.toLowerCase()} registrados.`}
-            </EmptyState>
-          )}
-          {list.data && list.data.items.length > 0 && (
-            <>
-              <p className="text-sm text-ink-muted">
-                {list.data.total} {list.data.total === 1 ? 'persona' : 'personas'}
-              </p>
-              <PersonsTable type={section.type} persons={list.data.items} />
-              <Pagination
-                page={list.data.page}
-                pageSize={list.data.pageSize}
-                total={list.data.total}
-                onPageChange={(next) => setParams({ ...(q ? { q } : {}), page: String(next) })}
-              />
-            </>
-          )}
+                : `Aún no hay ${section.title.toLowerCase()} registrados.`
+            }
+            onPageChange={(next) => setParams({ ...(q ? { q } : {}), page: String(next) })}
+          >
+            {(persons) => <PersonsTable type={section.type} persons={persons} />}
+          </PaginatedResults>
         </div>
       </Card>
     </div>

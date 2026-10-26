@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { formatDuration, isSameLocalDay, toDateTimeLocal, toQueryString } from './format';
+import {
+  formatCount,
+  formatDuration,
+  isSameLocalDay,
+  toDateTimeLocal,
+  toQueryString,
+} from './format';
 
 describe('formatDuration', () => {
   const now = new Date('2026-10-23T16:00:00Z');
@@ -37,5 +43,15 @@ describe('fechas locales', () => {
     const now = new Date(2026, 9, 23, 9, 0);
     expect(isSameLocalDay(new Date(2026, 9, 23, 23, 59).toISOString(), now)).toBe(true);
     expect(isSameLocalDay(new Date(2026, 9, 22, 23, 59).toISOString(), now)).toBe(false);
+  });
+});
+
+describe('formatCount', () => {
+  const persona = { one: 'persona', other: 'personas' };
+
+  it('usa el singular solo para 1', () => {
+    expect(formatCount(1, persona)).toBe('1 persona');
+    expect(formatCount(0, persona)).toBe('0 personas');
+    expect(formatCount(12, persona)).toBe('12 personas');
   });
 });

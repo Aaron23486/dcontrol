@@ -49,7 +49,7 @@ e2e/              Pruebas de punta a punta con Playwright
 ```
 
 - **API por módulos** (`auth`, `persons`, `companies`, `visits`, `dashboard`, `audit`, `health`): controlador (HTTP y validación) → servicio (reglas de negocio) → repositorio (acceso a datos). Autenticación y roles con guards globales; la auditoría es transversal.
-- **Web por funcionalidades** (`scan`, `persons`, `history`, `dashboard`, `audit`) con Atomic Design (átomos, moléculas, plantillas). Los componentes no contienen reglas de negocio; la lógica vive en hooks y funciones probadas aparte.
+- **Web por funcionalidades** (`scan`, `persons`, `history`, `dashboard`, `audit`) con Atomic Design (átomos, moléculas, organismos, plantillas). Los componentes no contienen reglas de negocio; la lógica vive en hooks y funciones probadas aparte.
 - **Producción:** un contenedor donde la API sirve también la web compilada (mismo origen), más PostgreSQL.
 
 Las decisiones están documentadas en [`docs/decisions/`](docs/decisions/README.md) (ADR) y en [`docs/plan.md`](docs/plan.md).

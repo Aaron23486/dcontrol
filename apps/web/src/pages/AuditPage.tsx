@@ -4,7 +4,7 @@ import { Select } from '../components/atoms/Select';
 import { Card } from '../components/molecules/Card';
 import { PageHeader } from '../components/molecules/PageHeader';
 import { DateRangeFilter } from '../components/molecules/DateRangeFilter';
-import { Pagination } from '../components/molecules/Pagination';
+import { PaginatedResults } from '../components/organisms/PaginatedResults';
 import { AuditTable } from '../features/audit/AuditTable';
 import {
   auditFiltersFromParams,
@@ -14,9 +14,6 @@ import {
 import { useAuditActors, useAuditLog } from '../features/audit/use-audit';
 import { RequireRole } from '../features/auth/RequireRole';
 import { useNow } from '../lib/use-now';
-import { EmptyState } from '../components/molecules/EmptyState';
-import { ErrorState } from '../components/molecules/ErrorState';
-import { LoadingState } from '../components/molecules/LoadingState';
 import { useDocumentTitle } from '../lib/use-document-title';
 
 const LABEL = 'flex flex-col gap-1.5 text-sm font-medium text-ink-soft';
@@ -93,27 +90,14 @@ function AuditView() {
               </Link>
             </p>
           )}
-          {log.error && (
-            <ErrorState message={log.error.message} onRetry={() => void log.refetch()} />
-          )}
-          {log.isPending && <LoadingState />}
-          {log.data && log.data.items.length === 0 && (
-            <EmptyState>No hay registros con estos filtros.</EmptyState>
-          )}
-          {log.data && log.data.items.length > 0 && (
-            <>
-              <p className="text-sm text-ink-muted">
-                {log.data.total} {log.data.total === 1 ? 'registro' : 'registros'}
-              </p>
-              <AuditTable items={log.data.items} />
-              <Pagination
-                page={log.data.page}
-                pageSize={log.data.pageSize}
-                total={log.data.total}
-                onPageChange={(page) => setParams(auditParamsFromFilters({ ...filters, page }))}
-              />
-            </>
-          )}
+          <PaginatedResults
+            query={log}
+            noun={{ one: 'registro', other: 'registros' }}
+            empty="No hay registros con estos filtros."
+            onPageChange={(page) => setParams(auditParamsFromFilters({ ...filters, page }))}
+          >
+            {(items) => <AuditTable items={items} />}
+          </PaginatedResults>
         </div>
       </Card>
     </div>
