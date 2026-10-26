@@ -179,11 +179,18 @@ Primera unidad del plan PSES 2.0 (aprobado el 2026-10-25). Decisiones en ADR 001
 - [x] I3: CSP sin `unsafe-inline`
 - [x] Revisión del responsable: aprobada y unida a `main` (pull request #4)
 
-## Fase 16 — Cadena de suministro en CI (SEC-11)  🔄 EN REVISIÓN
+## Fase 16 — Cadena de suministro en CI (SEC-11)  ✅ APROBADA (2026-10-26)
 Segunda unidad del plan PSES 2.0. Decisiones en ADR 0015.
 - [x] Job `supply-chain`: `npm audit --audit-level=high` y gitleaks sobre todo el historial (0 hallazgos en los 10 commits actuales)
 - [x] Acciones de GitHub fijadas por commit y `permissions: contents: read`
 - [x] Dependabot semanal (npm y acciones) que solo propone PR
 - [x] Workflow validado con actionlint
-- [ ] Revisión del responsable (incluye ver el CI en verde en el PR)
+- [x] Revisión del responsable: unida a `main` (pull request #5)
 - Recomendado al responsable: activar en GitHub «Secret scanning» y «Push protection» (Settings → Code security)
+
+## Fase 17 — Resultados paginados compartidos (DRY)  🔄 EN REVISIÓN
+Tercera unidad del plan PSES 2.0. Sin cambios de comportamiento ni visuales.
+- [x] Organismo `PaginatedResults` (error con reintento, carga, vacío, contador, tabla y paginación) usado por Personas, Historial y Auditoría, que repetían el mismo bloque
+- [x] `formatCount` para el contador en singular o plural, con su prueba
+- [x] Verificado: tipos, lint, pruebas de la web, E2E, y capturas regeneradas comparadas píxel a píxel (solo cambian fechas y horas de los datos de prueba; se conservan las capturas originales)
+- [ ] Revisión del responsable

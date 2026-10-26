@@ -49,6 +49,11 @@ const date = new Intl.DateTimeFormat('es', { dateStyle: 'short' });
 /** Solo la fecha, p. ej. «23/10/26». */
 export const formatDate = (iso: string): string => date.format(new Date(iso));
 
+/** Cantidad con su sustantivo en singular o plural: «1 persona», «12 personas». */
+export function formatCount(total: number, noun: { one: string; other: string }): string {
+  return `${total} ${total === 1 ? noun.one : noun.other}`;
+}
+
 /** Herramienta legible: «Taladro ×2 · inalámbrico». */
 export function formatToolLabel(tool: {
   name: string;
