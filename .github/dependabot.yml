@@ -1,0 +1,22 @@
+# SEC-11: Dependabot propone actualizaciones como pull requests; ninguna se aplica sola.
+# Cada PR pasa por el CI completo y se revisa antes de unirlo.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # Parches y versiones menores juntos; cada versión mayor llega en su propio PR.
+      minor-and-patch:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: chore(deps)
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci(deps)

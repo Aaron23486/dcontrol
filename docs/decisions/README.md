@@ -19,3 +19,4 @@ Una decisión nueva o un cambio a una existente se registra aquí **antes** de i
 | [0012](0012-rol-de-base-de-datos.md) | La API opera con un rol de BD sin privilegios; migraciones aparte con el dueño de las tablas | SEC-02 | APROBADO |
 | [0013](0013-eventos-de-seguridad.md) | Eventos de seguridad en el log con alerta y bloqueo temporal por cuenta | SEC-04, SEC-05 | APROBADO |
 | [0014](0014-endurecimiento-etapa-3.md) | Límite de peticiones por usuario, contraseñas adivinables, token y CSP estrictos, logs sin búsquedas; sin expiración por inactividad | SEC-07..10, SEC-13, I1, I3 | APROBADO |
+| [0015](0015-cadena-de-suministro.md) | CI con auditoría de dependencias, gitleaks sobre todo el historial, acciones fijadas por commit y Dependabot que solo propone | SEC-11 | APROBADO |
