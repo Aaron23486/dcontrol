@@ -65,7 +65,13 @@ describe('Producción: la API sirve la web', () => {
 
   it('envía cabeceras de seguridad (helmet)', async () => {
     const response = await request(app.getHttpServer()).get('/');
-    expect(response.headers['content-security-policy']).toContain("default-src 'self'");
+    const csp = response.headers['content-security-policy'];
+    expect(csp).toContain("default-src 'self'");
+    expect(csp).toContain("script-src 'self'");
+    // I3: sin estilos en línea ni hojas o fuentes de otros orígenes.
+    expect(csp).toContain("style-src 'self';");
+    expect(csp).toContain("font-src 'self';");
+    expect(csp).not.toContain('unsafe-inline');
     expect(response.headers['x-content-type-options']).toBe('nosniff');
     expect(response.headers['x-powered-by']).toBeUndefined();
   });
