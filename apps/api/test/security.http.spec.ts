@@ -1,7 +1,9 @@
 import { Controller, Get, type INestApplication } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { ErrorCode, Role } from '@cedi/shared';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { SESSION_TOKEN } from '../src/auth/auth.module';
 import { Roles } from '../src/auth/decorators/roles.decorator';
 import { PasswordHasher } from '../src/auth/password-hasher';
 import { SESSION_COOKIE } from '../src/auth/session-cookie';
@@ -149,6 +151,32 @@ describe('Seguridad de la API: SEC-04, SEC-05 y SEC-06 (HTTP)', () => {
     });
   });
 
+  describe('I1: la sesión solo acepta tokens HS256 de este emisor y audiencia', () => {
+    const jwt = new JwtService({ secret: testConfig.jwtSecret });
+    const meWith = (token: string) =>
+      request(server()).get('/api/auth/me').set('Cookie', `${SESSION_COOKIE}=${token}`);
+    const payload = async () => {
+      const user = await users.findById(securityId);
+      return { sub: securityId, ver: user?.sessionsValidFrom.getTime() };
+    };
+    const { algorithm, issuer, audience } = SESSION_TOKEN;
+
+    it('acepta un token con algoritmo, emisor y audiencia correctos', async () => {
+      const token = await jwt.signAsync(await payload(), { algorithm, issuer, audience });
+      await meWith(token).expect(200);
+    });
+
+    it.each([
+      ['otra audiencia', { algorithm, issuer, audience: 'otra-app' }],
+      ['otro emisor', { algorithm, issuer: 'otra-api', audience }],
+      ['sin emisor ni audiencia', { algorithm }],
+      ['otro algoritmo (HS512)', { algorithm: 'HS512' as const, issuer, audience }],
+    ])('rechaza un token firmado con el mismo secreto pero con %s', async (_, options) => {
+      const token = await jwt.signAsync(await payload(), options);
+      await meWith(token).expect(401);
+    });
+  });
+
   describe('SEC-06: errores del cuerpo de la petición', () => {
     it('un cuerpo demasiado grande responde 413, no 500', async () => {
       const response = await request(server())
@@ -170,5 +198,49 @@ describe('Seguridad de la API: SEC-04, SEC-05 y SEC-06 (HTTP)', () => {
         .expect(400);
       expect(response.body.code).toBe(ErrorCode.VALIDATION_ERROR);
     });
+  });
+});
+
+describe('SEC-07: límite de peticiones a toda la API (HTTP)', () => {
+  const API_LIMIT = 5;
+  let app: INestApplication;
+  let users: InMemoryUsersRepository;
+
+  const server = () => app.getHttpServer();
+  const loginAs = async (email: string) =>
+    sessionCookieOf(
+      await request(server())
+        .post('/api/auth/login')
+        .send({ email, password: PASSWORD })
+        .expect(200),
+    );
+  const me = (cookie: string) => request(server()).get('/api/auth/me').set('Cookie', cookie);
+
+  beforeAll(async () => {
+    users = new InMemoryUsersRepository();
+    app = await createTestApp({
+      users,
+      // El límite de login (2) es menor que el general: si se aplicara a /me, cortaría antes.
+      config: { ...testConfig, apiRateLimitPerMinute: API_LIMIT, loginRateLimitPerMinute: 2 },
+    });
+    const passwordHash = await new PasswordHasher().hash(PASSWORD);
+    for (const email of ['caseta1@cedi.test', 'caseta2@cedi.test']) {
+      await users.create({ name: 'Guarda', email, passwordHash, role: Role.SECURITY });
+    }
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('corta a un usuario que supera el límite, sin afectar a otro desde la misma IP', async () => {
+    const first = await loginAs('caseta1@cedi.test');
+    const second = await loginAs('caseta2@cedi.test');
+
+    for (let i = 0; i < API_LIMIT; i++) await me(first).expect(200);
+    const limited = await me(first).expect(429);
+    expect(limited.body.code).toBe(ErrorCode.TOO_MANY_REQUESTS);
+
+    await me(second).expect(200);
   });
 });

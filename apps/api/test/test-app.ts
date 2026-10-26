@@ -18,6 +18,7 @@ export const testConfig: AppConfig = {
   timezone: 'America/Mexico_City',
   // Alto para que las pruebas no choquen con el límite; el rate limit se prueba aparte.
   loginRateLimitPerMinute: 1000,
+  apiRateLimitPerMinute: 1000,
   // Igual con el bloqueo por cuenta y la alerta (SEC-05, SEC-04): se prueban aparte.
   loginMaxFailuresPerAccount: 1000,
   loginLockoutMinutes: 15,

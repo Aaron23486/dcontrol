@@ -36,6 +36,8 @@ const envSchema = z.object({
     .string({ error: 'CEDI_TIMEZONE es obligatoria.' })
     .refine(isValidTimeZone, 'CEDI_TIMEZONE no es una zona horaria IANA válida.'),
   LOGIN_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(5),
+  /** SEC-07: peticiones por minuto a toda la API, por usuario (o por IP sin sesión). */
+  API_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(30).default(300),
   /** SEC-05 (ADR 0013): intentos fallidos seguidos con un mismo correo antes de bloquearlo. */
   LOGIN_MAX_FAILURES_PER_ACCOUNT: z.coerce.number().int().min(3).default(5),
   /** Minutos que dura el bloqueo de un correo (y la ventana en que se cuentan sus fallos). */
@@ -64,6 +66,7 @@ export interface AppConfig {
   webOrigin: string;
   timezone: string;
   loginRateLimitPerMinute: number;
+  apiRateLimitPerMinute: number;
   loginMaxFailuresPerAccount: number;
   loginLockoutMinutes: number;
   securityAlertFailedLogins: number;
@@ -99,6 +102,7 @@ export function loadAppConfig(env: NodeJS.ProcessEnv): AppConfig {
     webOrigin: e.WEB_ORIGIN,
     timezone: e.CEDI_TIMEZONE,
     loginRateLimitPerMinute: e.LOGIN_RATE_LIMIT_PER_MINUTE,
+    apiRateLimitPerMinute: e.API_RATE_LIMIT_PER_MINUTE,
     loginMaxFailuresPerAccount: e.LOGIN_MAX_FAILURES_PER_ACCOUNT,
     loginLockoutMinutes: e.LOGIN_LOCKOUT_MINUTES,
     securityAlertFailedLogins: e.SECURITY_ALERT_FAILED_LOGINS,

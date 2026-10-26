@@ -8,9 +8,7 @@ import {
   Post,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
-import { ThrottlerGuard } from '@nestjs/throttler';
 import { AuthUser, LoginInput, loginSchema } from '@cedi/shared';
 import type { Request, Response } from 'express';
 import { ZodValidationPipe } from '../common/validation/zod-validation.pipe';
@@ -18,6 +16,7 @@ import { APP_CONFIG, AppConfig } from '../config/app-config';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
+import { LoginThrottle } from './rate-limit';
 import { SESSION_COOKIE, sessionCookieOptions, sessionMaxAgeMs } from './session-cookie';
 
 @Controller('auth')
@@ -28,7 +27,7 @@ export class AuthController {
   ) {}
 
   @Public()
-  @UseGuards(ThrottlerGuard)
+  @LoginThrottle()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
