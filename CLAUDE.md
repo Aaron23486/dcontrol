@@ -10,7 +10,7 @@ Fuentes de verdad, en orden: `docs/requirements.md` > ADR y decisiones de `docs/
 Si hay conflicto o falta información: pregunta. No asumas requisitos.
 
 ## Estado
-Versión **1.0.0** (2026-10-27): producto completo. README y `docs/` en inglés; este archivo sigue en español a propósito. Historial en `CHANGELOG.md`. `main` protegida: todo cambio entra por PR con el CI en verde.
+Versión **1.0.1** (2026-10-27): producto completo, repositorio público. README y `docs/` en inglés; este archivo sigue en español a propósito. Historial en `CHANGELOG.md`. `main` protegida: todo cambio entra por PR con el CI en verde.
 Cambios nuevos: documentar primero en `docs/requirements.md`, `docs/architecture.md` o un ADR nuevo, y agregar sus pruebas a `docs/testing.md`. Las referencias en código usan los IDs estables (FR-n, NFR-n, Rn, Dn, SEC-nn).
 
 ## Reglas críticas (nunca violar)
