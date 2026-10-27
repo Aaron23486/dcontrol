@@ -10,7 +10,7 @@ Fuentes de verdad, en orden: `docs/requirements.md` > ADR y decisiones de `docs/
 Si hay conflicto o falta información: pregunta. No asumas requisitos.
 
 ## Estado
-Producto completo; en preparación para portafolio con el estándar PSES 2.0 (README y `docs/` en inglés; este archivo sigue en español a propósito). Historial por etapas en `CHANGELOG.md`. Última unidad: reorganización profesional de la documentación (requisitos, arquitectura, ADR con nombres en inglés, CHANGELOG), **en revisión**. Pendiente hacia v1.0.0: prueba desde clon limpio, revisión final (quality gates y matriz), protección de `main` y release.
+Producto completo; en preparación para portafolio con el estándar PSES 2.0 (README y `docs/` en inglés; este archivo sigue en español a propósito). Historial por etapas en `CHANGELOG.md`. Versión **1.0.0** (2026-10-27). El repositorio sigue privado a propósito: el responsable lo hará público cuando las 4 apps del portafolio estén listas; entonces hay que activar la protección de `main`, el escaneo de secretos y la protección de push (no disponibles en privado con el plan gratuito).
 Cambios nuevos: documentar primero en `docs/requirements.md`, `docs/architecture.md` o un ADR nuevo, y agregar sus pruebas a `docs/testing.md`. Las referencias en código usan los IDs estables (FR-n, NFR-n, Rn, Dn, SEC-nn).
 
 ## Reglas críticas (nunca violar)
