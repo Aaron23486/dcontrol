@@ -1,6 +1,6 @@
 # CEDI — Control de Ingreso y Salida de Personal Externo
 
-Aplicación web interna (portafolio). Flujo: ESCANEAR → IDENTIFICAR → REGISTRAR ENTRADA → DENTRO → ESCANEAR → REGISTRAR SALIDA.
+Aplicación web interna. Flujo: ESCANEAR → IDENTIFICAR → REGISTRAR ENTRADA → DENTRO → ESCANEAR → REGISTRAR SALIDA.
 
 ## Antes de hacer cualquier cosa
 1. Lee `docs/requirements.md` (requisitos, reglas R1-R20) y `docs/architecture.md` (principios, arquitectura, decisiones D1-D15) cuando la tarea los necesite.
@@ -10,7 +10,7 @@ Fuentes de verdad, en orden: `docs/requirements.md` > ADR y decisiones de `docs/
 Si hay conflicto o falta información: pregunta. No asumas requisitos.
 
 ## Estado
-Producto completo; en preparación para portafolio con el estándar PSES 2.0 (README y `docs/` en inglés; este archivo sigue en español a propósito). Historial por etapas en `CHANGELOG.md`. Última unidad: reorganización profesional de la documentación (requisitos, arquitectura, ADR con nombres en inglés, CHANGELOG), **en revisión**. Pendiente hacia v1.0.0: prueba desde clon limpio, revisión final (quality gates y matriz), protección de `main` y release.
+Versión **1.0.0** (2026-10-27): producto completo. README y `docs/` en inglés; este archivo sigue en español a propósito. Historial en `CHANGELOG.md`. `main` protegida: todo cambio entra por PR con el CI en verde.
 Cambios nuevos: documentar primero en `docs/requirements.md`, `docs/architecture.md` o un ADR nuevo, y agregar sus pruebas a `docs/testing.md`. Las referencias en código usan los IDs estables (FR-n, NFR-n, Rn, Dn, SEC-nn).
 
 ## Reglas críticas (nunca violar)

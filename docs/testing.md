@@ -13,6 +13,8 @@ How CEDI Control is tested, and which tests cover each requirement and business 
 
 Integration and end-to-end tests need `npm run db:up`. They use the `cedi_test` database, never the development one, and leave it empty when they finish. The end-to-end suite starts its own API (port 3100) and web app (port 5174), so it does not clash with `npm run dev`, and it runs in a fixed time zone where it is midday, so results do not depend on the time of day.
 
+Integration and end-to-end runs print a `pg` deprecation warning ("Calling client.query() when the client is already executing a query"). It comes from `@prisma/adapter-pg` 7.10.1, the latest Prisma release, not from this code base. `pg` is a dependency of that adapter, pinned to the 8.x range, so the version that removes the deprecated behavior cannot be installed until Prisma itself moves to it.
+
 **Current figures:** 202 unit, 126 integration and 19 end-to-end tests. Coverage: API 98 % of lines and 88 % of branches; web logic 92 % and 90 %; `@cedi/shared` above 95 %. React components are covered by the end-to-end tests. CI fails below the thresholds (API 90 % / 80 %, shared 90 % / 90 %, web 85 % / 85 %).
 
 ## Required tests (NFR-8)

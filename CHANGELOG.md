@@ -1,17 +1,21 @@
 # Changelog
 
-Notable changes to CEDI Control, grouped by stage. The project has not had a tagged release yet; everything below leads up to 1.0.0.
+Notable changes to CEDI Control. Versions follow [Semantic Versioning](https://semver.org/); before 1.0.0 the work is grouped by stage.
 
-## Unreleased
+## [1.0.0] — 2026-10-27
 
-### Portfolio readiness — 2026-10-26 to 2026-10-27
+First release: the complete gatehouse application, hardened after a security review and prepared so anyone can clone, install and evaluate it.
+
+### Release preparation — 2026-10-26 to 2026-10-27
 
 - **Added** `npm run demo:setup`: one demo account per role with generated passwords shown once, and fictitious people, visits and audit entries; refuses to run in production ([ADR 0016](docs/decisions/0016-demo-access.md)).
 - **Added** MIT license.
 - **Changed** the README and every design document to English; reorganized the documentation into requirements, architecture, ADRs, security and testing.
 - **Changed** the People, History and Audit pages to share one `PaginatedResults` component instead of three copies of the same block.
 - **Changed** dependencies after reviewing Dependabot's proposals (Vite 8, pino-http 11, nestjs-pino 5, GitHub Actions v7, among others). Framework and tooling majors that must move together (NestJS, TypeScript, Vitest, ESLint, `@types/node`) are now planned upgrades instead of automatic proposals ([ADR 0015](docs/decisions/0015-supply-chain-in-ci.md)).
+- **Changed** the whole workspace to a single Vite 8 (Vitest and Tailwind still resolved Vite 7) and `@vitejs/plugin-react` 6.
 - **Fixed** end-to-end tests failing when CI ran just after midnight in the CEDI's time zone; the suite now runs in a fixed time zone where it is midday.
+- **Fixed** setup issues found by installing from a clean clone: the README uses `npm ci`, so the lockfile is not rewritten, and `.env.example` is in English.
 
 ### Security hardening — 2026-10-24 to 2026-10-26
 
