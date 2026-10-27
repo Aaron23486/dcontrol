@@ -8,16 +8,19 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     groups:
-      # NestJS se actualiza entero: sus paquetes comparten versión mayor y por separado
-      # la API no arranca (PR #13). Va primero porque cada paquete entra en el primer grupo que coincide.
-      nestjs:
-        patterns: ['@nestjs/*']
       # Parches y versiones menores juntos; cada versión mayor llega en su propio PR.
       minor-and-patch:
         update-types: [minor, patch]
     ignore:
-      # Los tipos siguen la versión mayor de Node que usan la app y el CI (22); se sube a mano con Node (PR #11).
+      # Versiones mayores que se hacen a propósito, como unidad propia (ADR 0015):
+      # - los tipos siguen la versión mayor de Node que usan la app y el CI (22) (PR #11);
+      # - NestJS se actualiza entero; Dependabot lo propone por piezas y la API no arranca (PR #13, #18, #20);
+      # - TypeScript depende de que typescript-eslint admita la nueva versión (PR #17).
       - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@nestjs/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'typescript'
         update-types: ['version-update:semver-major']
     commit-message:
       prefix: chore(deps)
