@@ -2,6 +2,7 @@
   "name": "@cedi/api",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "API REST de CEDI Control (NestJS + Prisma + PostgreSQL)",
   "scripts": {
     "dev": "nest start --watch",

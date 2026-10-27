@@ -2,6 +2,7 @@
   "name": "@cedi/shared",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Tipos, enums, códigos de error y esquemas Zod compartidos por API y web",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

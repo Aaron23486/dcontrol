@@ -2,6 +2,7 @@
   "name": "@cedi/web",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Interfaz web de CEDI Control (React + Vite)",
   "scripts": {
