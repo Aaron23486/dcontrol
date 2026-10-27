@@ -188,9 +188,18 @@ Segunda unidad del plan PSES 2.0. Decisiones en ADR 0015.
 - [x] Revisión del responsable: unida a `main` (pull request #5)
 - Recomendado al responsable: activar en GitHub «Secret scanning» y «Push protection» (Settings → Code security)
 
-## Fase 17 — Resultados paginados compartidos (DRY)  🔄 EN REVISIÓN
+## Fase 17 — Resultados paginados compartidos (DRY)  ✅ APROBADA (2026-10-26)
 Tercera unidad del plan PSES 2.0. Sin cambios de comportamiento ni visuales.
 - [x] Organismo `PaginatedResults` (error con reintento, carga, vacío, contador, tabla y paginación) usado por Personas, Historial y Auditoría, que repetían el mismo bloque
 - [x] `formatCount` para el contador en singular o plural, con su prueba
 - [x] Verificado: tipos, lint, pruebas de la web, E2E, y capturas regeneradas comparadas píxel a píxel (solo cambian fechas y horas de los datos de prueba; se conservan las capturas originales)
+- [x] Revisión del responsable: aprobada y unida a `main` (pull request #14)
+
+## Fase 18 — Primeras actualizaciones de Dependabot  🔄 EN REVISIÓN
+Cuarta unidad del plan PSES 2.0. Revisión de cada PR (compatibilidad, CI, riesgo) y ajuste de las reglas (ADR 0015).
+- [x] Unidos a `main` con CI en verde: acciones `checkout`, `setup-node` y `upload-artifact` v7 (#6, #7, #8); grupo de menores y parches: argon2 0.45, express 5.3, react-hook-form 7.91, eslint-plugin-react-refresh 0.5 (#15); pino-http 11 con pino 10 (#12); Vite 8 (#10)
+- [x] Cerrados: `@nestjs/platform-express` 12 solo (#13: la API no arranca con el resto de NestJS en 11) y `@types/node` 26 (#11: no coincide con Node 22)
+- [x] `dependabot.yml`: grupo `nestjs` para `@nestjs/*` e ignorar versiones mayores de `@types/node`
+- [x] Verificado en `main` tras unirlos: `npm ci`, formato, lint, tipos, build, `npm audit` (0 vulnerabilidades), 199 unitarias, 119 de integración, E2E 19 (1 omitida) y capturas regeneradas con Vite 8 (solo cambian fechas y horas de los datos de prueba; se conservan las originales)
+- Pendiente detectado: aviso de obsolescencia de `pg` («client.query() when the client is already executing a query»), que dejará de funcionar en pg 9
 - [ ] Revisión del responsable

@@ -15,6 +15,7 @@ La auditoría (SEC-11) encontró que:
 - **Acciones fijadas por commit** (`actions/checkout`, `setup-node`, `upload-artifact`), con la versión en un comentario.
 - **`permissions: contents: read`** para todo el workflow.
 - **Dependabot** semanal para npm y para las acciones. Agrupa parches y versiones menores en un PR; cada versión mayor llega en su propio PR. Solo propone: cada PR pasa por el CI completo y se revisa antes de unirlo.
+  - *Ajuste del 2026-10-26, tras revisar los primeros PR:* los paquetes `@nestjs/*` llegan juntos en un grupo propio, porque comparten versión mayor y actualizar uno solo deja la API sin arrancar (PR #13, cerrado). Las versiones mayores de `@types/node` se ignoran: los tipos deben coincidir con el Node que usan la app y el CI (22), y se suben a mano junto con Node (PR #11, cerrado).
 - **Versiones:** se conservan los rangos `^` de `package.json`. Lo que se instala lo define `package-lock.json`, y `npm ci` (CI e imagen Docker) falla si no coincide con `package.json`.
 
 ## Alternativas descartadas

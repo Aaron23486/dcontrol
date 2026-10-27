@@ -62,7 +62,7 @@ Las decisiones están documentadas en [`docs/decisions/`](docs/decisions/README.
 | API        | NestJS 11                                                                     | Módulos, inyección de dependencias y guards por rol nativos            |
 | Datos      | PostgreSQL 17 + Prisma 7                                                      | Índices parciales, `CHECK` y búsqueda trigram; migraciones versionadas |
 | Validación | Zod 4 (paquete compartido)                                                    | El mismo esquema valida el formulario y la API                         |
-| Web        | React 19, Vite 7, React Router 7, TanStack Query, React Hook Form, Tailwind 4 | Madurez, caché con sondeo en vivo y formularios tipados                |
+| Web        | React 19, Vite 8, React Router 7, TanStack Query, React Hook Form, Tailwind 4 | Madurez, caché con sondeo en vivo y formularios tipados                |
 | Seguridad  | argon2id, JWT en cookie `httpOnly`, helmet, rate limit                        | Ver [`docs/security.md`](docs/security.md)                             |
 | Pruebas    | Vitest, Supertest, Playwright, axe                                            | Unitarias, integración contra PostgreSQL real y E2E con accesibilidad  |
 | Entrega    | Docker multi-etapa, GitHub Actions                                            | Imagen reproducible y CI con lint, tipos, pruebas y cobertura          |
