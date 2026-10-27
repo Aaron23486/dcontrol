@@ -11,7 +11,7 @@ interface VisitHistoryTableProps {
   visits: VisitListItem[];
 }
 
-/** Historial de una sección: columnas comunes más las propias de su tipo (spec §16, ADR 0009). */
+/** Historial de una sección: columnas comunes más las propias de su tipo (FR-10, ADR 0009). */
 export function VisitHistoryTable({ type, visits }: VisitHistoryTableProps) {
   const columns = visitColumnsFor(type);
   return (

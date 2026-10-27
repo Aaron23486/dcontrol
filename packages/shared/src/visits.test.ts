@@ -8,7 +8,7 @@ const fail = (input: unknown) => {
   return result.error?.issues[0]?.message;
 };
 
-describe('visitDetailsSchema: campos por tipo (spec §7)', () => {
+describe('visitDetailsSchema: campos por tipo (FR-2)', () => {
   it('trabajador externo: no pide nada adicional', () => {
     expect(visitDetailsSchema.parse({ personType: PersonType.EXTERNAL_WORKER })).toEqual({
       personType: PersonType.EXTERNAL_WORKER,

@@ -1,7 +1,7 @@
 import type { DashboardSummary } from '@cedi/shared';
 import { StatTile } from '../../components/molecules/StatTile';
 
-/** Indicadores del día (spec §14). «Hoy» lo define la hora del CEDI (D6). */
+/** Indicadores del día (FR-8). «Hoy» lo define la hora del CEDI (D6). */
 export function DaySummaryTiles({ summary }: { summary: DashboardSummary }) {
   return (
     <div className="grid shrink-0 grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">

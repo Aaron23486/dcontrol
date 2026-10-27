@@ -7,7 +7,7 @@ interface ErrorStateProps {
   onRetry?: () => void;
 }
 
-/** Error comprensible para el personal operativo, con opción de reintentar (spec §26). */
+/** Error comprensible para el personal operativo, con opción de reintentar (NFR-3). */
 export function ErrorState({ message, onRetry }: ErrorStateProps) {
   return (
     <Alert>

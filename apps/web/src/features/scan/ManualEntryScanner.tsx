@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Icon } from '../../components/atoms/Icon';
 import type { ScannerSourceProps } from './scanner-source';
 
-/** Captura por teclado: el campo queda enfocado y Enter envía la cédula (spec §25). */
+/** Captura por teclado: el campo queda enfocado y Enter envía la cédula (NFR-2). */
 export function ManualEntryScanner({ onScan, disabled = false }: ScannerSourceProps) {
   const [code, setCode] = useState('');
   const input = useRef<HTMLInputElement>(null);

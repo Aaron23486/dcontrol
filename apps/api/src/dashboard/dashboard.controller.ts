@@ -12,7 +12,7 @@ export class DashboardController {
     return this.dashboard.summary();
   }
 
-  /** ¿Quién está dentro del CEDI ahora? (spec §17) */
+  /** ¿Quién está dentro del CEDI ahora? (FR-11) */
   @Get('visits/inside')
   inside(): Promise<InsideVisit[]> {
     return this.dashboard.inside();

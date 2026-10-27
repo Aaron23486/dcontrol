@@ -11,7 +11,7 @@ import { DEFAULT_SECTION, sectionBySlug } from '../features/persons/person-secti
 import { useNow } from '../lib/use-now';
 import { useDocumentTitle } from '../lib/use-document-title';
 
-/** Historial de visitas separado por tipo, con filtros en la URL (spec §16, ADR 0009). */
+/** Historial de visitas separado por tipo, con filtros en la URL (FR-10, ADR 0009). */
 export function HistoryPage() {
   useDocumentTitle('Historial');
   const section = sectionBySlug(useParams().section);

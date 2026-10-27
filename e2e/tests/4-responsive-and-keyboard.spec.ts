@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { login } from './support';
 
-/** La página no se desborda a lo ancho y los controles miden al menos 40 px (spec §27-28). */
+/** La página no se desborda a lo ancho y los controles miden al menos 40 px (NFR-4-28). */
 async function expectFitsAndTouchable(page: Page, screen: string): Promise<void> {
   const layout = await page.evaluate(() => ({
     overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,

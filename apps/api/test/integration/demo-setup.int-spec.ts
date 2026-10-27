@@ -45,7 +45,7 @@ describe('npm run demo:setup contra PostgreSQL (ADR 0016)', () => {
     }
   });
 
-  it('crea personas de los cuatro tipos con solo los datos de su tipo (spec §7)', async () => {
+  it('crea personas de los cuatro tipos con solo los datos de su tipo (FR-2)', async () => {
     const result = await setupDemo(prisma, options);
     const persons = await prisma.person.findMany({
       include: { visits: { include: { tools: true } } },

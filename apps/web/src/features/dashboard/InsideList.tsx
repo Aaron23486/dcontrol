@@ -12,7 +12,7 @@ interface InsideListProps {
   onClose?: (visit: InsideVisit) => void;
 }
 
-/** ¿Quién está dentro del CEDI ahora? (spec §17) */
+/** ¿Quién está dentro del CEDI ahora? (FR-11) */
 export function InsideList({ visits, onClose }: InsideListProps) {
   const now = useNow();
   return (

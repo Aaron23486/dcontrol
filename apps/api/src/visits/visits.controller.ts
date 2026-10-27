@@ -55,7 +55,7 @@ export class VisitsController {
     private readonly history: VisitHistoryService,
   ) {}
 
-  /** Historial de visitas de un tipo, con filtros de fecha, estado y búsqueda (spec §16). */
+  /** Historial de visitas de un tipo, con filtros de fecha, estado y búsqueda (FR-10). */
   @Get()
   list(
     @Query(new ZodValidationPipe(visitListQuerySchema)) query: VisitListQuery,

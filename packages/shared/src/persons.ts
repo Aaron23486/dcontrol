@@ -3,7 +3,7 @@ import type { CompanySummary } from './companies';
 import { PERSON_TYPES, PersonType, Role } from './enums';
 import type { VisitSummary } from './visits';
 
-/** Nombre de cada tipo para mostrar en la interfaz (spec §7). */
+/** Nombre de cada tipo para mostrar en la interfaz (FR-2). */
 export const PERSON_TYPE_LABEL: Record<PersonType, string> = {
   [PersonType.EXTERNAL_WORKER]: 'Trabajador externo',
   [PersonType.CONTRACTOR]: 'Contratista',
@@ -49,7 +49,7 @@ export const fullNameSchema = z
   .transform((name) => name.replace(/\s+/g, ' '));
 
 /**
- * Datos de la persona, iguales para los cuatro tipos (spec §7): nombre, cédula, empresa y tipo.
+ * Datos de la persona, iguales para los cuatro tipos (FR-2): nombre, cédula, empresa y tipo.
  * La empresa es obligatoria para todos (D9, ADR 0009).
  */
 export const personSchema = z.object({
@@ -75,7 +75,7 @@ export const canCorrectPersonIdentity = (role: Role): boolean => role === Role.A
 
 export const PERSONS_PAGE_SIZE_MAX = 100;
 
-/** Consulta de una sección de personas (una por tipo, spec §15). */
+/** Consulta de una sección de personas (una por tipo, FR-9). */
 export const personListQuerySchema = z.object({
   type: z.enum(PERSON_TYPES, { error: 'Indica el tipo de persona.' }),
   q: z.string().trim().max(100, 'La búsqueda es demasiado larga.').optional(),

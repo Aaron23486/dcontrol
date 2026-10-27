@@ -13,7 +13,7 @@ export const ErrorCode = {
 } as const;
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
 
-/** Formato único de error de la API (constitution: Seguridad). */
+/** Formato único de error de la API (docs/architecture.md: principios de seguridad). */
 export interface ApiError {
   code: ErrorCode;
   message: string;

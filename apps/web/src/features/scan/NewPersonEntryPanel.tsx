@@ -32,7 +32,7 @@ function StepTitle({ step, title, text }: { step: 1 | 2; title: string; text: st
 }
 
 /**
- * Persona no registrada (spec §10): primero sus datos, después los de la visita según su tipo.
+ * Persona no registrada (FR-5): primero sus datos, después los de la visita según su tipo.
  * Ambos se guardan juntos al final.
  */
 export function NewPersonEntryPanel({

@@ -11,7 +11,7 @@ import { ErrorState } from '../../components/molecules/ErrorState';
 const INSIDE_PREVIEW = 8;
 
 /**
- * Resumen del día, quién está dentro y actividad reciente (spec §14). En escritorio los dos
+ * Resumen del día, quién está dentro y actividad reciente (FR-8). En escritorio los dos
  * paneles llenan el alto que queda y se desplazan por dentro, no la página (ADR 0011).
  */
 export function DashboardPanels() {

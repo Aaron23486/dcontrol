@@ -23,7 +23,7 @@ interface VisitDetailsFormProps {
   onCancel: () => void;
 }
 
-/** Datos de la visita que corresponden al tipo de persona (spec §7). */
+/** Datos de la visita que corresponden al tipo de persona (FR-2). */
 export function VisitDetailsForm({
   personType,
   prefill,

@@ -25,14 +25,14 @@ export type ScanStep =
     }
   | { kind: 'previousDay'; person: PersonSummary; visit: VisitSummary };
 
-/** Aviso grande que confirma la operación registrada (spec §25). */
+/** Aviso grande que confirma la operación registrada (NFR-2). */
 export type ScanFeedback =
   | { kind: 'entry'; personName: string; at: string }
   | {
       kind: 'exit';
       personName: string;
       at: string;
-      /** Herramientas con que entró: el guarda verifica que salgan con él (Fase 7). */
+      /** Herramientas con que entró: el guarda verifica que salgan con él (FR-12). */
       tools: VisitToolSummary[];
     }
   | { kind: 'error'; message: string };

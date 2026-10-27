@@ -8,7 +8,7 @@ export interface Tone {
 }
 
 /**
- * Sonidos distinguibles sin mirar la pantalla (spec §25): entrada sube, salida baja,
+ * Sonidos distinguibles sin mirar la pantalla (NFR-2): entrada sube, salida baja,
  * error es grave. La forma de onda es suave para no resultar molesta en la caseta.
  */
 export const SCAN_TONES: Record<ScanFeedback['kind'], Tone[]> = {

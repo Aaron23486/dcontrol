@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { enterIdentification, login } from './support';
 
-/** Revisión automática WCAG 2.1 A/AA de la pantalla actual (spec §28). */
+/** Revisión automática WCAG 2.1 A/AA de la pantalla actual (NFR-5). */
 async function expectAccessible(page: Page, screen: string): Promise<void> {
   const { violations, passes } = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])

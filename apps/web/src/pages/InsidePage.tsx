@@ -22,7 +22,7 @@ const FILTERS: { value: InsideTypeFilter; label: string }[] = [
   ...PERSON_TYPES.map((type) => ({ value: type, label: PERSON_TYPE_LABEL[type] })),
 ];
 
-/** ¿Quién está dentro del CEDI ahora? Se actualiza sola cada 10 s (spec §17, D11). */
+/** ¿Quién está dentro del CEDI ahora? Se actualiza sola cada 10 s (FR-11, D11). */
 export function InsidePage() {
   useDocumentTitle('Personas dentro');
   const inside = useInsideVisits();

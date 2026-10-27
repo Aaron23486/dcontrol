@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { login } from './support';
 
-test('Seguridad no ve ni puede abrir la auditoría (spec §34, D12)', async ({ page }) => {
+test('Seguridad no ve ni puede abrir la auditoría (NFR-8, D12)', async ({ page }) => {
   await login(page, 'guard');
 
   const nav = page.getByRole('navigation', { name: 'Principal' });

@@ -1,7 +1,7 @@
 import { Button } from '../components/atoms/Button';
 import { Icon } from '../components/atoms/Icon';
 
-/** Error inesperado al mostrar una pantalla: mensaje claro, sin detalles técnicos (spec §26). */
+/** Error inesperado al mostrar una pantalla: mensaje claro, sin detalles técnicos (NFR-3). */
 export function RouteErrorPage() {
   return (
     <main className="flex min-h-dvh items-center justify-center p-4">

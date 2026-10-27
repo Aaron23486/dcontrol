@@ -109,7 +109,7 @@ async function main(): Promise<void> {
       },
     });
 
-    // Fase 7: técnico dentro (desde hace 5 minutos) con herramientas.
+    // FR-12: técnico dentro (desde hace 5 minutos) con herramientas.
     const tomas = await person('Tomás Herramientas', 'E2E0002', PersonType.MAINTENANCE_TECHNICIAN);
     await prisma.visit.create({
       data: {

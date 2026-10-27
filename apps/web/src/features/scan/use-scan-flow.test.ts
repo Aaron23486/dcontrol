@@ -28,7 +28,7 @@ const visit: VisitSummary = {
 };
 
 describe('stepOf: salida registrada', () => {
-  it('vuelve al campo de cédula y lleva las herramientas para verificarlas (Fase 7)', () => {
+  it('vuelve al campo de cédula y lleva las herramientas para verificarlas (FR-12)', () => {
     expect(stepOf({ result: ScanResultCode.EXIT_REGISTERED, person, visit })).toEqual({
       step: { kind: 'idle' },
       feedback: {

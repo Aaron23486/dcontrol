@@ -16,7 +16,7 @@ import { formatDateTime } from '../lib/format';
 import { useDocumentTitle } from '../lib/use-document-title';
 
 /**
- * Pantalla principal de la caseta: ingresar la cédula es la acción central (spec §14, §25)
+ * Pantalla principal de la caseta: ingresar la cédula es la acción central (FR-8, NFR-2)
  * y debajo el resumen del día, quién está dentro y la actividad reciente. En escritorio ocupa
  * justo la ventana; si se abre un formulario del flujo, la página puede desplazarse (ADR 0011).
  */

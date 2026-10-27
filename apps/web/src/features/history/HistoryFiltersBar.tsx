@@ -15,7 +15,7 @@ interface HistoryFiltersBarProps {
 
 const LABEL = 'flex flex-col gap-1.5 text-sm font-medium text-ink-soft';
 
-/** Filtros del historial: fechas, estado y búsqueda (spec §16). */
+/** Filtros del historial: fechas, estado y búsqueda (FR-10). */
 export function HistoryFiltersBar({ filters, today, onChange }: HistoryFiltersBarProps) {
   const [text, setText] = useState(filters.q ?? '');
   const debounced = useDebouncedValue(text.trim(), 300);

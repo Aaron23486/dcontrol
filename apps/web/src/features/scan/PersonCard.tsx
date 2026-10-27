@@ -2,7 +2,7 @@ import { PERSON_TYPE_LABEL, type PersonSummary } from '@cedi/shared';
 import { Badge } from '../../components/atoms/Badge';
 import { Icon } from '../../components/atoms/Icon';
 
-/** Ficha de la persona que se muestra al ingresar su cédula (spec §10). */
+/** Ficha de la persona que se muestra al ingresar su cédula (FR-5). */
 export function PersonCard({ person }: { person: PersonSummary }) {
   return (
     <div className="flex items-center gap-3">
