@@ -126,7 +126,7 @@ Dockerfile, docker-compose.yml, docker-compose.prod.yml
 git clone https://github.com/Aaron23486/dcontrol.git
 cd dcontrol
 cp .env.example .env      # then fill in the values (see Environment configuration)
-npm install               # also builds the shared package and generates the Prisma client
+npm ci                    # exact versions from package-lock.json; also builds the shared package and the Prisma client
 npm run db:up             # PostgreSQL in Docker (also creates the test database)
 npm run db:deploy         # applies migrations and creates the API's database user (no admin privileges)
 npm run demo:setup        # demo accounts (one per role) and fictitious data
