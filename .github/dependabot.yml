@@ -15,12 +15,22 @@ updates:
       # Versiones mayores que se hacen a propósito, como unidad propia (ADR 0015):
       # - los tipos siguen la versión mayor de Node que usan la app y el CI (22) (PR #11);
       # - NestJS se actualiza entero; Dependabot lo propone por piezas y la API no arranca (PR #13, #18, #20);
-      # - TypeScript depende de que typescript-eslint admita la nueva versión (PR #17).
+      # - TypeScript depende de que typescript-eslint admita la nueva versión (PR #17);
+      # - Vitest y sus paquetes comparten versión mayor; por separado falla la cobertura (PR #27);
+      # - ESLint 10 pide Node >= 22.13 y se sube junto con @eslint/js y engines (PR #29).
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
       - dependency-name: '@nestjs/*'
         update-types: ['version-update:semver-major']
       - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'vitest'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@vitest/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@eslint/js'
         update-types: ['version-update:semver-major']
     commit-message:
       prefix: chore(deps)
