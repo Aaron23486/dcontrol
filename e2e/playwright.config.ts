@@ -13,7 +13,21 @@ if (existsSync(envFile)) process.loadEnvFile(envFile);
 
 const API_PORT = 3100;
 const WEB_PORT = 5174;
-const TIMEZONE = 'America/Mexico_City';
+/**
+ * Zona horaria de las pruebas: una zona fija (Etc/GMT±N) en la que ahora es mediodía.
+ * Los escenarios crean datos «hace unos minutos» y los comparan con «hoy»; con la zona real del
+ * CEDI fallaban si las pruebas corrían justo después de medianoche (los datos caían en el día
+ * anterior). Se calcula una vez y los workers la heredan, así todos usan la misma.
+ * `E2E_TIMEZONE` permite forzar otra (p. ej. para reproducir el caso de medianoche).
+ */
+function middayTimeZone(now = new Date()): string {
+  const offset = 12 - now.getUTCHours(); // de -11 a +12 horas respecto de UTC
+  if (offset === 0) return 'Etc/GMT';
+  // En las zonas Etc/GMT el signo va invertido: Etc/GMT-3 es UTC+3.
+  return offset > 0 ? `Etc/GMT-${offset}` : `Etc/GMT+${-offset}`;
+}
+process.env.E2E_TIMEZONE ??= middayTimeZone();
+const TIMEZONE = process.env.E2E_TIMEZONE;
 // Contraseña de las cuentas e2e: solo existen en la base de pruebas, que se vacía al terminar.
 process.env.E2E_PASSWORD ??= 'contraseña-e2e-1234';
 process.env.CEDI_TIMEZONE = TIMEZONE;
