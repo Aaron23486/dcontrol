@@ -1,549 +1,549 @@
-# PROYECTO: Sistema de Control de Ingreso y Salida de Personal Externo — CEDI
+# PROJECT: External Staff Entry and Exit Control System — CEDI
 
-## REQUISITO EXPRESO — ELIMINACIÓN DEL CAMPO «PERSONA QUE AUTORIZA»
+## EXPRESS REQUIREMENT — REMOVAL OF THE "AUTHORIZING PERSON" FIELD
 
-**No se debe solicitar, almacenar ni mostrar el campo «Persona que autoriza» en ninguna parte de la aplicación.** Esta decisión aplica a contratistas, mantenimiento/técnicos, visitantes y cualquier otro tipo de persona. Por tanto, el campo no debe aparecer en formularios de registro, formularios de ingreso, detalles de visitas, filtros, reportes, APIs, validaciones ni modelo de datos. No sustituirlo por otro campo de autorización equivalente sin consultarme.
+**The "Authorizing person" (_Persona que autoriza_) field must not be requested, stored or displayed anywhere in the application.** This decision applies to contractors, maintenance staff/technicians, visitors and any other person type. Therefore, the field must not appear in registration forms, entry forms, visit details, filters, reports, APIs, validations or the data model. Do not replace it with another equivalent authorization field without asking me.
 
-**Importante:** esta eliminación se refiere exclusivamente a la persona que autoriza físicamente el ingreso al CEDI. No elimina la **autenticación** ni la **autorización informática por roles** (Seguridad y Administrador), las cuales siguen siendo obligatorias.
+**Important:** this removal refers exclusively to the person who physically authorizes entry to the CEDI. It does not remove **authentication** or **role-based authorization** in the software (Security and Administrator), which remain mandatory.
 
 ---
 
-## 1. ROL QUE DEBES ASUMIR
+## 1. ROLE YOU MUST TAKE ON
 
-Actúa como un equipo senior multidisciplinario compuesto por:
+Act as a senior multidisciplinary team made up of:
 
-- Analista de negocio.
-- Analista funcional.
-- Arquitecto de software.
-- Ingeniero Full Stack.
-- Diseñador UI/UX especializado en aplicaciones empresariales.
-- Ingeniero de bases de datos.
-- Especialista en seguridad de aplicaciones.
-- QA / ingeniero de pruebas.
+- Business analyst.
+- Functional analyst.
+- Software architect.
+- Full-stack engineer.
+- UI/UX designer specialized in enterprise applications.
+- Database engineer.
+- Application security specialist.
+- QA / test engineer.
 - DevOps.
 
-Tu responsabilidad es diseñar y desarrollar una aplicación web empresarial **completamente funcional**, no un prototipo visual ni un mockup.
+Your responsibility is to design and build a **fully functional** enterprise web application, not a visual prototype or a mockup.
 
-Debes analizar los requerimientos, detectar inconsistencias, proponer mejoras cuando sean necesarias y construir una solución mantenible, segura, escalable y profesional.
+You must analyze the requirements, detect inconsistencies, propose improvements when necessary and build a maintainable, secure, scalable and professional solution.
 
-NO debes agregar funcionalidades solamente para hacer que el proyecto parezca más grande. Cada funcionalidad debe responder a una necesidad real del proceso.
-
----
-
-# 2. CONTEXTO DEL PROYECTO
-
-El proyecto consiste en desarrollar un sistema web para el **registro y control de ingreso y salida de personal externo de un CEDI (Centro de Distribución)**.
-
-El CEDI recibe personas que no pertenecen directamente a la organización, entre ellas:
-
-- Trabajadores externos recurrentes.
-- Contratistas.
-- Técnicos.
-- Personal de mantenimiento.
-- Visitantes.
-- Personal de otras empresas.
-
-Cada persona se identifica por su número de cédula, que Seguridad registra al momento de su ingreso y su salida.
-
-El objetivo principal del sistema es:
-
-> Saber quién se encuentra actualmente dentro del CEDI y mantener un historial completo y confiable de sus entradas y salidas.
-
-El sistema debe priorizar la rapidez del proceso de ingreso y salida, especialmente para el personal de seguridad que utilizará la aplicación durante la operación diaria.
+You must NOT add features just to make the project look bigger. Every feature must respond to a real need of the process.
 
 ---
 
-# 3. PROBLEMA QUE SE DESEA RESOLVER
+# 2. PROJECT CONTEXT
 
-El CEDI necesita controlar de manera centralizada y trazable el ingreso y salida de personas externas.
+The project consists of building a web system for **recording and controlling the entry and exit of external staff at a CEDI (Distribution Center)**.
 
-Las personas pueden acudir diariamente o solamente una vez.
+The CEDI receives people who do not belong directly to the organization, including:
 
-Se requiere una solución que permita:
+- Recurring external workers.
+- Contractors.
+- Technicians.
+- Maintenance staff.
+- Visitors.
+- Staff from other companies.
 
-- Mantener un registro centralizado.
-- Identificar rápidamente a la persona mediante su cédula.
-- Registrar automáticamente la hora de entrada.
-- Registrar automáticamente la hora de salida.
-- Saber quién se encuentra dentro del CEDI en tiempo real.
-- Consultar el historial de visitas.
-- Mantener información diferente dependiendo del tipo de persona.
-- Mantener trazabilidad de las operaciones realizadas.
+Each person is identified by their ID number (_cédula_), which Security records when they enter and when they leave.
 
----
+The main goal of the system is:
 
-# 4. OBJETIVO GENERAL
+> To know who is currently inside the CEDI and keep a complete and reliable history of their entries and exits.
 
-Desarrollar una aplicación web para gestionar el registro, control y consulta del ingreso y salida de personal externo al CEDI.
-
-La aplicación debe permitir que el proceso operativo sea:
-
-> ESCANEAR → IDENTIFICAR → REGISTRAR ENTRADA → PERSONA DENTRO → ESCANEAR → REGISTRAR SALIDA.
-
-El sistema debe ser sencillo para el usuario de seguridad y suficientemente completo para demostrar buenas prácticas de desarrollo de software.
+The system must prioritize the speed of the entry and exit process, especially for the security staff who will use the application in daily operation.
 
 ---
 
-# 5. USUARIOS DEL SISTEMA
+# 3. PROBLEM TO SOLVE
 
-Existirán únicamente dos roles.
+The CEDI needs to control the entry and exit of external people in a centralized and traceable way.
 
-## 5.1 Seguridad
+People may come daily or only once.
 
-Es el usuario operativo principal.
+A solution is required that allows:
 
-Debe poder:
-
-- Iniciar sesión.
-- Registrar personas.
-- Buscar personas.
-- Registrar entradas.
-- Registrar salidas.
-- Consultar personas actualmente dentro.
-- Consultar visitas.
-- Consultar historial.
-- Visualizar información relevante de una persona.
-- Actualizar los datos que cambian con el tiempo (tipo de persona y empresa).
-
-## 5.2 Administrador
-
-Tiene las funciones de Seguridad y adicionalmente puede:
-
-- Corregir el nombre o la cédula de una persona cuando hubo un error de captura.
-- Consultar información administrativa necesaria (auditoría).
-
-No debe existir registro público de usuarios ni pantalla de gestión de usuarios.
-
-Quien opera la aplicación es el guarda de Seguridad, con su propio correo y contraseña. Las cuentas (de Seguridad y de Administrador) se crean, activan, desactivan y cambian de contraseña mediante comandos de terminal.
+- Keeping a centralized record.
+- Quickly identifying the person by their ID number.
+- Automatically recording the entry time.
+- Automatically recording the exit time.
+- Knowing who is inside the CEDI in real time.
+- Looking up the visit history.
+- Keeping different information depending on the person type.
+- Keeping traceability of the operations performed.
 
 ---
 
-# 6. AUTENTICACIÓN
+# 4. GENERAL OBJECTIVE
 
-La aplicación utilizará autenticación interna mediante:
+Build a web application to manage the recording, control and lookup of the entry and exit of external staff at the CEDI.
 
-- Usuario/email.
-- Contraseña.
-- Sesión segura.
-- Roles y autorización.
+The application must make the operating process:
 
-NO implementar:
+> SCAN → IDENTIFY → RECORD ENTRY → PERSON INSIDE → SCAN → RECORD EXIT.
+
+The system must be simple for the security user and complete enough to demonstrate good software development practices.
+
+---
+
+# 5. SYSTEM USERS
+
+There will be only two roles.
+
+## 5.1 Security
+
+The main operational user.
+
+Must be able to:
+
+- Sign in.
+- Register people.
+- Search for people.
+- Record entries.
+- Record exits.
+- See the people currently inside.
+- Look up visits.
+- Look up the history.
+- See relevant information about a person.
+- Update the data that changes over time (person type and company).
+
+## 5.2 Administrator
+
+Has the Security functions and can also:
+
+- Correct a person's name or ID number when there was a data-entry error.
+- Look up the necessary administrative information (audit log).
+
+There must be no public user sign-up and no user-management screen.
+
+The application is operated by the Security guard, with their own email and password. Accounts (Security and Administrator) are created, activated, deactivated and have their passwords changed through terminal commands.
+
+---
+
+# 6. AUTHENTICATION
+
+The application will use internal authentication through:
+
+- Username/email.
+- Password.
+- Secure session.
+- Roles and authorization.
+
+Do NOT implement:
 
 - Google Login.
 - Microsoft Login.
 - Facebook Login.
-- OAuth externo.
-- Registro público.
+- External OAuth.
+- Public sign-up.
 
-La razón es que el proyecto está pensado como una aplicación interna empresarial.
+The reason is that the project is designed as an internal enterprise application.
 
-El repositorio de GitHub debe quedar preparado para que un reclutador pueda:
+The GitHub repository must be ready so that a recruiter can:
 
-1. Clonar el proyecto.
-2. Configurar las variables de entorno.
-3. Conectar su propia base de datos.
-4. Ejecutar migraciones.
-5. Crear el usuario administrador.
-6. Iniciar sesión.
-7. Utilizar completamente el sistema.
+1. Clone the project.
+2. Configure the environment variables.
+3. Connect their own database.
+4. Run the migrations.
+5. Create the administrator user.
+6. Sign in.
+7. Use the whole system.
 
-No incluir credenciales reales dentro del repositorio.
-
----
-
-# 7. TIPOS DE PERSONAS EXTERNAS
-
-El sistema maneja cuatro tipos de persona. **Todos** se identifican por su cédula y **todos** pertenecen a una empresa.
-
-Hay datos **de la persona**, que se registran una sola vez, y datos **de cada visita**, que se piden en cada ingreso según el tipo.
-
-| Dato | Trabajador externo | Contratista | Mantenimiento / Técnico | Visitante |
-|---|:---:|:---:|:---:|:---:|
-| Nombre completo (persona) | Obligatorio | Obligatorio | Obligatorio | Obligatorio |
-| Cédula (persona) | Obligatoria | Obligatoria | Obligatoria | Obligatoria |
-| Empresa (persona) | Obligatoria | Obligatoria | Obligatoria | Obligatoria |
-| Motivo (visita) | — | Obligatorio | Obligatorio | Obligatorio |
-| Área (visita) | — | Obligatoria | Obligatoria | Obligatoria (área que visita) |
-| Herramientas o equipos (visita) | — | — | Opcional | — |
-
-«—» significa que el dato **no se pide ni se guarda** para ese tipo. Así la información de un tipo no se mezcla con la de otro.
-
-### TRABAJADOR EXTERNO
-
-Persona que trabaja regularmente en el CEDI pero pertenece a otra empresa.
-
-- Nombre completo.
-- Cédula.
-- Empresa.
-
-No se pide información adicional en cada ingreso: si ya está registrado, basta con su cédula.
-
-### CONTRATISTA
-
-Persona que ingresa para realizar un trabajo específico.
-
-- Nombre completo.
-- Cédula.
-- Empresa.
-- En cada visita: motivo y área.
-
-### MANTENIMIENTO / TÉCNICO
-
-Persona que ingresa para realizar trabajos técnicos o de mantenimiento.
-
-- Nombre completo.
-- Cédula.
-- Empresa.
-- En cada visita: motivo, área y, si los trae, las herramientas o equipos que ingresa.
-
-### VISITANTE
-
-Persona que visita el CEDI ocasionalmente.
-
-- Nombre completo.
-- Cédula.
-- Empresa.
-- En cada visita: motivo y área que visita.
-
-### Datos fijos y datos que cambian
-
-- **Nombre y cédula** no cambian. Solo un Administrador puede corregirlos si hubo un error de captura.
-- **Tipo de persona y empresa** pueden cambiar con el tiempo (por ejemplo, alguien pasa de la empresa 1 a la empresa 2). Seguridad puede actualizarlos.
-- Cada visita conserva el tipo y la empresa que la persona tenía al entrar, para que el historial no cambie cuando se actualizan sus datos.
-- Para agilizar, el motivo y el área de una visita se prellenan con los de la visita anterior de esa persona.
+Do not include real credentials in the repository.
 
 ---
 
-# 8. CONCEPTO IMPORTANTE: PERSONA VS VISITA
+# 7. EXTERNAL PERSON TYPES
 
-No almacenar toda la información en una sola entidad.
+The system handles four person types. **All** are identified by their ID number and **all** belong to a company.
 
-Separar conceptualmente:
+There is data **about the person**, recorded only once, and data **about each visit**, requested on each entry according to the type.
 
-## PERSONA
+| Data                         | External worker | Contractor | Maintenance / Technician | Visitor                       |
+| ---------------------------- | :-------------: | :--------: | :----------------------: | :---------------------------: |
+| Full name (person)           | Required        | Required   | Required                 | Required                      |
+| ID number (person)           | Required        | Required   | Required                 | Required                      |
+| Company (person)             | Required        | Required   | Required                 | Required                      |
+| Purpose (visit)              | —               | Required   | Required                 | Required                      |
+| Area (visit)                 | —               | Required   | Required                 | Required (area being visited) |
+| Tools or equipment (visit)   | —               | —          | Optional                 | —                             |
 
-Representa quién es la persona.
+"—" means the data is **neither requested nor stored** for that type. This way the information of one type does not mix with another's.
 
-Ejemplo:
+### EXTERNAL WORKER
+
+A person who works regularly at the CEDI but belongs to another company.
+
+- Full name.
+- ID number.
+- Company.
+
+No additional information is requested on each entry: if they are already registered, their ID number is enough.
+
+### CONTRACTOR
+
+A person who comes in to do a specific job.
+
+- Full name.
+- ID number.
+- Company.
+- On each visit: purpose and area.
+
+### MAINTENANCE / TECHNICIAN
+
+A person who comes in to do technical or maintenance work.
+
+- Full name.
+- ID number.
+- Company.
+- On each visit: purpose, area and, if they bring any, the tools or equipment they bring in.
+
+### VISITOR
+
+A person who visits the CEDI occasionally.
+
+- Full name.
+- ID number.
+- Company.
+- On each visit: purpose and area being visited.
+
+### Fixed data and changing data
+
+- **Name and ID number** do not change. Only an Administrator can correct them if there was a data-entry error.
+- **Person type and company** may change over time (for example, someone moves from company 1 to company 2). Security can update them.
+- Each visit keeps the type and company the person had when they entered, so that the history does not change when their data is updated.
+- To speed things up, the purpose and area of a visit are prefilled with those of that person's previous visit.
+
+---
+
+# 8. KEY CONCEPT: PERSON VS VISIT
+
+Do not store all the information in a single entity.
+
+Separate conceptually:
+
+## PERSON
+
+Represents who the person is.
+
+Example:
 
 - ID.
-- Nombre.
-- Identificación.
-- Empresa (vigente; puede cambiar).
-- Tipo de persona (vigente; puede cambiar).
+- Name.
+- Identification.
+- Company (current; may change).
+- Person type (current; may change).
 
-## VISITA
+## VISIT
 
-Representa cada ingreso realizado por una persona.
+Represents each entry made by a person.
 
-Debe almacenar como mínimo:
+Must store at least:
 
 - ID.
-- Persona.
-- Fecha.
-- Hora de entrada.
-- Hora de salida.
-- Estado.
-- Usuario que registró el ingreso.
-- Usuario que registró la salida.
-- Tipo de persona y empresa vigentes al entrar.
-- Motivo y área, según el tipo (sección 7).
-- Herramientas o equipos, solo para mantenimiento / técnico.
+- Person.
+- Date.
+- Entry time.
+- Exit time.
+- Status.
+- User who recorded the entry.
+- User who recorded the exit.
+- Person type and company in effect at entry.
+- Purpose and area, according to the type (section 7).
+- Tools or equipment, only for maintenance / technician.
 
-Una misma persona puede tener múltiples visitas.
+The same person can have multiple visits.
 
-Ejemplo:
+Example:
 
-Juan Pérez puede tener:
+Juan Pérez can have:
 
-Visita 1 → 07/10/2026\
-Visita 2 → 08/10/2026\
-Visita 3 → 09/10/2026
+Visit 1 → 07/10/2026\
+Visit 2 → 08/10/2026\
+Visit 3 → 09/10/2026
 
-No duplicar los datos permanentes de Juan en cada visita.
-
----
-
-# 9. CÉDULA
-
-Cada persona se identifica por su número de cédula, que es único.
-
-La cédula puede contener números, letras y guiones (documentos extranjeros o pasaportes). El sistema la guarda normalizada, en mayúsculas y sin espacios, puntos ni guiones, para que la misma cédula escrita de distintas formas identifique a la misma persona.
-
-El sistema debe permitir:
-
-1. Introducir la cédula.
-2. Buscar la persona asociada.
-3. Mostrar su información.
-4. Determinar si está dentro o no.
-5. Registrar la operación correspondiente.
-
-Inicialmente, Seguridad teclea la cédula. Un lector físico que funcione como teclado también debe servir sin cambios.
-
-La arquitectura debe permitir posteriormente integrar otros métodos de escaneo sin tener que rediseñar todo el sistema.
+Do not duplicate Juan's permanent data on each visit.
 
 ---
 
-# 10. FLUJO DE INGRESO
+# 9. ID NUMBER (CÉDULA)
 
-## Persona registrada
+Each person is identified by their ID number, which is unique.
 
-1. La persona llega al CEDI.
-2. Seguridad ingresa la cédula de la persona.
-3. El sistema encuentra la persona.
-4. Muestra información relevante.
-5. El sistema determina que la persona no tiene una visita abierta.
-6. Seguridad confirma/realiza el ingreso.
-7. Se registra fecha y hora.
-8. La visita pasa al estado:
+The ID number may contain digits, letters and hyphens (foreign documents or passports). The system stores it normalized, in uppercase and without spaces, dots or hyphens, so that the same ID number written in different ways identifies the same person.
 
-DENTRO.
+The system must allow:
 
-El proceso debe ser rápido y requerir la menor cantidad de pasos posible.
+1. Entering the ID number.
+2. Looking up the associated person.
+3. Showing their information.
+4. Determining whether they are inside or not.
+5. Recording the corresponding operation.
 
----
+Initially, Security types the ID number. A physical scanner that works as a keyboard must also work without changes.
 
-## Persona no registrada
-
-1. Seguridad ingresa la cédula de la persona.
-2. El sistema no encuentra la persona.
-3. Se muestra el formulario de registro.
-4. Seguridad selecciona el tipo de persona.
-5. El formulario cambia dinámicamente según el tipo.
-6. Se registra la persona.
-7. Se registra su primera entrada.
+The architecture must allow other scanning methods to be integrated later without redesigning the whole system.
 
 ---
 
-# 11. FLUJO DE SALIDA
+# 10. ENTRY FLOW
 
-1. La persona sale del CEDI.
-2. Seguridad ingresa nuevamente la cédula.
-3. El sistema encuentra la visita abierta.
-4. Se registra automáticamente la fecha y hora de salida.
-5. La visita pasa a:
+## Registered person
 
-SALIDA REGISTRADA.
+1. The person arrives at the CEDI.
+2. Security enters the person's ID number.
+3. The system finds the person.
+4. It shows relevant information.
+5. The system determines that the person has no open visit.
+6. Security confirms/performs the entry.
+7. The date and time are recorded.
+8. The visit moves to the status:
 
-No solicitar un formulario adicional para la salida.
+INSIDE.
 
----
-
-# 12. ESTADOS
-
-Mantener únicamente dos estados principales:
-
-## DENTRO
-
-La persona ingresó y todavía no ha registrado salida.
-
-## SALIDA REGISTRADA
-
-La persona ya salió del CEDI.
-
-No crear estados innecesarios como:
-
-- Pendiente.
-- Cancelado.
-- Autorizado.
-- Programado.
-
-A menos que posteriormente exista una necesidad funcional real.
+The process must be fast and require as few steps as possible.
 
 ---
 
-# 13. REGLAS DE NEGOCIO
+## Unregistered person
 
-Implementar como mínimo las siguientes reglas:
+1. Security enters the person's ID number.
+2. The system does not find the person.
+3. The registration form is shown.
+4. Security selects the person type.
+5. The form changes dynamically according to the type.
+6. The person is registered.
+7. Their first entry is recorded.
 
-### Regla 1
+---
 
-Una persona no puede tener dos visitas abiertas simultáneamente.
+# 11. EXIT FLOW
 
-### Regla 2
+1. The person leaves the CEDI.
+2. Security enters the ID number again.
+3. The system finds the open visit.
+4. The exit date and time are recorded automatically.
+5. The visit moves to:
 
-No se puede registrar una salida si la persona no tiene una visita abierta.
+EXIT RECORDED.
 
-### Regla 3
+Do not request an additional form for the exit.
 
-Al registrar una entrada se debe guardar automáticamente fecha y hora.
+---
 
-### Regla 4
+# 12. STATUSES
 
-Al registrar una salida se debe guardar automáticamente fecha y hora.
+Keep only two main statuses:
 
-### Regla 5
+## INSIDE
 
-Una persona que tenga una visita abierta debe aparecer como "DENTRO".
+The person entered and has not recorded an exit yet.
 
-### Regla 6
+## EXIT RECORDED
 
-Una visita cerrada debe conservar su historial.
+The person has already left the CEDI.
 
-### Regla 7
+Do not create unnecessary statuses such as:
 
-La información de la persona no debe duplicarse cada vez que ingresa.
+- Pending.
+- Cancelled.
+- Authorized.
+- Scheduled.
 
-### Regla 8
+Unless a real functional need arises later.
 
-Los datos que se piden y se guardan dependen del tipo de persona, según la tabla de la sección 7. No se piden ni se guardan datos que no correspondan al tipo.
+---
 
-### Regla 9
+# 13. BUSINESS RULES
 
-Las funciones administrativas deben estar protegidas por rol.
+Implement at least the following rules:
 
-### Regla 10
+### Rule 1
 
-No permitir operaciones que generen registros inconsistentes.
+A person cannot have two open visits at the same time.
 
-Si detectas otras reglas de negocio necesarias para garantizar la integridad del sistema, proponlas antes de implementarlas.
+### Rule 2
+
+An exit cannot be recorded if the person has no open visit.
+
+### Rule 3
+
+When an entry is recorded, the date and time must be saved automatically.
+
+### Rule 4
+
+When an exit is recorded, the date and time must be saved automatically.
+
+### Rule 5
+
+A person with an open visit must appear as "INSIDE".
+
+### Rule 6
+
+A closed visit must keep its history.
+
+### Rule 7
+
+The person's information must not be duplicated each time they come in.
+
+### Rule 8
+
+The data requested and stored depends on the person type, according to the table in section 7. Data that does not correspond to the type is neither requested nor stored.
+
+### Rule 9
+
+Administrative functions must be protected by role.
+
+### Rule 10
+
+Do not allow operations that produce inconsistent records.
+
+If you identify other business rules needed to guarantee the integrity of the system, propose them before implementing them.
 
 ---
 
 # 14. DASHBOARD
 
-El Dashboard debe estar orientado al usuario de Seguridad.
+The Dashboard must be oriented to the Security user.
 
-Debe mostrar como mínimo:
+It must show at least:
 
-- Cantidad de personas actualmente dentro.
-- Cantidad de entradas del día.
-- Cantidad de salidas del día.
-- Lista de personas actualmente dentro.
-- Hora de ingreso.
-- Empresa.
-- Tipo de persona.
+- Number of people currently inside.
+- Number of entries today.
+- Number of exits today.
+- List of people currently inside.
+- Entry time.
+- Company.
+- Person type.
 
-Debe existir una acción principal claramente visible:
+There must be a clearly visible main action:
 
-> INGRESAR CÉDULA
+> ENTER ID NUMBER
 
-El escaneo debe ser el elemento principal de la interfaz.
+Scanning must be the main element of the interface.
 
-No convertir el dashboard en una pantalla llena de gráficos innecesarios.
+Do not turn the dashboard into a screen full of unnecessary charts.
 
-En escritorio (≥ 1024 px de ancho, a partir de 1280 × 720) la pantalla «Ingreso y salida» se ve completa sin desplazar la página: escaneo, los cuatro indicadores, «Personas dentro» y «Actividad reciente». La actividad reciente se desplaza dentro de su panel. Mientras el guarda completa un formulario del flujo, la página puede desplazarse (ADR 0011).
-
----
-
-# 15. PERSONAS
-
-Crear un módulo para consultar personas.
-
-Debe permitir:
-
-- Listar.
-- Buscar.
-- Filtrar.
-- Ver detalle.
-- Registrar.
-- Editar cuando corresponda.
-
-La información se presenta **separada por tipo de persona** (Trabajadores externos, Contratistas, Mantenimiento / Técnicos y Visitantes), cada sección con sus propias columnas, para no mezclar información de distintos tipos.
-
-La búsqueda debe poder utilizar:
-
-- Nombre.
-- Cédula.
-- Empresa.
-- Tipo de persona.
-
-El detalle de una persona muestra sus datos y su historial de visitas, con el motivo, el área y las herramientas que correspondan a cada visita.
+On desktop (≥ 1024 px wide, from 1280 × 720 up) the "Ingreso y salida" (entry and exit) screen is fully visible without scrolling the page: scanning, the four indicators, "Personas dentro" (people inside) and "Actividad reciente" (recent activity). Recent activity scrolls inside its panel. While the guard fills in a form of the flow, the page may scroll (ADR 0011).
 
 ---
 
-# 16. VISITAS
+# 15. PEOPLE
 
-Crear un módulo para consultar visitas.
+Create a module to look up people.
 
-Debe permitir:
+It must allow:
 
-- Ver visitas del día.
-- Ver historial.
-- Filtrar por fecha.
-- Buscar por persona.
-- Buscar por empresa.
-- Filtrar por tipo.
-- Filtrar por estado.
+- Listing.
+- Searching.
+- Filtering.
+- Viewing details.
+- Registering.
+- Editing when appropriate.
 
-Mostrar claramente:
+The information is presented **separated by person type** (External workers, Contractors, Maintenance / Technicians and Visitors), each section with its own columns, so as not to mix information from different types.
 
-- Persona.
-- Empresa.
-- Tipo.
-- Fecha.
-- Hora de entrada.
-- Hora de salida.
-- Estado.
-- Motivo y área, cuando el tipo los tenga.
+Search must be able to use:
 
----
+- Name.
+- ID number.
+- Company.
+- Person type.
 
-# 17. PERSONAS ACTUALMENTE DENTRO
-
-Crear una vista específica para responder rápidamente:
-
-> ¿Quién está actualmente dentro del CEDI?
-
-Mostrar:
-
-- Nombre.
-- Empresa.
-- Tipo.
-- Hora de entrada.
-- Tiempo dentro, si resulta útil.
-- Estado.
-
-Esta vista debe actualizarse correctamente cuando alguien entra o sale.
+A person's detail shows their data and their visit history, with the purpose, area and tools that apply to each visit.
 
 ---
 
-# 18. MANTENIMIENTO Y HERRAMIENTAS
+# 16. VISITS
 
-Para personas de mantenimiento o técnicos se debe contemplar el registro de herramientas/equipos ingresados.
+Create a module to look up visits.
 
-No crear una plataforma compleja de gestión de inventario.
+It must allow:
 
-El objetivo únicamente es conservar dentro de la visita información como:
+- Seeing today's visits.
+- Seeing the history.
+- Filtering by date.
+- Searching by person.
+- Searching by company.
+- Filtering by type.
+- Filtering by status.
 
-- Herramienta/equipo.
-- Descripción.
-- Cantidad, si corresponde.
+Clearly show:
 
-El diseño debe permitir posteriormente ampliar esta funcionalidad si el negocio lo requiere.
-
----
-
-# 19. AUDITORÍA
-
-Implementar trazabilidad de las acciones importantes.
-
-Registrar como mínimo:
-
-- Usuario que realizó la acción.
-- Acción realizada.
-- Fecha y hora.
-- Entidad afectada.
-- Identificador del registro afectado.
-
-Las acciones importantes incluyen:
-
-- Crear persona.
-- Modificar persona.
-- Registrar entrada.
-- Registrar salida.
-- Cambiar el tipo o la empresa de una persona.
-- Corregir el nombre o la cédula de una persona.
-
-No almacenar información sensible innecesaria en logs.
+- Person.
+- Company.
+- Type.
+- Date.
+- Entry time.
+- Exit time.
+- Status.
+- Purpose and area, when the type has them.
 
 ---
 
-# 20. BASE DE DATOS
+# 17. PEOPLE CURRENTLY INSIDE
 
-Diseñar una base de datos relacional normalizada.
+Create a specific view to quickly answer:
 
-Como mínimo deben analizarse entidades similares a:
+> Who is currently inside the CEDI?
+
+Show:
+
+- Name.
+- Company.
+- Type.
+- Entry time.
+- Time inside, if useful.
+- Status.
+
+This view must update correctly when someone enters or leaves.
+
+---
+
+# 18. MAINTENANCE AND TOOLS
+
+For maintenance staff or technicians, recording the tools/equipment brought in must be supported.
+
+Do not build a complex inventory-management platform.
+
+The only goal is to keep information such as the following within the visit:
+
+- Tool/equipment.
+- Description.
+- Quantity, if applicable.
+
+The design must allow this feature to be extended later if the business requires it.
+
+---
+
+# 19. AUDIT LOG
+
+Implement traceability of important actions.
+
+Record at least:
+
+- User who performed the action.
+- Action performed.
+- Date and time.
+- Affected entity.
+- Identifier of the affected record.
+
+Important actions include:
+
+- Creating a person.
+- Modifying a person.
+- Recording an entry.
+- Recording an exit.
+- Changing a person's type or company.
+- Correcting a person's name or ID number.
+
+Do not store unnecessary sensitive information in logs.
+
+---
+
+# 20. DATABASE
+
+Design a normalized relational database.
+
+At a minimum, entities similar to these must be analyzed:
 
 - Users
 - Roles
@@ -553,59 +553,59 @@ Como mínimo deben analizarse entidades similares a:
 - VisitTools / VisitItems
 - AuditLogs
 
-No asumir que todas estas tablas son obligatorias.
+Do not assume all of these tables are mandatory.
 
-Primero analizar las relaciones y justificar la estructura final.
+First analyze the relationships and justify the final structure.
 
-Evitar:
+Avoid:
 
-- Duplicación innecesaria.
-- Relaciones circulares.
-- Campos genéricos sin propósito.
-- JSON para información que debería estar normalizada.
-- Sobreingeniería.
+- Unnecessary duplication.
+- Circular relationships.
+- Generic fields without a purpose.
+- JSON for information that should be normalized.
+- Over-engineering.
 
-Crear claves primarias, foráneas, índices y restricciones apropiadas.
+Create appropriate primary keys, foreign keys, indexes and constraints.
 
-Los campos utilizados frecuentemente para búsqueda deben estar correctamente indexados.
+Fields frequently used for searching must be properly indexed.
 
 ---
 
-# 21. ARQUITECTURA
+# 21. ARCHITECTURE
 
-Utilizar una arquitectura profesional, mantenible y apropiada para una aplicación empresarial.
+Use a professional, maintainable architecture appropriate for an enterprise application.
 
-Separar claramente:
+Clearly separate:
 
-- UI / presentación.
-- Lógica de negocio.
-- Acceso a datos.
-- Autenticación/autorización.
+- UI / presentation.
+- Business logic.
+- Data access.
+- Authentication/authorization.
 - API.
-- Persistencia.
+- Persistence.
 
-Evitar mezclar lógica de negocio directamente dentro de componentes visuales.
+Avoid mixing business logic directly into visual components.
 
-Utilizar principios de:
+Apply the principles of:
 
 - SOLID.
 - DRY.
 - Separation of Concerns.
 - Clean Code.
-- Validación centralizada.
-- Manejo consistente de errores.
+- Centralized validation.
+- Consistent error handling.
 
-No implementar patrones complejos si no aportan valor real.
+Do not implement complex patterns if they do not add real value.
 
 ---
 
 # 22. API
 
-Diseñar una API limpia y consistente.
+Design a clean and consistent API.
 
-Los endpoints deben representar recursos reales.
+Endpoints must represent real resources.
 
-Ejemplos conceptuales:
+Conceptual examples:
 
 - `/auth`
 - `/users`
@@ -615,522 +615,522 @@ Ejemplos conceptuales:
 - `/dashboard`
 - `/audit`
 
-No es obligatorio utilizar exactamente estos nombres.
+Using exactly these names is not mandatory.
 
-Utilizar:
+Use:
 
-- HTTP methods correctos.
-- Códigos HTTP apropiados.
-- Validación de entrada.
-- Manejo de errores consistente.
-- Autorización por endpoint.
-- DTOs cuando corresponda.
+- Correct HTTP methods.
+- Appropriate HTTP status codes.
+- Input validation.
+- Consistent error handling.
+- Authorization per endpoint.
+- DTOs where appropriate.
 
 ---
 
-# 23. SEGURIDAD
+# 23. SECURITY
 
-Implementar buenas prácticas:
+Implement good practices:
 
-- Contraseñas almacenadas mediante hashing seguro.
-- No almacenar contraseñas en texto plano.
-- Sesiones/tokens seguros.
-- Autorización por rol.
-- Validación del lado servidor.
-- Protección contra acceso no autorizado.
-- Protección contra inyección SQL.
-- Protección de información sensible.
-- Variables de entorno.
-- No subir secretos al repositorio.
-- CORS correctamente configurado.
-- Validación de datos.
-- Manejo seguro de errores.
+- Passwords stored with secure hashing.
+- No plain-text passwords.
+- Secure sessions/tokens.
+- Role-based authorization.
+- Server-side validation.
+- Protection against unauthorized access.
+- Protection against SQL injection.
+- Protection of sensitive information.
+- Environment variables.
+- No secrets committed to the repository.
+- Properly configured CORS.
+- Data validation.
+- Secure error handling.
 
-No revelar detalles internos de la aplicación en mensajes de error al usuario final.
+Do not reveal internal details of the application in error messages to the end user.
 
 ---
 
 # 24. UI/UX
 
-La aplicación debe tener apariencia de **software empresarial moderno**, profesional y limpio.
+The application must look like **modern enterprise software**: professional and clean.
 
-No debe parecer:
+It must not look like:
 
-- Una plantilla genérica.
-- Un proyecto universitario.
-- Un dashboard sobrecargado.
-- Una landing page.
+- A generic template.
+- A university project.
+- An overloaded dashboard.
+- A landing page.
 
-Priorizar:
+Prioritize:
 
-- Claridad.
-- Rapidez.
-- Jerarquía visual.
-- Accesibilidad.
-- Consistencia.
+- Clarity.
+- Speed.
+- Visual hierarchy.
+- Accessibility.
+- Consistency.
 - Responsive design.
-- Estados claros.
-- Feedback inmediato.
+- Clear states.
+- Immediate feedback.
 
-La acción principal debe ser evidente.
+The main action must be obvious.
 
-El usuario de Seguridad debe poder registrar una entrada/salida en pocos segundos.
+The Security user must be able to record an entry/exit in a few seconds.
 
 ---
 
-# 25. EXPERIENCIA DE ESCANEO
+# 25. SCANNING EXPERIENCE
 
-El sistema debe estar diseñado pensando en un lector de códigos que se comporte como teclado.
+The system must be designed with a barcode scanner that behaves like a keyboard in mind.
 
-Cuando el usuario escanee:
+When the user scans:
 
 ```
 123456789
 
 ```
 
-la aplicación debe procesar el código sin obligar al usuario a hacer múltiples clics.
+the application must process the code without forcing the user to make multiple clicks.
 
-Considerar:
+Consider:
 
-- Campo de escaneo enfocado automáticamente.
-- Enter como finalización del escaneo.
-- Feedback visual.
-- Feedback sonoro opcional.
-- Mensaje de éxito.
-- Mensaje de error.
-- Evitar doble registro accidental.
-- Mostrar claramente si se registró ENTRADA o SALIDA.
+- Scan field focused automatically.
+- Enter as the end of the scan.
+- Visual feedback.
+- Optional sound feedback.
+- Success message.
+- Error message.
+- Avoiding accidental double recording.
+- Clearly showing whether an ENTRY or an EXIT was recorded.
 
-Si el lector envía Enter automáticamente, aprovecharlo.
+If the scanner sends Enter automatically, take advantage of it.
 
 ---
 
-# 26. MANEJO DE ERRORES
+# 26. ERROR HANDLING
 
-Crear mensajes claros para situaciones como:
+Create clear messages for situations such as:
 
-- Cédula no registrada.
-- Persona ya está dentro.
-- Persona no tiene una visita abierta.
-- Código inválido.
-- Error de conexión.
-- Datos incompletos.
-- Usuario sin permisos.
+- ID number not registered.
+- Person is already inside.
+- Person has no open visit.
+- Invalid code.
+- Connection error.
+- Incomplete data.
+- User without permissions.
 
-Los errores deben ser comprensibles para personal operativo.
+Errors must be understandable for operational staff.
 
-No mostrar errores técnicos como stack traces al usuario.
+Do not show technical errors such as stack traces to the user.
 
 ---
 
 # 27. RESPONSIVE DESIGN
 
-La aplicación debe funcionar correctamente en:
+The application must work correctly on:
 
 - Desktop.
 - Laptop.
 - Tablet.
 
-La interfaz principal debe estar optimizada para el entorno operativo de un CEDI.
+The main interface must be optimized for the operating environment of a CEDI.
 
-Priorizar desktop/tablet sobre móvil, pero mantener una experiencia responsive.
+Prioritize desktop/tablet over mobile, but keep a responsive experience.
 
-Todas las pantallas comparten el sistema de diseño de la ADR 0011 (colores, tipografía, íconos, tarjetas, tablas y estados). Ninguna pantalla se desborda a lo ancho.
-
----
-
-# 28. ACCESIBILIDAD
-
-Aplicar buenas prácticas básicas:
-
-- Contraste adecuado.
-- Labels claros.
-- Estados no comunicados únicamente mediante color.
-- Navegación por teclado cuando corresponda.
-- Inputs correctamente asociados a labels.
-- Mensajes de error claros.
-- Tamaños adecuados de botones.
+All screens share the design system of ADR 0011 (colors, typography, icons, cards, tables and states). No screen overflows horizontally.
 
 ---
 
-# 29. TECNOLOGÍAS
+# 28. ACCESSIBILITY
 
-Antes de comenzar el desarrollo, analiza y propone un stack tecnológico adecuado.
+Apply basic good practices:
 
-Priorizar:
-
-- Tecnologías modernas.
-- Madurez.
-- Mantenibilidad.
-- Facilidad de instalación.
-- Buena documentación.
-- Adecuación para un proyecto de portafolio.
-- Facilidad para que un reclutador pueda clonar y ejecutar el proyecto.
-
-No seleccionar tecnologías únicamente porque sean populares.
-
-Explica brevemente la razón de cada tecnología seleccionada.
+- Adequate contrast.
+- Clear labels.
+- States not communicated by color alone.
+- Keyboard navigation where appropriate.
+- Inputs correctly associated with labels.
+- Clear error messages.
+- Adequate button sizes.
 
 ---
 
-# 30. CONFIGURACIÓN DEL PROYECTO
+# 29. TECHNOLOGIES
 
-El proyecto debe poder ejecutarse desde cero siguiendo instrucciones claras.
+Before starting development, analyze and propose a suitable technology stack.
 
-Debe incluir:
+Prioritize:
+
+- Modern technologies.
+- Maturity.
+- Maintainability.
+- Ease of installation.
+- Good documentation.
+- Suitability for a portfolio project.
+- Ease for a recruiter to clone and run the project.
+
+Do not choose technologies just because they are popular.
+
+Briefly explain the reason for each selected technology.
+
+---
+
+# 30. PROJECT SETUP
+
+The project must be runnable from scratch by following clear instructions.
+
+It must include:
 
 - `.env.example`
-- Migraciones.
-- Seed inicial.
-- Configuración de base de datos.
-- Usuario administrador inicial mediante proceso seguro.
-- Scripts de desarrollo.
-- Scripts de producción.
-- Documentación de instalación.
+- Migrations.
+- Initial seed.
+- Database configuration.
+- Initial administrator user through a secure process.
+- Development scripts.
+- Production scripts.
+- Installation documentation.
 
-Nunca incluir:
+Never include:
 
-- `.env` real.
-- Contraseñas reales.
-- API keys reales.
+- A real `.env`.
+- Real passwords.
+- Real API keys.
 - Tokens.
-- Secretos.
+- Secrets.
 
 ---
 
-# 31. GITHUB / PORTAFOLIO
+# 31. GITHUB / PORTFOLIO
 
-El proyecto será publicado en GitHub como proyecto de portafolio profesional.
+The project will be published on GitHub as a professional portfolio project.
 
-El README debe incluir:
+The README must include:
 
-## Descripción
+## Description
 
-Qué problema resuelve.
+What problem it solves.
 
-## Características
+## Features
 
-Principales funcionalidades.
+Main functionality.
 
-## Arquitectura
+## Architecture
 
-Descripción de la arquitectura.
+Description of the architecture.
 
-## Tecnologías
+## Technologies
 
-Stack utilizado.
+Stack used.
 
-## Base de datos
+## Database
 
-Modelo y relaciones.
+Model and relationships.
 
-## Instalación
+## Installation
 
-Pasos desde cero.
+Steps from scratch.
 
-## Configuración
+## Configuration
 
-Variables de entorno necesarias.
+Required environment variables.
 
-## Migraciones
+## Migrations
 
-Cómo ejecutar la base de datos.
+How to set up the database.
 
-## Usuario inicial
+## Initial user
 
-Cómo crear el administrador.
+How to create the administrator.
 
-## Ejecución
+## Running
 
-Cómo ejecutar frontend/backend.
+How to run the frontend/backend.
 
-## Capturas
+## Screenshots
 
-Espacio para screenshots.
+Space for screenshots.
 
-## Decisiones técnicas
+## Technical decisions
 
-Explicar decisiones importantes.
+Explain important decisions.
 
-## Seguridad
+## Security
 
-Explicar brevemente las medidas implementadas.
+Briefly explain the measures implemented.
 
-## Futuras mejoras
+## Future improvements
 
-Solamente funcionalidades razonables.
-
----
-
-# 32. NO HACER
-
-No implementar:
-
-- Login con Google.
-- Login con Microsoft.
-- Registro público.
-- Funciones innecesarias.
-- Sistema de reservas complejo.
-- Notificaciones innecesarias.
-- Módulos de inventario completos.
-- Módulos de recursos humanos.
-- Gestión de empleados internos.
-- Funcionalidades que no estén relacionadas con el objetivo principal.
-
-No sobrecomplicar el proyecto.
+Only reasonable features.
 
 ---
 
-# 33. CALIDAD DEL CÓDIGO
+# 32. DO NOT
 
-Todo código generado debe ser:
+Do not implement:
 
-- Legible.
-- Tipado cuando el lenguaje lo permita.
+- Google login.
+- Microsoft login.
+- Public sign-up.
+- Unnecessary features.
+- A complex booking system.
+- Unnecessary notifications.
+- Full inventory modules.
+- Human resources modules.
+- Internal employee management.
+- Features unrelated to the main objective.
+
+Do not overcomplicate the project.
+
+---
+
+# 33. CODE QUALITY
+
+All generated code must be:
+
+- Readable.
+- Typed when the language allows it.
 - Modular.
-- Mantenible.
-- Consistente.
-- Documentado únicamente donde aporte valor.
+- Maintainable.
+- Consistent.
+- Documented only where it adds value.
 
-Evitar:
+Avoid:
 
-- Código duplicado.
-- Funciones gigantes.
-- Componentes gigantes.
-- Variables ambiguas.
+- Duplicated code.
+- Giant functions.
+- Giant components.
+- Ambiguous variables.
 - Hardcoding.
-- Lógica de negocio en la UI.
-- Comentarios innecesarios.
-- TODOs sin resolver.
+- Business logic in the UI.
+- Unnecessary comments.
+- Unresolved TODOs.
 
 ---
 
 # 34. TESTING
 
-Implementar pruebas para las reglas críticas.
+Implement tests for the critical rules.
 
-Como mínimo probar:
+At a minimum, test:
 
-### Personas
+### People
 
-- Crear persona.
-- Buscar persona.
-- Validar identificación.
-- Validar formato y unicidad de la cédula.
+- Create a person.
+- Search for a person.
+- Validate identification.
+- Validate the format and uniqueness of the ID number.
 
-### Entradas
+### Entries
 
-- Registrar entrada.
-- Evitar doble entrada.
-- Persona registrada.
-- Persona no registrada.
+- Record an entry.
+- Prevent a double entry.
+- Registered person.
+- Unregistered person.
 
-### Salidas
+### Exits
 
-- Registrar salida.
-- Evitar salida sin entrada.
-- Cerrar correctamente la visita.
+- Record an exit.
+- Prevent an exit without an entry.
+- Close the visit correctly.
 
-### Autorización
+### Authorization
 
-- Seguridad no puede acceder a funciones administrativas.
-- Administrador puede administrar usuarios.
+- Security cannot access administrative functions.
+- Administrator can administer users.
 
-### Integridad
+### Integrity
 
-- Una persona no puede tener dos visitas abiertas.
-
----
-
-# 35. DESARROLLO POR FASES
-
-NO intentes construir todo de una sola vez.
-
-Trabaja por fases.
-
-## FASE 1 — Análisis
-
-Antes de programar:
-
-- Revisar requerimientos.
-- Detectar ambigüedades.
-- Proponer arquitectura.
-- Proponer modelo de datos.
-- Definir flujos.
-- Definir stack.
-
-NO escribir código todavía.
-
-Presentar las decisiones y esperar validación.
+- A person cannot have two open visits.
 
 ---
 
-## FASE 2 — Base del proyecto
+# 35. PHASED DEVELOPMENT
 
-Crear:
+Do NOT try to build everything at once.
 
-- Estructura.
-- Configuración.
-- Base de datos.
-- Migraciones.
-- Autenticación.
+Work in phases.
+
+## PHASE 1 — Analysis
+
+Before programming:
+
+- Review the requirements.
+- Detect ambiguities.
+- Propose the architecture.
+- Propose the data model.
+- Define the flows.
+- Define the stack.
+
+Do NOT write code yet.
+
+Present the decisions and wait for validation.
+
+---
+
+## PHASE 2 — Project foundation
+
+Create:
+
+- Structure.
+- Configuration.
+- Database.
+- Migrations.
+- Authentication.
 - Roles.
 - Seed.
 
 ---
 
-## FASE 3 — Personas
+## PHASE 3 — People
 
-Implementar:
+Implement:
 
 - CRUD.
-- Tipos de personas.
-- Empresas.
-- Validaciones.
+- Person types.
+- Companies.
+- Validations.
 
 ---
 
-## FASE 4 — Ingreso y salida
+## PHASE 4 — Entry and exit
 
-Implementar:
+Implement:
 
-- Escaneo.
-- Registro de entrada.
-- Registro de salida.
-- Estados.
-- Validaciones.
+- Scanning.
+- Entry recording.
+- Exit recording.
+- Statuses.
+- Validations.
 - Feedback.
 
 ---
 
-## FASE 5 — Dashboard
+## PHASE 5 — Dashboard
 
-Implementar:
+Implement:
 
-- Personas dentro.
-- Entradas del día.
-- Salidas del día.
-- Actividad reciente.
-
----
-
-## FASE 6 — Historial
-
-Implementar:
-
-- Historial.
-- Búsquedas.
-- Filtros.
-- Detalle de visitas.
+- People inside.
+- Today's entries.
+- Today's exits.
+- Recent activity.
 
 ---
 
-## FASE 7 — Herramientas
+## PHASE 6 — History
 
-Implementar información de herramientas/equipos para mantenimiento/técnicos.
+Implement:
 
----
-
-## FASE 8 — Auditoría
-
-Implementar trazabilidad de acciones.
-
----
-
-## FASE 9 — Testing
-
-Crear pruebas unitarias/integración/e2e según corresponda.
+- History.
+- Searches.
+- Filters.
+- Visit details.
 
 ---
 
-## FASE 10 — UI/UX final
+## PHASE 7 — Tools
 
-Realizar revisión completa:
+Implement tool/equipment information for maintenance staff/technicians.
+
+---
+
+## PHASE 8 — Audit log
+
+Implement traceability of actions.
+
+---
+
+## PHASE 9 — Testing
+
+Create unit/integration/e2e tests as appropriate.
+
+---
+
+## PHASE 10 — Final UI/UX
+
+Perform a full review:
 
 - Responsive.
-- Accesibilidad.
-- Estados.
-- Errores.
+- Accessibility.
+- States.
+- Errors.
 - Loading.
 - Empty states.
 - Feedback.
-- Consistencia visual.
+- Visual consistency.
 
 ---
 
-## FASE 11 — Producción
+## PHASE 11 — Production
 
-Preparar:
+Prepare:
 
-- Variables de entorno.
+- Environment variables.
 - Build.
-- Migraciones.
-- Seguridad.
+- Migrations.
+- Security.
 - Deployment.
-- Documentación.
+- Documentation.
 
 ---
 
-# 36. FORMA DE TRABAJO
+# 36. WAY OF WORKING
 
-En cada fase:
+In each phase:
 
-1. Analiza.
-2. Explica qué vas a implementar.
-3. Identifica posibles problemas.
-4. Propón soluciones.
-5. Implementa.
-6. Ejecuta pruebas.
-7. Verifica que no hayas roto funcionalidades existentes.
-8. Resume los cambios.
-9. Indica qué queda pendiente.
+1. Analyze.
+2. Explain what you are going to implement.
+3. Identify possible problems.
+4. Propose solutions.
+5. Implement.
+6. Run tests.
+7. Verify that you have not broken existing functionality.
+8. Summarize the changes.
+9. State what remains pending.
 
-No avances automáticamente a una fase importante si existe una decisión arquitectónica que todavía no está clara.
-
----
-
-# 37. PRINCIPIO GENERAL DEL PROYECTO
-
-La aplicación debe seguir este principio:
-
-> **Simple para operar, sólida técnicamente y completa funcionalmente.**
-
-El usuario de Seguridad no debe necesitar conocimientos técnicos para utilizarla.
-
-La complejidad debe estar en la arquitectura y en la calidad del software, no en la experiencia del usuario.
+Do not automatically move on to an important phase if there is an architectural decision that is still unclear.
 
 ---
 
-# 38. PRIMERA TAREA
+# 37. GENERAL PRINCIPLE OF THE PROJECT
 
-NO empieces escribiendo código.
+The application must follow this principle:
 
-Primero realiza un análisis profesional del proyecto.
+> **Simple to operate, technically solid and functionally complete.**
 
-Entrega:
+The Security user must not need technical knowledge to use it.
 
-1. Requerimientos funcionales.
-2. Requerimientos no funcionales.
-3. Actores y permisos.
-4. Casos de uso.
-5. Flujo de entrada.
-6. Flujo de salida.
-7. Reglas de negocio.
-8. Entidades principales.
-9. Propuesta de modelo de datos.
-10. Relaciones entre entidades.
-11. Arquitectura propuesta.
-12. Stack tecnológico recomendado.
-13. Estructura de carpetas propuesta.
-14. Estrategia de autenticación.
-15. Estrategia de autorización.
-16. Estrategia de auditoría.
-17. Estrategia de testing.
-18. Estructura inicial del README.
-19. Riesgos o ambigüedades detectadas.
-20. Recomendaciones de mejora.
+The complexity must be in the architecture and the quality of the software, not in the user experience.
 
-Después de presentar este análisis, espera mi aprobación antes de comenzar la implementación.
+---
 
-No inventes requisitos de negocio que no hayan sido definidos. Cuando una decisión sea necesaria, presenta la recomendación y explica brevemente por qué.
+# 38. FIRST TASK
+
+Do NOT start by writing code.
+
+First perform a professional analysis of the project.
+
+Deliver:
+
+1. Functional requirements.
+2. Non-functional requirements.
+3. Actors and permissions.
+4. Use cases.
+5. Entry flow.
+6. Exit flow.
+7. Business rules.
+8. Main entities.
+9. Proposed data model.
+10. Relationships between entities.
+11. Proposed architecture.
+12. Recommended technology stack.
+13. Proposed folder structure.
+14. Authentication strategy.
+15. Authorization strategy.
+16. Audit strategy.
+17. Testing strategy.
+18. Initial README structure.
+19. Risks or ambiguities detected.
+20. Improvement recommendations.
+
+After presenting this analysis, wait for my approval before starting the implementation.
+
+Do not invent business requirements that have not been defined. When a decision is needed, present the recommendation and briefly explain why.
