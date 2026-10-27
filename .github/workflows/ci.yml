@@ -61,7 +61,10 @@ jobs:
       - run: npm run typecheck
       # Unitarias + integración (PostgreSQL real) con umbrales mínimos de cobertura.
       - run: npm run test:coverage
+      # El job usa NODE_ENV=test; el build se comprueba como el de producción (React en modo producción).
       - run: npm run build
+        env:
+          NODE_ENV: production
       # La imagen de producción debe seguir construyéndose (ADR 0010).
       - run: docker build -t cedi-control:ci .
       # E2E del flujo de la caseta en Chromium (levanta su propia API y web).
