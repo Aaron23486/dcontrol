@@ -1,13 +1,16 @@
-# 0005 — Tiempo real por polling
+# 0005 — Real time through polling
 
-**Estado:** APROBADO (2026-10-23)
+**Status:** APPROVED (2026-10-23)
 
-## Contexto
-El dashboard y la lista de personas dentro deben reflejar lo que registran otras casetas.
+## Context
 
-## Decisión
-TanStack Query consulta cada 10 s e invalida la caché justo después de cada operación local. SSE queda como mejora futura.
+The dashboard and the list of people inside must reflect what other gatehouses record.
 
-## Consecuencias
-- Hasta 10 s de retraso para ver lo registrado en otra caseta; es aceptable para el proceso.
-- Sin infraestructura extra (WebSockets, broker).
+## Decision
+
+TanStack Query polls every 10 s and invalidates the cache right after each local operation. SSE remains a future improvement.
+
+## Consequences
+
+- Up to 10 s of delay to see what another gatehouse recorded; acceptable for the process.
+- No extra infrastructure (WebSockets, broker).

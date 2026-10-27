@@ -1,23 +1,27 @@
-# 0010 — Despliegue en un contenedor
+# 0010 — Deployment in one container
 
-**Estado:** APROBADO (2026-10-23, Fase 11; dentro del stack delegado en la ADR 0001)
+**Status:** APPROVED (2026-10-23, Phase 11; within the stack delegated in ADR 0001)
 
-## Contexto
-La app debe poder desplegarse y también clonarse y ejecutarse con facilidad (spec §6, §30, §31). La sesión usa una cookie `SameSite=Strict` (ADR 0004), que exige que la web y la API compartan sitio.
+## Context
 
-## Decisión
-- **Un solo contenedor** con la API, que en producción sirve también la web compilada (`WEB_DIST_DIR`): mismo origen, sin CORS entre dominios y un único servicio que operar, más PostgreSQL.
-- **Imagen Docker multi-etapa** (`node:22-alpine`): compila `shared`, API y web, y deja solo lo necesario para ejecutar. Corre como usuario sin privilegios.
-- ~~**Migraciones al arrancar**~~ → sustituido por la ADR 0012: las migraciones se aplican aparte (`npm run db:deploy`, servicio `migrate`) con el dueño de las tablas, y la API opera con un usuario sin privilegios. El seed de demostración nunca corre en producción.
-- **`GET /api/health`** (público) comprueba que la base de datos responde, para los chequeos de salud de la plataforma.
-- **Detrás de un proxy con HTTPS** (`TRUST_PROXY=true`): Express toma la IP real del cliente (rate limit del login) y la cookie `Secure` funciona.
-- El puerto se toma de `API_PORT` o, si no está, de `PORT` (la convención de la mayoría de las plataformas).
-- `docker-compose.prod.yml` levanta base y app juntas para una demostración o un servidor propio.
+The app must be deployable and also easy to clone and run (spec §6, §30, §31). The session uses a `SameSite=Strict` cookie (ADR 0004), which requires the web app and the API to share the site.
 
-## Alternativas descartadas
-- **Web en un CDN y API aparte:** obligaría a usar `SameSite=None` y CORS con credenciales, más superficie de ataque, y no aporta nada a una app interna de una caseta.
-- **Una plataforma concreta (Render, Fly…):** la imagen sirve para cualquiera; elegir una requiere las cuentas del responsable.
+## Decision
 
-## Consecuencias
-- En producción las rutas `/api/*` son de la API y cualquier otra ruta devuelve la web (SPA).
-- Si algún día la web se sirve desde otro dominio, hay que revisar la ADR 0004.
+- **A single container** with the API, which in production also serves the built web app (`WEB_DIST_DIR`): same origin, no cross-domain CORS and a single service to operate, plus PostgreSQL.
+- **Multi-stage Docker image** (`node:22-alpine`): builds `shared`, API and web, and keeps only what is needed to run. It runs as an unprivileged user.
+- ~~**Migrations on startup**~~ → superseded by ADR 0012: migrations are applied separately (`npm run db:deploy`, `migrate` service) as the table owner, and the API runs with an unprivileged user. The demo seed never runs in production.
+- **`GET /api/health`** (public) checks that the database responds, for the platform's health checks.
+- **Behind an HTTPS proxy** (`TRUST_PROXY=true`): Express takes the client's real IP (login rate limit) and the `Secure` cookie works.
+- The port is taken from `API_PORT` or, if absent, from `PORT` (the convention of most platforms).
+- `docker-compose.prod.yml` starts the database and the app together for a demo or a self-hosted server.
+
+## Rejected alternatives
+
+- **Web on a CDN and a separate API:** it would require `SameSite=None` and CORS with credentials, more attack surface, and adds nothing to an internal app for a gatehouse.
+- **A specific platform (Render, Fly…):** the image works on any of them; choosing one requires the owner's accounts.
+
+## Consequences
+
+- In production the `/api/*` routes belong to the API and any other route returns the web app (SPA).
+- If the web app is ever served from another domain, ADR 0004 must be revisited.

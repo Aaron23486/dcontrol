@@ -1,14 +1,17 @@
-# 0002 — Visita abierta única garantizada en BD
+# 0002 — Single open visit enforced in the database
 
-**Estado:** APROBADO (2026-10-23)
+**Status:** APPROVED (2026-10-23)
 
-## Contexto
-R1: una persona no puede tener dos visitas abiertas. Si dos casetas ingresan la misma cédula a la vez, una validación solo en código tiene condición de carrera.
+## Context
 
-## Decisión
-- Índice único parcial `visits(person_id) WHERE exit_at IS NULL`.
-- `CHECK (exit_at IS NULL OR exit_at >= entry_at)` (R11) y `CHECK ((exit_at IS NULL) = (exit_by IS NULL))` (R12).
-- El servicio valida antes de insertar para dar un mensaje claro, y traduce la violación del índice (código `P2002`) a un error de negocio `{ code, message }`.
+R1: a person cannot have two open visits. If two gatehouses enter the same ID number at the same time, a check only in code has a race condition.
 
-## Consecuencias
-- Requiere pruebas de integración contra PostgreSQL real, incluida una prueba de concurrencia.
+## Decision
+
+- Partial unique index `visits(person_id) WHERE exit_at IS NULL`.
+- `CHECK (exit_at IS NULL OR exit_at >= entry_at)` (R11) and `CHECK ((exit_at IS NULL) = (exit_by IS NULL))` (R12).
+- The service checks before inserting to give a clear message, and translates an index violation (code `P2002`) into a `{ code, message }` business error.
+
+## Consequences
+
+- Requires integration tests against real PostgreSQL, including a concurrency test.

@@ -1,37 +1,42 @@
-# 0014 — Endurecimiento: límite de peticiones, contraseñas, tokens y registros
+# 0014 — Hardening: request limits, passwords, tokens and logs
 
-**Estado:** APROBADO (2026-10-25, remediación de la auditoría de seguridad, Etapa 3: SEC-07, SEC-08, SEC-09, SEC-10, SEC-13, I1 e I3).
+**Status:** APPROVED (2026-10-25, remediation of the security audit, Stage 3: SEC-07, SEC-08, SEC-09, SEC-10, SEC-13, I1 and I3).
 
-## Contexto
-La auditoría dejó hallazgos bajos e informativos:
-- Solo el login tenía límite de peticiones; el resto de la API no (SEC-07).
-- Una contraseña de 12 caracteres como «Password2024» era válida (SEC-08).
-- La sesión no vence por inactividad (SEC-09).
-- PostgreSQL de desarrollo escuchaba en todas las interfaces (SEC-10).
-- Los logs de cada petición guardaban la cadena de búsqueda, que lleva nombres o cédulas (SEC-13).
-- El token de sesión no fijaba algoritmo, emisor ni audiencia (I1), y la CSP permitía estilos en línea (I3).
+## Context
 
-## Decisión
-- **Límite de peticiones a toda la API (`api`)** con `API_RATE_LIMIT_PER_MINUTE` (300 por defecto). Con sesión cuenta **por usuario**, porque varias casetas pueden salir a Internet por la misma IP. Sin sesión cuenta por IP. El límite de login por IP se conserva como un segundo límite, aplicado solo al endpoint marcado con `@LoginThrottle()`. El guard de límites va después de los de sesión y rol para conocer al usuario.
-- **Contraseñas fáciles de adivinar** (`guessablePasswordReason` en `@cedi/shared`). Se rechazan:
-  - las que, sin números ni símbolos, son una palabra o secuencia muy usada (incluidos el nombre del sistema y «seguridad»);
-  - las de solo números o símbolos;
-  - las de menos de 5 caracteres distintos;
-  - las que contienen el nombre o el correo de la persona.
-  - Lo aplica `npm run users`, el único lugar donde se crean o cambian contraseñas (ADR 0008).
-- **Token de sesión:** HS256, emisor `cedi-control-api` y audiencia `cedi-control-web`, exigidos al verificar.
-- **Registros:** de cada petición se guardan solo id, método, ruta sin la cadena de búsqueda e IP.
-- **CSP:** estilos y fuentes solo propios (`'self'`), sin `unsafe-inline`; la web compilada no usa estilos en línea.
-- **PostgreSQL de desarrollo:** publicado solo en `127.0.0.1`.
-- **SEC-09, riesgo aceptado:** no se agrega expiración por inactividad. La pantalla de la caseta consulta al servidor cada 10 s (ADR 0005), así que el servidor no distingue una caseta atendida de una abandonada, y un bloqueo en el navegador interrumpiría el escaneo durante el turno. Se mantienen la duración fija de un turno (12 h), el cierre de sesión que revoca (SEC-01) y la desactivación inmediata (R14).
+The audit left low and informational findings:
 
-## Alternativas descartadas
-- **Consultar una base de contraseñas filtradas en Internet** (k-anonimato): agrega una dependencia externa a la creación de cuentas de un sistema interno. La longitud mínima de 12 y las reglas locales cubren los casos comunes.
-- **Límite general por IP:** cortaría a todas las casetas de un mismo sitio a la vez.
-- **Expiración deslizante del token:** las consultas automáticas la renovarían siempre, sin proteger nada.
+- Only login had a request limit; the rest of the API did not (SEC-07).
+- A 12-character password such as "Password2024" was valid (SEC-08).
+- The session does not expire on inactivity (SEC-09).
+- Development PostgreSQL listened on all interfaces (SEC-10).
+- Each request's log stored the query string, which carries names or ID numbers (SEC-13).
+- The session token did not pin the algorithm, issuer or audience (I1), and the CSP allowed inline styles (I3).
 
-## Consecuencias
-- Al desplegar, las sesiones emitidas antes de este cambio dejan de valer (no traen emisor ni audiencia): cada usuario inicia sesión una vez.
-- Los límites siguen en memoria de la instancia (igual que en ADR 0013).
-- Una contraseña existente que hoy sería rechazada sigue funcionando; las reglas aplican al crearla o cambiarla.
-- La lista de palabras comunes es corta y local: es una defensa razonable, no exhaustiva.
+## Decision
+
+- **Request limit on the whole API (`api`)** with `API_RATE_LIMIT_PER_MINUTE` (300 by default). With a session it counts **per user**, because several gatehouses can reach the Internet through the same IP. Without a session it counts per IP. The per-IP login limit is kept as a second limit, applied only to the endpoint marked with `@LoginThrottle()`. The limit guard runs after the session and role guards so it knows the user.
+- **Easy-to-guess passwords** (`guessablePasswordReason` in `@cedi/shared`). Rejected:
+  - those that, without digits or symbols, are a very common word or sequence (including the system's name and "seguridad");
+  - those with only digits or symbols;
+  - those with fewer than 5 distinct characters;
+  - those containing the person's name or email.
+  - `npm run users` applies it, the only place where passwords are created or changed (ADR 0008).
+- **Session token:** HS256, issuer `cedi-control-api` and audience `cedi-control-web`, required on verification.
+- **Logs:** for each request only id, method, path without the query string, and IP are stored.
+- **CSP:** styles and fonts only from the app itself (`'self'`), without `unsafe-inline`; the built web app uses no inline styles.
+- **Development PostgreSQL:** published only on `127.0.0.1`.
+- **SEC-09, accepted risk:** no inactivity timeout is added. The gatehouse screen polls the server every 10 s (ADR 0005), so the server cannot tell an attended gatehouse from an abandoned one, and a lock in the browser would interrupt scanning during the shift. The fixed one-shift duration (12 h), sign-out that revokes (SEC-01) and immediate deactivation (R14) are kept.
+
+## Rejected alternatives
+
+- **Querying a breached-password database on the Internet** (k-anonymity): adds an external dependency to account creation in an internal system. The 12-character minimum and the local rules cover the common cases.
+- **A general per-IP limit:** it would cut off every gatehouse at the same site at once.
+- **Sliding token expiration:** the automatic polling would always renew it, protecting nothing.
+
+## Consequences
+
+- On deployment, sessions issued before this change stop working (they carry no issuer or audience): each user signs in once.
+- The limits still live in the instance's memory (same as in ADR 0013).
+- An existing password that would be rejected today keeps working; the rules apply when it is created or changed.
+- The common-word list is short and local: a reasonable defense, not an exhaustive one.

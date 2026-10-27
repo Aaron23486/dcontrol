@@ -1,16 +1,19 @@
-# 0006 — Escáner y operación de escaneo
+# 0006 — Scanner and scan operation
 
-**Estado:** APROBADO (2026-10-23). Enmendada por ADR 0008: la entrada es la cédula, no un gafete.
+**Status:** APPROVED (2026-10-23). Amended by ADR 0008: the input is the ID number, not a badge.
 
-## Contexto
-Hoy se usa un lector que actúa como teclado (escribe el código y envía Enter) y entrada manual; en el futuro, quizá cámara. La caseta debe operar con el mínimo de pasos.
+## Context
 
-## Decisión
-- En la web, la entrada del escáner está detrás de una interfaz `ScannerSource`. Las implementaciones de hoy son lector-teclado y manual.
-- La API expone una sola operación `POST /scans {identification}`, que decide el resultado: `EXIT_REGISTERED`, `ENTRY_PENDING`, `PERSON_NOT_FOUND`, `CONFIRMATION_REQUIRED` (D2) o `PREVIOUS_DAY_VISIT_OPEN` (D3). Con `confirmed: true` el guarda confirma un doble escaneo o una visita olvidada.
-- La entrada se registra con `POST /visits` (persona existente o persona nueva junto con su primera entrada, en una transacción) y una visita olvidada se cierra con `PATCH /visits/:id/close` indicando la hora real de salida.
-- Las reglas viven en el servicio `visits`, no en la UI: salida automática si hay visita abierta, confirmación si la operación anterior fue hace menos de 60 s (D2), y datos prellenados de la última visita (D1).
+Today a scanner that acts as a keyboard (it types the code and sends Enter) and manual input are used; in the future, perhaps a camera. The gatehouse must operate with as few steps as possible.
 
-## Consecuencias
-- Agregar cámara solo requiere otra implementación de `ScannerSource`.
-- El flujo completo se cubre con e2e en Playwright.
+## Decision
+
+- In the web app, scanner input sits behind a `ScannerSource` interface. Today's implementations are keyboard-scanner and manual.
+- The API exposes a single operation `POST /scans {identification}`, which decides the result: `EXIT_REGISTERED`, `ENTRY_PENDING`, `PERSON_NOT_FOUND`, `CONFIRMATION_REQUIRED` (D2) or `PREVIOUS_DAY_VISIT_OPEN` (D3). With `confirmed: true` the guard confirms a double scan or a forgotten visit.
+- The entry is recorded with `POST /visits` (an existing person, or a new person together with their first entry, in one transaction) and a forgotten visit is closed with `PATCH /visits/:id/close` giving the real exit time.
+- The rules live in the `visits` service, not in the UI: automatic exit if there is an open visit, confirmation if the previous operation was less than 60 s ago (D2), and data prefilled from the last visit (D1).
+
+## Consequences
+
+- Adding a camera only requires another `ScannerSource` implementation.
+- The full flow is covered by Playwright e2e tests.

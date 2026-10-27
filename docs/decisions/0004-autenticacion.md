@@ -1,17 +1,20 @@
-# 0004 — Autenticación y sesión
+# 0004 — Authentication and session
 
-**Estado:** APROBADO (2026-10-23)
+**Status:** APPROVED (2026-10-23)
 
-## Contexto
-Dos roles, sin registro público ni OAuth. Un usuario desactivado debe perder el acceso en su siguiente petición (R14).
+## Context
 
-## Decisión
-- Login con email y contraseña; hash con argon2.
-- JWT firmado en cookie `httpOnly`, `Secure` en producción y `SameSite=Strict`. Dura un turno (12 h) y no hay refresh token.
-- Cada petición lee `is_active` y el rol del usuario en la BD. El rol del token no se usa para autorizar.
-- Guards por rol en cada endpoint; rate limit en login; CORS restringido al origen de la web.
-- El primer admin se crea con `npm run create-admin` (D14).
+Two roles, no public sign-up or OAuth. A deactivated user must lose access on their next request (R14).
 
-## Consecuencias
-- Una consulta por petición para verificar al usuario: es un costo aceptable con el volumen de una caseta.
-- `SameSite=Strict` y CORS restringido cubren CSRF mientras web y API compartan sitio. Si se separan de dominio, hay que revisar esta decisión.
+## Decision
+
+- Login with email and password; argon2 hashing.
+- Signed JWT in an `httpOnly` cookie, `Secure` in production and `SameSite=Strict`. It lasts one shift (12 h) and there is no refresh token.
+- Every request reads the user's `is_active` and role from the database. The role in the token is not used for authorization.
+- Role guards on every endpoint; login rate limit; CORS restricted to the web origin.
+- The first admin is created with `npm run create-admin` (D14).
+
+## Consequences
+
+- One query per request to verify the user: an acceptable cost at a gatehouse's volume.
+- `SameSite=Strict` and restricted CORS cover CSRF as long as web and API share the site. If they move to separate domains, this decision must be revisited.

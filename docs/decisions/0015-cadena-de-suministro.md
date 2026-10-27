@@ -1,29 +1,34 @@
-# 0015 — Cadena de suministro en CI: auditoría, secretos y acciones fijadas
+# 0015 — Supply chain in CI: audit, secrets and pinned actions
 
-**Estado:** APROBADO (2026-10-26, remediación de la auditoría de seguridad: SEC-11).
+**Status:** APPROVED (2026-10-26, remediation of the security audit: SEC-11).
 
-## Contexto
-La auditoría (SEC-11) encontró que:
-- el CI no revisaba vulnerabilidades conocidas en las dependencias ni secretos en el historial de Git;
-- las acciones de GitHub se usaban por etiqueta movible (`@v4`), que su dueño puede reapuntar a otro código;
-- el workflow tenía los permisos por defecto del `GITHUB_TOKEN`.
+## Context
 
-## Decisión
-- **Job `supply-chain`** en el CI, en paralelo con el de pruebas:
-  - `npm audit --audit-level=high`: falla con vulnerabilidades altas o críticas, de producción o de desarrollo (las herramientas de desarrollo también corren en el CI).
-  - **gitleaks** sobre todo el historial (`fetch-depth: 0`) con `--redact`, para que un hallazgo nunca muestre el valor en los logs públicos del CI. Se ejecuta desde su imagen oficial fijada por digest, el mismo comando que se puede correr en local con Docker. No se usa una acción de terceros, que pediría permisos sobre los PR.
-- **Acciones fijadas por commit** (`actions/checkout`, `setup-node`, `upload-artifact`), con la versión en un comentario.
-- **`permissions: contents: read`** para todo el workflow.
-- **Dependabot** semanal para npm y para las acciones. Agrupa parches y versiones menores en un PR; cada versión mayor llega en su propio PR. Solo propone: cada PR pasa por el CI completo y se revisa antes de unirlo.
-  - *Ajuste del 2026-10-26/27, tras revisar los primeros PR:* Dependabot no propone versiones mayores de `@types/node`, `@nestjs/*` ni `typescript`; se hacen a propósito, como unidad propia. Los tipos deben coincidir con el Node que usan la app y el CI (22) (PR #11). NestJS comparte versión mayor entre sus paquetes y Dependabot lo proponía por piezas, que dejan la API sin arrancar (PR #13, #18, #20); un grupo `nestjs` no lo evitó y se retiró. TypeScript depende de que `typescript-eslint` admita la nueva versión (PR #17). Tampoco se proponen las mayores de `vitest`/`@vitest/*`, que deben ir juntas (PR #27), ni de `eslint`/`@eslint/js`, porque ESLint 10 exige Node ≥ 22.13 (PR #29). Sus versiones menores y parches siguen llegando en el grupo semanal.
-- **Versiones:** se conservan los rangos `^` de `package.json`. Lo que se instala lo define `package-lock.json`, y `npm ci` (CI e imagen Docker) falla si no coincide con `package.json`.
+The audit (SEC-11) found that:
 
-## Alternativas descartadas
-- **Fijar versiones exactas en `package.json`:** el lockfile ya da instalaciones reproducibles; fijar todo agregaría cambios sin beneficio verificable.
-- **`gitleaks/gitleaks-action`:** necesita el token con permisos sobre los PR y es otra dependencia de terceros que hay que fijar.
-- **Actualizar automáticamente (auto-merge de Dependabot):** contradice la regla de revisar cada actualización.
+- CI did not check for known vulnerabilities in dependencies or for secrets in the Git history;
+- GitHub Actions were used by a movable tag (`@v4`), which their owner can repoint to other code;
+- the workflow had the default `GITHUB_TOKEN` permissions.
 
-## Consecuencias
-- Una vulnerabilidad alta publicada en una dependencia hace fallar el CI hasta que se actualice o se documente su excepción.
-- Las acciones fijadas no reciben correcciones solas: Dependabot propone el nuevo commit.
-- El escaneo de secretos de GitHub (y su protección al hacer push) es una opción del repositorio: el dueño la activa en Settings → Code security.
+## Decision
+
+- **`supply-chain` job** in CI, in parallel with the test job:
+  - `npm audit --audit-level=high`: fails on high or critical vulnerabilities, production or development (development tools also run in CI).
+  - **gitleaks** over the whole history (`fetch-depth: 0`) with `--redact`, so a finding never shows the value in the public CI logs. It runs from its official image pinned by digest, the same command that can be run locally with Docker. No third-party action is used, which would ask for permissions on PRs.
+- **Actions pinned by commit** (`actions/checkout`, `setup-node`, `upload-artifact`), with the version in a comment.
+- **`permissions: contents: read`** for the whole workflow.
+- **Weekly Dependabot** for npm and for the actions. It groups patch and minor versions in one PR; each major version arrives in its own PR. It only proposes: every PR goes through the full CI and is reviewed before merging.
+  - _Adjustment on 2026-10-26/27, after reviewing the first PRs:_ Dependabot does not propose major versions of `@types/node`, `@nestjs/*` or `typescript`; they are done on purpose, as their own unit. The types must match the Node version used by the app and CI (22) (PR #11). NestJS shares its major version across its packages and Dependabot proposed it piece by piece, which leaves the API unable to start (PR #13, #18, #20); a `nestjs` group did not prevent it and was removed. TypeScript depends on `typescript-eslint` supporting the new version (PR #17). Majors of `vitest`/`@vitest/*`, which must move together (PR #27), and of `eslint`/`@eslint/js`, because ESLint 10 requires Node ≥ 22.13 (PR #29), are not proposed either. Their minor and patch versions still arrive in the weekly group.
+- **Versions:** the `^` ranges in `package.json` are kept. What gets installed is defined by `package-lock.json`, and `npm ci` (CI and Docker image) fails if it does not match `package.json`.
+
+## Rejected alternatives
+
+- **Pinning exact versions in `package.json`:** the lockfile already gives reproducible installs; pinning everything would add changes without a verifiable benefit.
+- **`gitleaks/gitleaks-action`:** needs the token with permissions on PRs and is another third-party dependency to pin.
+- **Automatic updates (Dependabot auto-merge):** contradicts the rule of reviewing each update.
+
+## Consequences
+
+- A high vulnerability published in a dependency makes CI fail until it is updated or its exception is documented.
+- Pinned actions do not receive fixes on their own: Dependabot proposes the new commit.
+- GitHub's secret scanning (and its push protection) is a repository option: the owner enables it in Settings → Code security.
