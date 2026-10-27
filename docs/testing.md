@@ -75,3 +75,4 @@ Las pruebas de integración y E2E necesitan `npm run db:up`. Usan la base `cedi_
 | SEC-13: los logs de petición no guardan la cadena de búsqueda, parámetros ni encabezados | `request-log.spec` |
 | I1: solo tokens HS256 con el emisor y la audiencia de la app | `security.http.spec` «I1» (otra audiencia, otro emisor, sin ellos, HS512 → 401) |
 | I3: CSP sin `unsafe-inline`; estilos y fuentes solo propios | `production.http.spec` «cabeceras de seguridad»; web compilada revisada en el navegador sin errores de CSP |
+| ADR 0016: `demo:setup` crea una cuenta por rol con contraseña generada que permite entrar, datos solo del tipo (spec §7), visitas coherentes y su auditoría; no duplica al repetirse, renueva contraseñas, no toca otras cuentas y se niega en producción | `demo-password.spec`; `demo-setup.int-spec`; prueba manual en el navegador con ambas cuentas |
