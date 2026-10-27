@@ -6,7 +6,7 @@ Notable changes to CEDI Control. Versions follow [Semantic Versioning](https://s
 
 First release: the complete gatehouse application, hardened after a security review and prepared so anyone can clone, install and evaluate it.
 
-### Portfolio readiness — 2026-10-26 to 2026-10-27
+### Release preparation — 2026-10-26 to 2026-10-27
 
 - **Added** `npm run demo:setup`: one demo account per role with generated passwords shown once, and fictitious people, visits and audit entries; refuses to run in production ([ADR 0016](docs/decisions/0016-demo-access.md)).
 - **Added** MIT license.
