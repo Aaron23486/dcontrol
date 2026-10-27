@@ -89,7 +89,7 @@ TypeScript monorepo (npm workspaces) with three packages:
 - **`apps/web`** — React SPA organized by feature (`scan`, `persons`, `history`, `dashboard`, `audit`) with Atomic Design (atoms, molecules, organisms, templates). Components contain no business rules; logic lives in hooks and functions tested separately.
 - **Production:** a single container where the API also serves the built web app (same origin), plus PostgreSQL.
 
-Decisions are documented as ADRs in [`docs/decisions/`](docs/decisions/README.md) and in [`docs/plan.md`](docs/plan.md).
+Decisions are documented as ADRs in [`docs/decisions/`](docs/decisions/README.md) and in [`docs/plan.md`](docs/plan.md); [`docs/README.md`](docs/README.md) explains how the requirements, design, decisions, tasks and tests fit together.
 
 ## Project structure
 
@@ -285,7 +285,6 @@ Details, known limitations and deployment recommendations: [`docs/security.md`](
 - **The per-email lockout can be triggered on purpose:** someone who knows a guard's email can lock it for 15 minutes. It is logged (`auth.account_locked`) and expires on its own (ADR 0013).
 - **The common-password list is short and local:** it does not query breached-password databases; the 12-character minimum does most of the work.
 - **Account changes made from the terminal are not in the app's audit log**, because no app user makes them (ADR 0008); they remain in the server's terminal history.
-- **Documentation language:** this README is in English; the detailed design documents under `docs/` are currently in Spanish.
 
 Possible future improvements:
 

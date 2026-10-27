@@ -1,28 +1,31 @@
-# 0009 — Campos por tipo de persona y empresa obligatoria
+# 0009 — Fields by person type and required company
 
-**Estado:** APROBADO (2026-10-23). Modifica D1, D8 y D9. Agrega R18 y R19.
+**Status:** APPROVED (2026-10-23). Modifies D1, D8 and D9. Adds R18 and R19.
 
-## Contexto
-El responsable del proyecto definió qué datos se piden para cada tipo de persona y pidió que la información de un tipo no se mezcle con la de otro (spec §7):
+## Context
 
-| Dato | Trabajador externo | Contratista | Mantenimiento / Técnico | Visitante |
-|---|:---:|:---:|:---:|:---:|
-| Nombre, cédula, empresa (persona) | Sí | Sí | Sí | Sí |
-| Motivo y área (visita) | — | Obligatorios | Obligatorios | Obligatorios |
-| Herramientas o equipos (visita) | — | — | Opcionales | — |
+The project owner defined which data is requested for each person type and asked that the information of one type does not mix with another's (spec §7):
 
-## Decisión
-1. **Empresa obligatoria para todos (D9):** `persons.company_id` y `visits.company_id` son `NOT NULL`. Se eliminan los `CHECK` que la exigían «salvo para visitantes». Un visitante particular se registra con una empresa genérica, por ejemplo «Particular».
-2. **Sin «tipo de visita» (D8):** se elimina la columna `visits.visit_kind`.
-3. **Campos por tipo en la visita (R18), garantizados en BD:**
-   - Contratista, técnico y visitante: `purpose` y `area` obligatorios y no vacíos.
-   - Trabajador externo: `purpose` y `area` deben ser `NULL`. No se guarda información que no corresponde al tipo.
-4. **Herramientas (R16, R19):** opcionales y solo para técnicos. Como es una regla entre `visits` y `visit_tools`, la valida el servicio de visitas (Fase 4) con su prueba. No se usa un trigger, para mantener la lógica en un solo lugar.
-5. **Esquemas compartidos:** `@cedi/shared` define el esquema de la persona (nombre, cédula, empresa, tipo) y una unión discriminada por tipo para los datos de la visita. La web arma el formulario a partir de esos esquemas y la API valida con los mismos.
-6. **Presentación separada por tipo:** las vistas de personas y visitas se dividen en secciones por tipo, cada una con sus propias columnas (spec §15).
-7. **Prellenado (D1):** el motivo y el área de una nueva visita se proponen a partir de la visita anterior de esa persona.
+| Data                                | External worker | Contractor | Maintenance / Technician | Visitor  |
+| ----------------------------------- | :-------------: | :--------: | :----------------------: | :------: |
+| Name, ID number, company (person)   | Yes             | Yes        | Yes                      | Yes      |
+| Purpose and area (visit)            | —               | Required   | Required                 | Required |
+| Tools or equipment (visit)          | —               | —          | Optional                 | —        |
 
-## Consecuencias
-- Migración `campos_por_tipo`: `company_id NOT NULL`, se elimina `visit_kind` y se agrega el `CHECK` por tipo. No rellena datos: si una base ya tuviera personas sin empresa o visitas sin motivo y área, la migración falla y hay que corregir esos datos a mano. Hoy no hay datos reales.
-- Prisma no ejecuta cada migración dentro de una transacción, así que una migración que falla puede quedar a medias. Las migraciones nuevas que modifiquen datos o restricciones se envuelven en `BEGIN; … COMMIT;`, y las pruebas de integración dejan `cedi_test` vacía al terminar.
-- Si la persona cambia de tipo, sus visitas anteriores siguen siendo válidas porque cada visita guarda su propio `person_type` (R17).
+## Decision
+
+1. **Company required for everyone (D9):** `persons.company_id` and `visits.company_id` are `NOT NULL`. The `CHECK` constraints that required it "except for visitors" are removed. A private visitor is registered with a generic company, for example "Particular".
+2. **No "visit type" (D8):** the `visits.visit_kind` column is removed.
+3. **Fields by type on the visit (R18), enforced in the database:**
+   - Contractor, technician and visitor: `purpose` and `area` required and non-empty.
+   - External worker: `purpose` and `area` must be `NULL`. Information that does not correspond to the type is not stored.
+4. **Tools (R16, R19):** optional and only for technicians. As it is a rule across `visits` and `visit_tools`, the visits service validates it (Phase 4) with its test. No trigger is used, to keep the logic in one place.
+5. **Shared schemas:** `@cedi/shared` defines the person schema (name, ID number, company, type) and a discriminated union by type for the visit data. The web app builds the form from those schemas and the API validates with the same ones.
+6. **Presentation split by type:** the people and visit views are divided into sections by type, each with its own columns (spec §15).
+7. **Prefill (D1):** the purpose and area of a new visit are proposed from that person's previous visit.
+
+## Consequences
+
+- Migration `campos_por_tipo`: `company_id NOT NULL`, `visit_kind` removed and the per-type `CHECK` added. It does not backfill data: if a database already had people without a company or visits without purpose and area, the migration fails and that data must be fixed by hand. Today there is no real data.
+- Prisma does not run each migration inside a transaction, so a failing migration can be left half-applied. New migrations that modify data or constraints are wrapped in `BEGIN; … COMMIT;`, and the integration tests leave `cedi_test` empty when they finish.
+- If the person changes type, their previous visits remain valid because each visit stores its own `person_type` (R17).

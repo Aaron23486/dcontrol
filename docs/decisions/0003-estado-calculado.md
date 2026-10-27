@@ -1,14 +1,17 @@
-# 0003 — Estado de la visita calculado
+# 0003 — Computed visit status
 
-**Estado:** APROBADO (2026-10-23)
+**Status:** APPROVED (2026-10-23)
 
-## Contexto
-El spec define dos estados: DENTRO y SALIDA REGISTRADA. Guardarlos en una columna aparte duplicaría la información de `exit_at` y podría contradecirla.
+## Context
 
-## Decisión
-- No hay columna de estado. `DENTRO` equivale a `exit_at IS NULL`; la API lo expone como campo calculado.
-- Solo se guardan `entry_at` y `exit_at` en UTC. La fecha del día se obtiene con la zona horaria del CEDI (variable de entorno, D6).
-- Las visitas olvidadas no generan un estado nuevo: se resaltan y se cierran manualmente, con auditoría (D3).
+The spec defines two statuses: INSIDE and EXIT RECORDED. Storing them in a separate column would duplicate the information in `exit_at` and could contradict it.
 
-## Consecuencias
-- Los filtros por día convierten a la zona del CEDI en la consulta; necesita pruebas con horas cercanas a medianoche.
+## Decision
+
+- There is no status column. `INSIDE` means `exit_at IS NULL`; the API exposes it as a computed field.
+- Only `entry_at` and `exit_at` are stored, in UTC. The calendar date is obtained with the CEDI's time zone (environment variable, D6).
+- Forgotten visits do not create a new status: they are highlighted and closed manually, with auditing (D3).
+
+## Consequences
+
+- Day filters convert to the CEDI's time zone in the query; this needs tests with times close to midnight.

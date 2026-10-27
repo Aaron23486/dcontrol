@@ -1,35 +1,40 @@
-# Constitution — reglas no negociables
+# Constitution — non-negotiable rules
 
-## Principios de diseño
-- **SOLID:** una responsabilidad por módulo; dependencias hacia interfaces; inyección de dependencias; sin clases «dios».
-- **DRY:** lógica duplicada más de 2 veces se extrae. Una sola fuente de verdad para tipos, enums, validaciones y constantes (paquete `shared`).
-- **Separation of Concerns:** UI / API / lógica de negocio / acceso a datos / autenticación separados.
-- **Atomic Design (solo UI):** átomos → moléculas → organismos → templates → páginas. Los componentes no contienen reglas de negocio.
-- **Clean Code:** funciones y componentes pequeños, nombres claros, tipado estricto, sin hardcoding, sin TODOs sin resolver, comentarios solo donde aporten valor.
-- **Sin sobreingeniería:** no aplicar patrones complejos ni funcionalidades que no respondan a una necesidad real del proceso.
+## Design principles
 
-## Seguridad
-- Contraseñas con hash seguro (argon2). Nunca en texto plano.
-- Validación del lado servidor siempre, con esquemas compartidos.
-- Autorización por rol en cada endpoint (guards). Usuario desactivado pierde acceso en la siguiente petición.
-- Consultas parametrizadas (sin concatenar SQL). CORS restringido. Rate limit en login.
-- Errores al usuario con formato `{ code, message }`, comprensibles y sin detalles internos ni stack traces.
-- Variables de entorno; `.env.example` sin valores reales. Nunca subir secretos.
-- Logs y auditoría sin datos sensibles innecesarios.
+- **SOLID:** one responsibility per module; dependencies on interfaces; dependency injection; no "god" classes.
+- **DRY:** logic duplicated more than twice is extracted. A single source of truth for types, enums, validations and constants (the `shared` package).
+- **Separation of Concerns:** UI / API / business logic / data access / authentication kept separate.
+- **Atomic Design (UI only):** atoms → molecules → organisms → templates → pages. Components contain no business rules.
+- **Clean Code:** small functions and components, clear names, strict typing, no hardcoding, no unresolved TODOs, comments only where they add value.
+- **No over-engineering:** no complex patterns or features that do not respond to a real need of the process.
 
-## Integridad de datos
-- Las reglas críticas se garantizan en la base de datos (índices únicos parciales, `CHECK`), no solo en el código.
-- Las migraciones son versionadas y reproducibles.
+## Security
+
+- Passwords with a secure hash (argon2). Never in plain text.
+- Always validate on the server, with shared schemas.
+- Role-based authorization on every endpoint (guards). A deactivated user loses access on the next request.
+- Parameterized queries (no concatenated SQL). Restricted CORS. Login rate limit.
+- Errors shown to the user in the `{ code, message }` format, understandable and without internal details or stack traces.
+- Environment variables; `.env.example` without real values. Never commit secrets.
+- Logs and the audit log without unnecessary sensitive data.
+
+## Data integrity
+
+- Critical rules are enforced in the database (partial unique indexes, `CHECK`), not only in the code.
+- Migrations are versioned and reproducible.
 
 ## Testing
-- Toda regla de negocio crítica tiene test antes de darse por terminada.
-- Pruebas de integración contra PostgreSQL real para integridad (visita abierta única).
-- E2E del flujo de escaneo.
-- Una tarea no está terminada si lint, tipos o tests fallan.
 
-## Proceso
-- Trabajo por fases, una tarea a la vez, con validación antes de avanzar.
-- Decisión nueva → se escribe en `spec.md`, `plan.md` o `docs/decisions/` antes de implementarla.
-- Si el código contradice la spec, se corrige uno de los dos; nunca se deja la discrepancia.
-- No realizar cambios fuera del alcance autorizado de la tarea.
-- Si existe un error de diseño o una solución superior, se indica claramente antes de ejecutar.
+- Every critical business rule has a test before it is considered done.
+- Integration tests against real PostgreSQL for integrity (single open visit).
+- E2E tests of the scan flow.
+- A task is not done if lint, types or tests fail.
+
+## Process
+
+- Work in phases, one task at a time, with validation before moving on.
+- New decision → written in `spec.md`, `plan.md` or `docs/decisions/` before it is implemented.
+- If the code contradicts the spec, one of the two is fixed; the discrepancy is never left in place.
+- No changes outside the authorized scope of the task.
+- If there is a design flaw or a better solution, say so clearly before carrying it out.

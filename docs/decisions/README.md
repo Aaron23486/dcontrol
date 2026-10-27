@@ -1,23 +1,23 @@
-# Decisiones (ADR)
+# Decisions (ADR)
 
-Un archivo por decisión importante. Formato: Contexto → Decisión → Consecuencias.
-Una decisión nueva o un cambio a una existente se registra aquí **antes** de implementarse.
+One file per important decision. Format: Context → Decision → Consequences.
+A new decision, or a change to an existing one, is recorded here **before** it is implemented. File names keep their original Spanish slugs so that existing links stay valid.
 
-| ADR | Decisión | Origen | Estado |
-|---|---|---|---|
-| [0001](0001-stack.md) | Stack TypeScript: NestJS + Prisma + PostgreSQL + React/Vite | plan §4 | APROBADO |
-| [0002](0002-visita-abierta-unica.md) | Visita abierta única garantizada en BD | R1, plan §3 | APROBADO |
-| [0003](0003-estado-calculado.md) | Estado de la visita calculado, no almacenado | D5, D6 | APROBADO |
-| [0004](0004-autenticacion.md) | Sesión por cookie httpOnly con JWT de turno y verificación en BD | plan §4, R14 | APROBADO |
-| [0005](0005-tiempo-real-polling.md) | Tiempo real por polling de 10 s | D11 | APROBADO |
-| [0006](0006-escaner.md) | Escáner detrás de `ScannerSource` y operación única `POST /scans` | D1, D2, plan §7 | APROBADO |
-| [0007](0007-gafete-y-catalogos.md) | Área, tipo y motivo como texto libre (la parte del gafete fue sustituida por 0008) | D7, D8 | APROBADO (enmendada) |
-| [0008](0008-cedula-sin-gafete.md) | Identificación por cédula, sin gafete; historial con empresa y tipo por visita; usuarios por terminal | spec §5, §7, §9 | APROBADO |
-| [0009](0009-campos-por-tipo.md) | Campos por tipo de persona; empresa obligatoria; sin «tipo de visita» | spec §7 | APROBADO |
-| [0010](0010-despliegue.md) | Un contenedor con API y web; migraciones al arrancar | spec §6, §30 | APROBADO |
-| [0011](0011-sistema-de-diseno.md) | Sistema de diseño: tokens, Inter, íconos propios y «Ingreso y salida» a pantalla completa | rediseño UI | APROBADO |
-| [0012](0012-rol-de-base-de-datos.md) | La API opera con un rol de BD sin privilegios; migraciones aparte con el dueño de las tablas | SEC-02 | APROBADO |
-| [0013](0013-eventos-de-seguridad.md) | Eventos de seguridad en el log con alerta y bloqueo temporal por cuenta | SEC-04, SEC-05 | APROBADO |
-| [0014](0014-endurecimiento-etapa-3.md) | Límite de peticiones por usuario, contraseñas adivinables, token y CSP estrictos, logs sin búsquedas; sin expiración por inactividad | SEC-07..10, SEC-13, I1, I3 | APROBADO |
-| [0015](0015-cadena-de-suministro.md) | CI con auditoría de dependencias, gitleaks sobre todo el historial, acciones fijadas por commit y Dependabot que solo propone | SEC-11 | APROBADO |
-| [0016](0016-acceso-de-demostracion.md) | Acceso de demostración: `demo:setup` con una cuenta por rol, contraseñas generadas mostradas una vez y datos ficticios; se niega en producción | PSES 2.0 | APROBADO |
+| ADR                                        | Decision                                                                                                                              | Origin                     | Status             |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | ------------------ |
+| [0001](0001-stack.md)                      | TypeScript stack: NestJS + Prisma + PostgreSQL + React/Vite                                                                           | plan §4                    | APPROVED           |
+| [0002](0002-visita-abierta-unica.md)       | Single open visit enforced in the database                                                                                            | R1, plan §3                | APPROVED           |
+| [0003](0003-estado-calculado.md)           | Visit status computed, not stored                                                                                                     | D5, D6                     | APPROVED           |
+| [0004](0004-autenticacion.md)              | Session in an `httpOnly` cookie with a shift-long JWT and database verification                                                       | plan §4, R14               | APPROVED           |
+| [0005](0005-tiempo-real-polling.md)        | Real time through 10-second polling                                                                                                   | D11                        | APPROVED           |
+| [0006](0006-escaner.md)                    | Scanner behind `ScannerSource` and a single `POST /scans` operation                                                                   | D1, D2, plan §7            | APPROVED           |
+| [0007](0007-gafete-y-catalogos.md)         | Area, type and purpose as free text (the badge part was superseded by 0008)                                                           | D7, D8                     | APPROVED (amended) |
+| [0008](0008-cedula-sin-gafete.md)          | Identification by ID number, no badge; history with company and type per visit; users from the terminal                              | spec §5, §7, §9            | APPROVED           |
+| [0009](0009-campos-por-tipo.md)            | Fields by person type; company required; no "visit type"                                                                              | spec §7                    | APPROVED           |
+| [0010](0010-despliegue.md)                 | One container with API and web; migrations on startup                                                                                 | spec §6, §30               | APPROVED           |
+| [0011](0011-sistema-de-diseno.md)          | Design system: tokens, Inter, custom icons and a full-screen "Ingreso y salida"                                                       | UI redesign                | APPROVED           |
+| [0012](0012-rol-de-base-de-datos.md)       | The API runs with an unprivileged database role; migrations run separately as the table owner                                        | SEC-02                     | APPROVED           |
+| [0013](0013-eventos-de-seguridad.md)       | Security events in the log with an alert and a temporary per-account lockout                                                          | SEC-04, SEC-05             | APPROVED           |
+| [0014](0014-endurecimiento-etapa-3.md)     | Per-user request limit, guessable passwords, strict token and CSP, logs without searches; no inactivity timeout                       | SEC-07..10, SEC-13, I1, I3 | APPROVED           |
+| [0015](0015-cadena-de-suministro.md)       | CI with dependency audit, gitleaks over the whole history, actions pinned by commit and Dependabot that only proposes                 | SEC-11                     | APPROVED           |
+| [0016](0016-acceso-de-demostracion.md)     | Demo access: `demo:setup` with one account per role, generated passwords shown once and fictitious data; refuses to run in production | PSES 2.0                   | APPROVED           |

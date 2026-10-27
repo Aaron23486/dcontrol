@@ -1,27 +1,31 @@
-# 0016 — Acceso de demostración: `npm run demo:setup`
+# 0016 — Demo access: `npm run demo:setup`
 
-**Estado:** APROBADO (2026-10-26, plan PSES 2.0 de portafolio).
+**Status:** APPROVED (2026-10-26, PSES 2.0 portfolio plan).
 
-## Contexto
-Para probar la app, un evaluador tenía que crear el administrador con `create-admin`, inventar personas y registrar entradas una por una; las pantallas Dentro, Historial y Auditoría salían vacías. El estándar del portafolio exige un acceso de demostración reproducible que no dependa del autor.
+## Context
 
-Dos reglas existentes lo impedían: el seed no crea usuarios (D14) y las contraseñas nunca se imprimen (`npm run users`).
+To try the app, an evaluator had to create the administrator with `create-admin`, invent people and record entries one by one; the Inside, History and Audit screens started empty. The portfolio standard requires reproducible demo access that does not depend on the author.
 
-## Decisión
-- Comando local **`npm run demo:setup`**, después de `db:deploy`:
-  - **Una cuenta por rol** en el dominio reservado `@demo.cedi.test`: `seguridad@demo.cedi.test` (SECURITY) y `admin@demo.cedi.test` (ADMIN).
-  - **Contraseñas generadas** con `crypto.randomInt` (16 caracteres al azar, sin caracteres ambiguos), que cumplen la regla de contraseñas nuevas. Se **muestran una sola vez** en la terminal y no se guardan en ningún archivo. Repetir el comando genera contraseñas nuevas para esas dos cuentas (y las reactiva si estaban desactivadas).
-  - **Datos ficticios**: 10 personas de los cuatro tipos con solo los datos de su tipo (spec §7), visitas abiertas y cerradas de hoy, días anteriores, una visita olvidada desde ayer (D3), otra cerrada a mano por el administrador, un técnico dentro con herramientas, y la auditoría de todo ello. Las horas se calculan desde el momento de ejecución en `CEDI_TIMEZONE`.
-- **Protecciones**: se niega con `NODE_ENV=production`; solo inserta (respeta los permisos de ADR 0012); los datos se crean una sola vez (si ya existe alguna persona `DEMO…`, no se duplican); no toca cuentas fuera de `@demo.cedi.test`.
-- La excepción a «las contraseñas nunca se imprimen» aplica **solo** a `demo:setup` y a esas dos cuentas. `create-admin`, `npm run users` y el seed no cambian.
-- Las empresas ficticias se comparten con el seed (`scripts/lib/demo-companies.ts`).
+Two existing rules prevented it: the seed creates no users (D14) and passwords are never printed (`npm run users`).
 
-## Alternativas descartadas
-- **Contraseñas fijas documentadas en el README:** cualquiera que lea el repositorio podría entrar en una instalación que las conserve.
-- **Pedir las contraseñas como `create-admin`:** añade fricción al evaluador sin beneficio en una base local de demostración.
-- **Insertar los datos desde la API (HTTP):** exigiría la app en marcha y no permite fechar visitas en días anteriores.
+## Decision
 
-## Consecuencias
-- Un evaluador ejecuta `db:up`, `db:deploy` y `demo:setup`, y entra con cualquiera de los dos roles con datos realistas.
-- Las visitas de demostración envejecen: si se repite el comando otro día, no se recrean (no se duplican ni se borran).
-- Una instalación de producción nunca tiene cuentas de demostración: el comando se niega a ejecutarse allí.
+- Local command **`npm run demo:setup`**, after `db:deploy`:
+  - **One account per role** in the reserved `@demo.cedi.test` domain: `seguridad@demo.cedi.test` (SECURITY) and `admin@demo.cedi.test` (ADMIN).
+  - **Generated passwords** with `crypto.randomInt` (16 random characters, no ambiguous ones) that meet the new-password rule. They are **printed only once** in the terminal and never stored in a file. Running the command again generates new passwords for those two accounts (and reactivates them if they were deactivated).
+  - **Fictitious data:** 10 people of the four types with only the data of their type (spec §7), open and closed visits today, previous days, a forgotten visit from yesterday (D3), another closed manually by the administrator, a technician inside with tools, and the audit trail of all of it. Times are computed from the moment it runs, in `CEDI_TIMEZONE`.
+- **Safeguards:** refuses `NODE_ENV=production`; only inserts (respects the ADR 0012 permissions); the data is created only once (if any `DEMO…` person already exists, nothing is duplicated); accounts outside `@demo.cedi.test` are never touched.
+- The exception to "passwords are never printed" applies **only** to `demo:setup` and those two accounts. `create-admin`, `npm run users` and the seed do not change.
+- The fictitious companies are shared with the seed (`scripts/lib/demo-companies.ts`).
+
+## Rejected alternatives
+
+- **Fixed passwords documented in the README:** anyone reading the repository could sign in to an installation that keeps them.
+- **Asking for the passwords like `create-admin`:** adds friction for the evaluator with no benefit on a local demo database.
+- **Inserting the data through the API (HTTP):** it would require the app to be running and does not allow dating visits on previous days.
+
+## Consequences
+
+- An evaluator runs `db:up`, `db:deploy` and `demo:setup`, and signs in with either role with realistic data.
+- Demo visits age: if the command is run again on another day, they are not recreated (neither duplicated nor deleted).
+- A production installation never has demo accounts: the command refuses to run there.

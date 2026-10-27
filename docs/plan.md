@@ -1,45 +1,45 @@
-# Plan técnico
+# Technical plan
 
-> **Estado: APROBADO (2026-10-23).** D1-D14, R11-R16 y el stack fueron aprobados por el responsable del proyecto.
-> Cualquier cambio posterior se registra como ADR en `docs/decisions/` antes de implementarse.
-> **Cambios aprobados el 2026-10-23:** ADR 0008 (la cédula identifica a la persona; usuarios por terminal) y ADR 0009 (campos por tipo de persona; empresa obligatoria). Afectan D1, D7, D8, D9, D10, D13, D14, R13, R15 y R16-R19.
+> **Status: APPROVED (2026-10-23).** D1-D14, R11-R16 and the stack were approved by the project owner.
+> Any later change is recorded as an ADR in `docs/decisions/` before it is implemented.
+> **Changes approved on 2026-10-23:** ADR 0008 (the ID number identifies the person; users managed from the terminal) and ADR 0009 (fields by person type; company required). They affect D1, D7, D8, D9, D10, D13, D14, R13, R15 and R16-R19.
 
-## 1. Decisiones sobre ambigüedades del spec
+## 1. Decisions on ambiguities in the spec
 
-| # | Tema | Decisión propuesta | Estado |
-|---|---|---|---|
-| D1 | Entrada rápida vs datos por visita | Al ingresar la cédula se muestra la ficha. Trabajador externo: un Enter confirma. Contratista, técnico y visitante: mini-formulario de motivo y área (y herramientas para el técnico), prellenado con los de su última visita, de modo que normalmente basta un Enter. | APROBADO (enmendada) |
-| D2 | Doble escaneo accidental | Si pasan menos de 60 s desde la operación anterior de esa persona, se pide confirmación explícita antes de registrar la operación contraria. | APROBADO |
-| D3 | Visitas olvidadas (sin salida) | Sin estado nuevo. Se resalta toda visita abierta de un día anterior. Seguridad o Admin puede cerrarla manualmente indicando hora de salida (auditado). Si la persona vuelve a escanear, se avisa de la visita pendiente y se ofrece cerrarla antes de abrir otra. | APROBADO |
-| D4 | «Administrar roles» | Roles como enum (`SECURITY`, `ADMIN`). Significa asignar rol a un usuario. Sin tabla `roles`. | APROBADO |
-| D5 | Estado de la visita | No se almacena. `DENTRO` equivale a `exit_at IS NULL`; la API lo expone como campo calculado. | APROBADO |
-| D6 | «Fecha» de la visita | Solo `entry_at` y `exit_at` en UTC. La fecha se deriva con la zona horaria del CEDI (variable de entorno). | APROBADO |
-| D7 | Identificador de búsqueda | La persona se busca por su cédula (`identification`); no existe otro código (ADR 0008). | APROBADO (enmendada) |
-| D8 | Motivo y área | Texto libre con límite de longitud en v1. Sin catálogos. No existe «tipo de visita» (ADR 0009). | APROBADO (enmendada) |
-| D9 | Empresa | Obligatoria para los cuatro tipos (`company_id NOT NULL` en `persons` y `visits`). Empresas creadas en línea con autocompletado y nombre normalizado único (ADR 0009). | APROBADO (enmendada) |
-| D10 | Identificación (cédula) | Única y fija. Se teclea con números, letras y guiones; se guarda normalizada: mayúsculas, sin espacios, puntos ni guiones (así `1-234-567` y `1234567` son la misma persona). Entre 4 y 20 caracteres alfanuméricos tras normalizar. Sin lógica específica de país. | APROBADO (enmendada) |
-| D11 | Tiempo real | Polling cada 10 s más invalidación de caché tras cada operación local. SSE como mejora futura. | APROBADO |
-| D12 | Auditoría | Solo Admin la consulta. Se guarda usuario, acción, entidad, id, fecha y nombres de campos modificados (sin valores). | APROBADO |
-| D13 | Edición de personas | Seguridad y Admin editan los datos que cambian (tipo, empresa). Cédula y nombre solo los corrige Admin. Todo cambio queda auditado y el cambio de tipo pide confirmación. No se borran personas con visitas. | APROBADO (enmendada) |
-| D14 | Gestión de usuarios | Sin pantalla. Las cuentas se gestionan por terminal: `npm run users -- create` (rol SECURITY o ADMIN), `list`, `activate`, `deactivate` y `reset-password`. `npm run create-admin` sigue disponible como atajo. El seed no contiene datos sensibles. | APROBADO (enmendada) |
-| D15 | Búsqueda de personas por nombre | Columna `persons.name_normalized` (sin tildes ni puntuación, en mayúsculas), calculada por la API con `normalizeSearchText` de `@cedi/shared` e indexada con trigram. Así «perez» encuentra a «Pérez». La cédula se busca por prefijo y la empresa por su `name_normalized`. | APROBADO (Fase 3) |
+| #   | Topic                                | Proposed decision                                                                                                                                                                                                                                                                                         | Status             |
+| --- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| D1  | Fast entry vs per-visit data         | Entering the ID number shows the person's record. External worker: one Enter confirms. Contractor, technician and visitor: a mini-form with purpose and area (and tools for the technician), prefilled from their last visit, so that one Enter is usually enough.                                          | APPROVED (amended) |
+| D2  | Accidental double scan               | If less than 60 s have passed since that person's previous operation, explicit confirmation is requested before recording the opposite operation.                                                                                                                                                       | APPROVED           |
+| D3  | Forgotten visits (no exit)           | No new status. Every open visit from a previous day is highlighted. Security or Admin can close it manually by entering the exit time (audited). If the person scans again, they are warned about the pending visit and offered to close it before opening another one.                                  | APPROVED           |
+| D4  | "Administer roles"                   | Roles as an enum (`SECURITY`, `ADMIN`). It means assigning a role to a user. No `roles` table.                                                                                                                                                                                                           | APPROVED           |
+| D5  | Visit status                         | Not stored. `INSIDE` means `exit_at IS NULL`; the API exposes it as a computed field.                                                                                                                                                                                                                    | APPROVED           |
+| D6  | Visit "date"                         | Only `entry_at` and `exit_at`, in UTC. The date is derived with the CEDI's time zone (environment variable).                                                                                                                                                                                              | APPROVED           |
+| D7  | Search identifier                    | The person is looked up by their ID number (`identification`); there is no other code (ADR 0008).                                                                                                                                                                                                        | APPROVED (amended) |
+| D8  | Purpose and area                     | Free text with a length limit in v1. No catalogs. There is no "visit type" (ADR 0009).                                                                                                                                                                                                                    | APPROVED (amended) |
+| D9  | Company                              | Required for all four types (`company_id NOT NULL` in `persons` and `visits`). Companies are created inline with autocomplete and a unique normalized name (ADR 0009).                                                                                                                                     | APPROVED (amended) |
+| D10 | Identification (ID number)           | Unique and fixed. Typed with digits, letters and hyphens; stored normalized: uppercase, without spaces, dots or hyphens (so `1-234-567` and `1234567` are the same person). Between 4 and 20 alphanumeric characters after normalization. No country-specific logic.                                        | APPROVED (amended) |
+| D11 | Real time                            | Polling every 10 s plus cache invalidation after each local operation. SSE as a future improvement.                                                                                                                                                                                                       | APPROVED           |
+| D12 | Audit log                            | Only Admin can view it. It stores user, action, entity, id, date and the names of the modified fields (no values).                                                                                                                                                                                       | APPROVED           |
+| D13 | Editing people                       | Security and Admin edit the data that changes (type, company). Only Admin corrects the ID number and name. Every change is audited and a type change asks for confirmation. People with visits are not deleted.                                                                                            | APPROVED (amended) |
+| D14 | User management                      | No screen. Accounts are managed from the terminal: `npm run users -- create` (SECURITY or ADMIN role), `list`, `activate`, `deactivate` and `reset-password`. `npm run create-admin` remains available as a shortcut. The seed contains no sensitive data.                                                  | APPROVED (amended) |
+| D15 | Searching people by name             | Column `persons.name_normalized` (no accents or punctuation, uppercase), computed by the API with `normalizeSearchText` from `@cedi/shared` and indexed with trigrams. This way "perez" finds "Pérez". The ID number is searched by prefix and the company by its `name_normalized`.                        | APPROVED (Phase 3) |
 
-## 2. Reglas de negocio adicionales (se suman a R1-R10 del spec)
+## 2. Additional business rules (added to R1-R10 of the spec)
 
-| # | Regla | Estado |
-|---|---|---|
-| R11 | `exit_at >= entry_at` | APROBADO |
-| R12 | `exit_by` existe si y solo si `exit_at` existe | APROBADO |
-| R13 | La identificación (cédula) es única | APROBADO (enmendada) |
-| R14 | Un usuario desactivado pierde acceso en la siguiente petición | APROBADO |
-| R15 | ~~Un admin no puede desactivarse a sí mismo~~ No aplica: no hay gestión de usuarios en la web. El comando `users` impide desactivar al último ADMIN activo. | APROBADO (enmendada) |
-| R16 | Solo técnicos de mantenimiento pueden tener herramientas asociadas a la visita | APROBADO |
-| R17 | Cada visita guarda la empresa y el tipo de persona vigentes al momento de la entrada; cambiar los datos de la persona no altera el historial | APROBADO |
-| R18 | Contratista, técnico y visitante: motivo y área obligatorios en cada visita. Trabajador externo: la visita no lleva motivo ni área (garantizado en BD) | APROBADO |
-| R19 | Las herramientas son opcionales para el técnico y no se admiten para los demás tipos (refuerza R16) | APROBADO |
-| R20 | Cambiar la contraseña o desactivar una cuenta invalida sus sesiones abiertas (`users.sessions_valid_from`, Fase 11) | APROBADO |
+| #   | Rule                                                                                                                                                                       | Status             |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| R11 | `exit_at >= entry_at`                                                                                                                                                      | APPROVED           |
+| R12 | `exit_by` exists if and only if `exit_at` exists                                                                                                                           | APPROVED           |
+| R13 | The identification (ID number) is unique                                                                                                                                   | APPROVED (amended) |
+| R14 | A deactivated user loses access on the next request                                                                                                                        | APPROVED           |
+| R15 | ~~An admin cannot deactivate themselves~~ Not applicable: there is no user management on the web. The `users` command prevents deactivating the last active ADMIN.          | APPROVED (amended) |
+| R16 | Only maintenance technicians can have tools associated with the visit                                                                                                      | APPROVED           |
+| R17 | Each visit stores the company and person type in effect at the time of entry; changing the person's data does not alter the history                                        | APPROVED           |
+| R18 | Contractor, technician and visitor: purpose and area required on every visit. External worker: the visit has no purpose or area (enforced in the database)                 | APPROVED           |
+| R19 | Tools are optional for the technician and not allowed for the other types (reinforces R16)                                                                                 | APPROVED           |
+| R20 | Changing the password or deactivating an account invalidates its open sessions (`users.sessions_valid_from`, Phase 11)                                                     | APPROVED           |
 
-## 3. Modelo de datos (PostgreSQL)
+## 3. Data model (PostgreSQL)
 
 ```
 users        (id, name, email UQ, password_hash, role, is_active, sessions_valid_from, created_at, updated_at)
@@ -51,48 +51,49 @@ visit_tools  (id, visit_id FK, name, description null, quantity null)
 audit_logs   (id, user_id FK, action, entity, entity_id, changed_fields null, created_at)
 ```
 
-Relaciones: empresa 1—N personas; empresa 1—N visitas (copia de la empresa vigente al entrar, R17); persona 1—N visitas; visita 1—N herramientas. Usuarios solo como autores (visitas y auditoría). Sin relaciones circulares.
+Relationships: company 1—N persons; company 1—N visits (a copy of the company in effect at entry, R17); person 1—N visits; visit 1—N tools. Users only as authors (visits and audit log). No circular relationships.
 
-Integridad en BD:
-- Índice único parcial `visits(person_id) WHERE exit_at IS NULL` (R1, incluso con varias casetas concurrentes).
+Integrity in the database:
+
+- Partial unique index `visits(person_id) WHERE exit_at IS NULL` (R1, even with several concurrent gatehouses).
 - `CHECK (exit_at IS NULL OR exit_at >= entry_at)`.
 - `CHECK ((exit_at IS NULL) = (exit_by IS NULL))`.
-- `company_id NOT NULL` en `persons` y `visits` (D9).
-- `CHECK` de campos por tipo en `visits` (R18): motivo y área presentes y no vacíos salvo para trabajador externo, y ausentes para trabajador externo.
-- `CHECK` de formato de cédula normalizada (D10).
-- R16/R19 (herramientas solo para técnico) se valida en el servicio de visitas: es una regla entre tablas.
+- `company_id NOT NULL` in `persons` and `visits` (D9).
+- Per-type field `CHECK` on `visits` (R18): purpose and area present and non-empty except for the external worker, and absent for the external worker.
+- `CHECK` on the normalized ID number format (D10).
+- R16/R19 (tools only for technicians) is validated in the visits service: it is a cross-table rule.
 
-Índices de búsqueda: `persons(identification)`, `persons(company_id)`, `persons(type)`, trigram (`pg_trgm`) en `full_name` y `companies.name_normalized`, `visits(person_id, entry_at DESC)`, `visits(entry_at)`, `visits(company_id)`, parcial sobre visitas abiertas, `audit_logs(entity, entity_id)`, `(created_at)`, `(user_id)`.
+Search indexes: `persons(identification)`, `persons(company_id)`, `persons(type)`, trigram (`pg_trgm`) on `full_name` and `companies.name_normalized`, `visits(person_id, entry_at DESC)`, `visits(entry_at)`, `visits(company_id)`, partial on open visits, `audit_logs(entity, entity_id)`, `(created_at)`, `(user_id)`.
 
-## 4. Stack (todo TypeScript)
+## 4. Stack (all TypeScript)
 
-| Capa | Tecnología | Razón |
-|---|---|---|
-| Runtime | Node.js ≥ 22.12 (22 o 24 LTS), TypeScript 5.9 en modo `strict` | LTS; un solo lenguaje en API, web y `shared`. Desde 22.12 se puede usar la versión de Node más común. |
-| Monorepo | npm workspaces: `apps/api`, `apps/web`, `packages/shared` | Un clone, un install. `shared` guarda enums y esquemas Zod (fuente única de validación). |
-| Backend | NestJS | Modular, DI nativa, guards por rol. |
-| ORM | Prisma | Migraciones versionadas y tipado. Índices parciales y `CHECK` en SQL dentro de migraciones. |
-| BD | PostgreSQL 17 | Índices parciales, `CHECK`, trigram. Docker local o base gestionada. |
-| Frontend | React + Vite + React Router | Madurez; app interna sin SEO, no requiere SSR. |
-| Datos en UI | TanStack Query | Caché, polling e invalidación tras escaneo. |
-| Formularios | React Hook Form + resolver de Zod | Reutiliza los esquemas de `shared`; campos dinámicos por tipo de persona. |
-| UI | Tailwind + Radix/shadcn | Accesibilidad y teclado resueltos de base. |
-| Validación | Zod compartido; en la API un `ZodValidationPipe` propio | Unión discriminada por tipo de persona, usada en formulario y API. |
-| Auth | Cookie httpOnly + `SameSite=Strict` con JWT firmado que dura un turno (12 h, sin refresh token), `is_active` y rol leídos de BD en cada petición, argon2 | Desactivación inmediata sin la complejidad de refresh tokens. Sin OAuth. CORS restringido. Rate limit en login (`@nestjs/throttler`). |
-| Logs | `nestjs-pino` | Logs estructurados sin datos sensibles. |
-| Pruebas | Vitest en API, web y `shared` (un solo runner); integración con PostgreSQL real (Testcontainers o la BD de docker-compose); Playwright para e2e | Validar el índice parcial y el flujo de escaneo. |
-| DevOps | docker-compose (solo BD), GitHub Actions (lint, tipos, tests), `.env.example`, ESLint + Prettier | Setup reproducible para un reclutador. |
+| Layer         | Technology                                                                                                                                                       | Reason                                                                                                                     |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Runtime       | Node.js ≥ 22.12 (22 or 24 LTS), TypeScript 5.9 in `strict` mode                                                                                                  | LTS; a single language across API, web and `shared`. From 22.12 the most common Node version can be used.                  |
+| Monorepo      | npm workspaces: `apps/api`, `apps/web`, `packages/shared`                                                                                                        | One clone, one install. `shared` holds enums and Zod schemas (a single source of validation).                              |
+| Backend       | NestJS                                                                                                                                                           | Modular, native DI, role guards.                                                                                           |
+| ORM           | Prisma                                                                                                                                                           | Versioned, typed migrations. Partial indexes and `CHECK` constraints in SQL inside migrations.                             |
+| Database      | PostgreSQL 17                                                                                                                                                    | Partial indexes, `CHECK`, trigram. Local Docker or a managed database.                                                     |
+| Frontend      | React + Vite + React Router                                                                                                                                      | Mature; an internal app without SEO needs no SSR.                                                                          |
+| UI data       | TanStack Query                                                                                                                                                   | Caching, polling and invalidation after a scan.                                                                            |
+| Forms         | React Hook Form + Zod resolver                                                                                                                                   | Reuses the `shared` schemas; dynamic fields by person type.                                                                |
+| UI            | Tailwind + Radix/shadcn                                                                                                                                          | Accessibility and keyboard support out of the box.                                                                         |
+| Validation    | Shared Zod; in the API a custom `ZodValidationPipe`                                                                                                              | Discriminated union by person type, used in the form and the API.                                                          |
+| Auth          | `httpOnly` + `SameSite=Strict` cookie with a signed JWT lasting one shift (12 h, no refresh token), `is_active` and role read from the database on every request, argon2 | Immediate deactivation without the complexity of refresh tokens. No OAuth. Restricted CORS. Login rate limit (`@nestjs/throttler`). |
+| Logs          | `nestjs-pino`                                                                                                                                                    | Structured logs without sensitive data.                                                                                    |
+| Testing       | Vitest in API, web and `shared` (a single runner); integration with real PostgreSQL (Testcontainers or the docker-compose database); Playwright for e2e          | Validate the partial index and the scan flow.                                                                              |
+| DevOps        | docker-compose (database only), GitHub Actions (lint, types, tests), `.env.example`, ESLint + Prettier                                                          | Reproducible setup for a recruiter.                                                                                        |
 
-Versiones mayores fijadas en Fase 2: NestJS 11, Prisma 7 (con `@prisma/adapter-pg`), React 19, Vite 7, React Router 7, Zod 4, Vitest 4 (≥ 4.1.12 por avisos de seguridad en versiones anteriores), ESLint 9. Las versiones exactas quedan en `package-lock.json`. Actualizado el 2026-10-26 (Fase 18): Vite 8.
+Major versions pinned in Phase 2: NestJS 11, Prisma 7 (with `@prisma/adapter-pg`), React 19, Vite 7, React Router 7, Zod 4, Vitest 4 (≥ 4.1.12 because of security advisories in earlier versions), ESLint 9. Exact versions are in `package-lock.json`. Updated on 2026-10-26 (Phase 18): Vite 8.
 
-Estado del stack: APROBADO (ver `docs/decisions/0001-stack.md`).
+Stack status: APPROVED (see `docs/decisions/0001-stack.md`).
 
-## 5. Arquitectura
+## 5. Architecture
 
-- **Backend por módulo** (`auth`, `users`, `persons`, `companies`, `visits`, `dashboard`, `audit`): Controller (HTTP, DTO, guard) → Service (casos de uso y reglas) → Repository (datos). La lógica de entrada/salida vive en `visits`. La auditoría es transversal.
-- **Frontend por features** (`scan`, `persons`, `visits`, `inside`, `users`, `audit`) con Atomic Design. El escáner está detrás de una interfaz `ScannerSource` (lector tipo teclado y entrada manual hoy; cámara mañana).
+- **Backend by module** (`auth`, `users`, `persons`, `companies`, `visits`, `dashboard`, `audit`): Controller (HTTP, DTO, guard) → Service (use cases and rules) → Repository (data). The entry/exit logic lives in `visits`. Auditing is cross-cutting.
+- **Frontend by feature** (`scan`, `persons`, `visits`, `inside`, `users`, `audit`) with Atomic Design. The scanner sits behind a `ScannerSource` interface (keyboard-style scanner and manual input today; camera tomorrow).
 
-## 6. API (resumen)
+## 6. API (summary)
 
 ```
 POST /auth/login · POST /auth/logout · GET /auth/me
@@ -100,18 +101,18 @@ POST /scans {identification} → EXIT_REGISTERED | ENTRY_PENDING | PERSON_NOT_FO
 POST /visits · PATCH /visits/:id/close · GET /visits · GET /visits/:id · GET /visits/inside
 GET/POST/PATCH /persons · GET /persons/:id
 GET/POST /companies
-GET/POST/PATCH /users           (solo ADMIN)
+GET/POST/PATCH /users           (ADMIN only)
 GET /dashboard/summary
-GET /audit                      (solo ADMIN)
+GET /audit                      (ADMIN only)
 ```
 
-Errores: `{ code, message }`, mensajes comprensibles, sin detalles internos.
+Errors: `{ code, message }`, understandable messages, no internal details.
 
-## 7. Flujo de escaneo
+## 7. Scan flow
 
 ```
-Cédula tecleada (Enter) → POST /scans
- ├─ cédula no registrada → formulario de registro (tipo → campos dinámicos) → persona + 1ª entrada
- ├─ tiene visita abierta → salida automática (si fue hace <60 s, pide confirmación)
- └─ sin visita abierta → ficha + datos prellenados → Enter → ENTRADA registrada
+ID number typed (Enter) → POST /scans
+ ├─ ID number not registered → registration form (type → dynamic fields) → person + 1st entry
+ ├─ has an open visit → automatic exit (if it was < 60 s ago, asks for confirmation)
+ └─ no open visit → person record + prefilled data → Enter → ENTRY recorded
 ```
