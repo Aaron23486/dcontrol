@@ -24,8 +24,10 @@ export async function enterIdentification(page: Page, identification: string): P
 
 export const banner = (page: Page) => page.getByRole('status');
 
-/** AAAA-MM-DD de ayer en la zona del CEDI (la misma que usa el navegador de las pruebas). */
+/** AAAA-MM-DD de ayer en la zona de las pruebas (la que usan la API y el navegador). */
 export function yesterdayInCedi(): string {
   const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Mexico_City' }).format(yesterday);
+  return new Intl.DateTimeFormat('en-CA', { timeZone: process.env.CEDI_TIMEZONE }).format(
+    yesterday,
+  );
 }
