@@ -204,10 +204,19 @@ Cuarta unidad del plan PSES 2.0. Revisión de cada PR (compatibilidad, CI, riesg
 - Pendiente detectado: aviso de obsolescencia de `pg` («client.query() when the client is already executing a query»), que dejará de funcionar en pg 9
 - [x] Revisión del responsable: aprobada y unida a `main` (pull request #16)
 
-## Fase 19 — Acceso de demostración (`demo:setup`)  🔄 EN REVISIÓN
+## Fase 19 — Acceso de demostración (`demo:setup`)  ✅ APROBADA (2026-10-27)
 Quinta unidad del plan PSES 2.0. Decisión en ADR 0016.
 - [x] `npm run demo:setup`: una cuenta por rol en `@demo.cedi.test` con contraseña generada mostrada una vez (se renueva al repetir); 10 personas de los cuatro tipos y 14 visitas (dentro, historial, visita olvidada, cierre manual, técnico con herramientas) con su auditoría; se niega en producción; solo inserta y no duplica
 - [x] Empresas ficticias compartidas con `db:seed` (`scripts/lib/demo-companies.ts`)
 - [x] Pruebas: `demo-password.spec` (3) y `demo-setup.int-spec` (7), registradas en `docs/testing.md`
 - [x] Prueba manual: ejecutado sobre la base de desarrollo (sin tocar la cuenta existente) e inicio de sesión en el navegador con ambas cuentas (panel con gente dentro y visita olvidada; Auditoría con 37 registros)
+- [x] Revisión del responsable: aprobada y unida a `main` (pull request #22)
+
+## Fase 20 — Segunda ronda de Dependabot  🔄 EN REVISIÓN
+Sexta unidad del plan PSES 2.0. Decisiones en ADR 0015.
+- [x] Unidos a `main` con CI en verde: nestjs-pino 5 (#19; admite NestJS 11 y 12) y concurrently 10 (#21)
+- [x] Cerrados: TypeScript 7 (#17: `npm ci` falla, typescript-eslint aún no lo admite) y NestJS 12 por piezas (#18 `@nestjs/common`, #20 `@nestjs/core`: la API no arranca)
+- [x] `dependabot.yml`: se ignoran las versiones mayores de `@nestjs/*` y `typescript` (además de `@types/node`); se retira el grupo `nestjs`, que no evitó los PR por piezas
+- [x] Verificado en `main` tras unirlos: `npm ci`, lint, tipos, build, `npm audit` (0 vulnerabilidades), 202 unitarias, 126 de integración, E2E 19 (1 omitida) y `npm run dev` arranca
+- Pendiente detectado: Vite 8 avisa que `optimizeDeps.esbuildOptions` está obsoleto (lo fija un plugin; no afecta al build)
 - [ ] Revisión del responsable
