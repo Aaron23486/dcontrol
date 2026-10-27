@@ -68,7 +68,7 @@ ID number typed (Enter) → POST /scans
 
 ## Web app
 
-Organized by feature (`scan`, `dashboard`, `persons`, `history`, `audit`, `auth`, `companies`) with Atomic Design for shared components (atoms → molecules → organisms → templates → pages). Data comes from TanStack Query, which polls every 10 seconds and refreshes right after each local operation; forms use React Hook Form with the shared Zod schemas. Scanner input sits behind a `ScannerSource` interface — keyboard and keyboard-style scanners today, a camera later without redesigning the flow ([ADR 0006](decisions/0006-scanner-and-scan-operation.md)). Colors, radii and shadows come only from design tokens ([ADR 0011](decisions/0011-design-system.md)).
+Organized by feature (`scan`, `dashboard`, `persons`, `history`, `audit`, `auth`, `companies`) with Atomic Design for shared components (atoms → molecules → organisms → templates → pages). The sign-in and entry and exit screens ship in the initial bundle; every other screen is loaded on demand when its route is opened, and libraries are split into their own long-lived chunks (React, TanStack Query, forms). Data comes from TanStack Query, which polls every 10 seconds and refreshes right after each local operation; forms use React Hook Form with the shared Zod schemas. Scanner input sits behind a `ScannerSource` interface — keyboard and keyboard-style scanners today, a camera later without redesigning the flow ([ADR 0006](decisions/0006-scanner-and-scan-operation.md)). Colors, radii and shadows come only from design tokens ([ADR 0011](decisions/0011-design-system.md)).
 
 ## Data model
 
