@@ -2,6 +2,12 @@
 
 Notable changes to CEDI Control. Versions follow [Semantic Versioning](https://semver.org/); before 1.0.0 the work is grouped by stage.
 
+## [1.0.1] — 2026-10-27
+
+- **Fixed** local and CI production builds bundling the development builds of React and React Router: the web config read `NODE_ENV=development` from `.env` through Vite's `loadEnv`. The Docker image was not affected.
+- **Changed** the web app to load each screen on demand and to split libraries into their own chunks: the initial download drops from 819 kB to about 540 kB (240 kB to about 170 kB compressed), and no chunk exceeds 500 kB.
+- **Added** a security policy (`SECURITY.md`) for private vulnerability reports.
+
 ## [1.0.0] — 2026-10-27
 
 First release: the complete gatehouse application, hardened after a security review and prepared so anyone can clone, install and evaluate it.
