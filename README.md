@@ -261,7 +261,7 @@ npm run test:coverage       # unit + integration with minimum coverage threshold
 - Logs without cookies, passwords or search text; the audit log stores field names, not values.
 - Secrets only in environment variables; unprivileged container; no known vulnerabilities in dependencies at the time of writing.
 
-Details, known limitations and deployment recommendations: [`docs/security.md`](docs/security.md).
+Details, known limitations and deployment recommendations: [`docs/security.md`](docs/security.md). To report a vulnerability, see [`SECURITY.md`](SECURITY.md).
 
 ## Engineering decisions
 
