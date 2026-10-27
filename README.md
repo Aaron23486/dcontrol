@@ -89,7 +89,7 @@ TypeScript monorepo (npm workspaces) with three packages:
 - **`apps/web`** — React SPA organized by feature (`scan`, `persons`, `history`, `dashboard`, `audit`) with Atomic Design (atoms, molecules, organisms, templates). Components contain no business rules; logic lives in hooks and functions tested separately.
 - **Production:** a single container where the API also serves the built web app (same origin), plus PostgreSQL.
 
-Decisions are documented as ADRs in [`docs/decisions/`](docs/decisions/README.md) and in [`docs/plan.md`](docs/plan.md); [`docs/README.md`](docs/README.md) explains how the requirements, design, decisions, tasks and tests fit together.
+The requirements are in [`docs/requirements.md`](docs/requirements.md), the design in [`docs/architecture.md`](docs/architecture.md) and each significant decision in an ADR under [`docs/decisions/`](docs/decisions/README.md); [`docs/README.md`](docs/README.md) is the index, and [`CHANGELOG.md`](CHANGELOG.md) summarizes how the project evolved.
 
 ## Project structure
 
@@ -109,7 +109,7 @@ apps/
 packages/
   shared/            Shared enums, Zod schemas and domain helpers
 e2e/                 Playwright tests (gatehouse flow, roles, accessibility, responsive, screenshots)
-docs/                Specification, plan, ADRs, security, testing and screenshots
+docs/                Requirements, architecture, ADRs, security, testing and screenshots
 docker/              PostgreSQL init scripts
 .github/             CI workflow and Dependabot configuration
 Dockerfile, docker-compose.yml, docker-compose.prod.yml
@@ -191,7 +191,7 @@ npm run db:migrate   # creates a new migration after changing schema.prisma (dev
 npm run db:seed      # demo companies (creates no users; refuses to run in production)
 ```
 
-Some constraints (partial index, `CHECK`, the `pg_trgm` extension) are written in SQL inside the migrations because Prisma cannot express them; they must be kept. Full details in [`docs/plan.md`](docs/plan.md) §3 and [`apps/api/prisma/schema.prisma`](apps/api/prisma/schema.prisma).
+Some constraints (partial index, `CHECK`, the `pg_trgm` extension) are written in SQL inside the migrations because Prisma cannot express them; they must be kept. Full details in [`docs/architecture.md`](docs/architecture.md#data-model) and [`apps/api/prisma/schema.prisma`](apps/api/prisma/schema.prisma).
 
 ## Authentication and demo access
 
@@ -203,9 +203,9 @@ There are two roles, **Security** and **Administrator**, with no public sign-up 
 npm run demo:setup
 ```
 
-It creates `seguridad@demo.cedi.test` (Security) and `admin@demo.cedi.test` (Administrator) with generated passwords that are **printed only once**, plus 10 fictitious people of the four types and 14 visits (people inside, history, a forgotten visit, a technician with tools) with their audit trail. Running it again issues new passwords and never duplicates the data. It refuses to run with `NODE_ENV=production` ([ADR 0016](docs/decisions/0016-acceso-de-demostracion.md)).
+It creates `seguridad@demo.cedi.test` (Security) and `admin@demo.cedi.test` (Administrator) with generated passwords that are **printed only once**, plus 10 fictitious people of the four types and 14 visits (people inside, history, a forgotten visit, a technician with tools) with their audit trail. Running it again issues new passwords and never duplicates the data. It refuses to run with `NODE_ENV=production` ([ADR 0016](docs/decisions/0016-demo-access.md)).
 
-**Real installation:** there is no user-management screen; accounts are managed from the server terminal ([ADR 0008](docs/decisions/0008-cedula-sin-gafete.md)):
+**Real installation:** there is no user-management screen; accounts are managed from the server terminal ([ADR 0008](docs/decisions/0008-id-number-identification.md)):
 
 ```bash
 npm run create-admin                            # first administrator (asks for the details)
@@ -265,17 +265,19 @@ Details, known limitations and deployment recommendations: [`docs/security.md`](
 
 ## Engineering decisions
 
-- **The ID number identifies the person** (there are no badges), normalized so that `1-234-567` and `1234567` are the same ([ADR 0008](docs/decisions/0008-cedula-sin-gafete.md)).
+The choices I consider most important, each with its decision record:
+
+- **The ID number identifies the person** (there are no badges), normalized so that `1-234-567` and `1234567` are the same ([ADR 0008](docs/decisions/0008-id-number-identification.md)).
 - **Person and visit are separate:** fixed data is stored once. Each visit keeps the type and company of that moment, so the history does not change if someone moves to another company.
-- **Fields by person type**, enforced by the database ([ADR 0009](docs/decisions/0009-campos-por-tipo.md)).
-- **Critical rules in the database:** the partial index prevents two open visits even with several gatehouses at once ([ADR 0002](docs/decisions/0002-visita-abierta-unica.md)).
-- **Computed state, not stored:** "inside" means `exit_at IS NULL`. Timestamps are stored in UTC and "today" is computed in the CEDI's time zone ([ADR 0003](docs/decisions/0003-estado-calculado.md)).
-- **`httpOnly` cookie session verified on every request:** deactivating an account cuts access immediately ([ADR 0004](docs/decisions/0004-autenticacion.md)).
-- **Scanner behind an interface:** a keyboard or keyboard-style scanner today, a camera tomorrow, without a redesign ([ADR 0006](docs/decisions/0006-escaner.md)).
-- **Polling every 10 s** instead of WebSockets: enough for a gatehouse, with no extra infrastructure ([ADR 0005](docs/decisions/0005-tiempo-real-polling.md)).
-- **A single container in production** ([ADR 0010](docs/decisions/0010-despliegue.md)).
-- **Own design system:** colors, radii and shadows as tokens in a single file, self-hosted Inter font and custom SVG icons, no component library. On desktop, the entry and exit screen fits entirely in the window ([ADR 0011](docs/decisions/0011-sistema-de-diseno.md)).
-- **Reproducible demo access** with generated passwords instead of fixed credentials in the documentation ([ADR 0016](docs/decisions/0016-acceso-de-demostracion.md)).
+- **Fields by person type**, enforced by the database ([ADR 0009](docs/decisions/0009-fields-by-person-type.md)).
+- **Critical rules in the database:** the partial index prevents two open visits even with several gatehouses at once ([ADR 0002](docs/decisions/0002-single-open-visit.md)).
+- **Computed state, not stored:** "inside" means `exit_at IS NULL`. Timestamps are stored in UTC and "today" is computed in the CEDI's time zone ([ADR 0003](docs/decisions/0003-computed-visit-status.md)).
+- **`httpOnly` cookie session verified on every request:** deactivating an account cuts access immediately ([ADR 0004](docs/decisions/0004-authentication-and-session.md)).
+- **Scanner behind an interface:** a keyboard or keyboard-style scanner today, a camera tomorrow, without a redesign ([ADR 0006](docs/decisions/0006-scanner-and-scan-operation.md)).
+- **Polling every 10 s** instead of WebSockets: enough for a gatehouse, with no extra infrastructure ([ADR 0005](docs/decisions/0005-polling-for-live-data.md)).
+- **A single container in production** ([ADR 0010](docs/decisions/0010-single-container-deployment.md)).
+- **Own design system:** colors, radii and shadows as tokens in a single file, self-hosted Inter font and custom SVG icons, no component library. On desktop, the entry and exit screen fits entirely in the window ([ADR 0011](docs/decisions/0011-design-system.md)).
+- **Reproducible demo access** with generated passwords instead of fixed credentials in the documentation ([ADR 0016](docs/decisions/0016-demo-access.md)).
 
 ## Known limitations
 

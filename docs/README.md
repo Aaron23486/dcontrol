@@ -1,18 +1,18 @@
 # Documentation
 
-CEDI Control was built with spec-driven development: requirements first, then the technical plan and the decisions, then phased tasks, each closed with its tests. These documents are the trail of that process.
+I designed CEDI Control requirements-first: the requirements came before any code, design decisions were written down before they were implemented, and every business rule was closed with its tests. These documents keep that trail.
 
-| Document                                   | Role                                                                                                                              |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| [`spec.md`](spec.md)                       | **Requirements.** The owner's original specification: roles, person types, flows, business rules R1-R10. First source of truth.   |
-| [`plan.md`](plan.md)                       | **Design.** Decisions on the spec's ambiguities (D1-D15), additional rules (R11-R20), data model, stack, architecture and API.     |
-| [`decisions/`](decisions/README.md)        | **Architecture decision records (ADRs).** One file per important decision or later change, with context and rejected options.     |
-| [`constitution.md`](constitution.md)       | **Principles.** Non-negotiable rules for design, security, data integrity, testing and process.                                   |
-| [`tasks.md`](tasks.md)                     | **Delivery log.** Every phase with its tasks, verification and the owner's approval (with the pull request that merged it).       |
-| [`testing.md`](testing.md)                 | **Verification.** Which test covers each spec requirement and each plan rule.                                                     |
-| [`security.md`](security.md)               | **Security.** Implemented measures with their tests, known limitations and deployment checklist.                                  |
-| [`screenshots/`](screenshots)              | Screenshots used in the README, generated from test data with `npm run screenshots`.                                              |
+| Document                              | What it covers                                                                                                  |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| [requirements.md](requirements.md)    | What the system must do: users and roles, person types, flows, business rules and non-functional requirements. |
+| [architecture.md](architecture.md)    | How it is built: principles, API and web structure, data model and database constraints, stack, design decisions. |
+| [decisions/](decisions/README.md)     | Architecture decision records: the context, decision, alternatives and consequences of each significant choice.  |
+| [security.md](security.md)            | Security measures with their tests, known limitations and a deployment checklist.                               |
+| [testing.md](testing.md)              | Test levels, current figures and which tests cover each requirement and rule.                                   |
+| [screenshots/](screenshots)           | Screenshots used in the README, generated from test data with `npm run screenshots`.                            |
 
-Order of precedence when two documents disagree: `spec.md` > approved decisions in `plan.md` and the ADRs > `constitution.md`. Identifiers such as R1, D3 or SEC-02 are stable and are referenced from code comments, tests and pull requests.
+The project history is in [CHANGELOG.md](../CHANGELOG.md).
 
-The user interface is in Spanish; Spanish screen labels quoted in these documents (for example "Ingreso y salida") are kept as they appear in the app, with an English gloss.
+**Identifiers.** Requirements (FR-1…, NFR-1…), business rules (R1…R20) and design decisions (D1…D15) have stable identifiers so that code comments, tests and ADRs can point to them. SEC-xx identifiers refer to findings of the security review.
+
+**Language.** The documentation is in English; the user interface is in Spanish, so screen labels and test names are quoted as they appear in the app.
