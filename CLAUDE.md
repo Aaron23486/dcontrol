@@ -31,7 +31,7 @@ Monorepo con npm workspaces (`packages/shared`, `apps/api`, `apps/web`). Node �
 
 ```
 cp .env.example .env          # completar JWT_SECRET y contraseñas
-npm install                   # también compila shared y genera el cliente Prisma
+npm ci                        # versiones exactas del lockfile; también compila shared y el cliente Prisma
 npm run db:up                 # PostgreSQL en Docker (crea también la BD <db>_test)
 npm run db:deploy             # migraciones + usuario de la API sin privilegios (ADR 0012); db:migrate = crear una nueva
 npm run create-admin          # primer ADMIN (pregunta datos o usa ADMIN_* del .env)
