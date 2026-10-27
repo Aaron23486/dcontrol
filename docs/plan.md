@@ -83,7 +83,7 @@ Integridad en BD:
 | Pruebas | Vitest en API, web y `shared` (un solo runner); integración con PostgreSQL real (Testcontainers o la BD de docker-compose); Playwright para e2e | Validar el índice parcial y el flujo de escaneo. |
 | DevOps | docker-compose (solo BD), GitHub Actions (lint, tipos, tests), `.env.example`, ESLint + Prettier | Setup reproducible para un reclutador. |
 
-Versiones mayores fijadas en Fase 2: NestJS 11, Prisma 7 (con `@prisma/adapter-pg`), React 19, Vite 7, React Router 7, Zod 4, Vitest 4 (≥ 4.1.12 por avisos de seguridad en versiones anteriores), ESLint 9. Las versiones exactas quedan en `package-lock.json`.
+Versiones mayores fijadas en Fase 2: NestJS 11, Prisma 7 (con `@prisma/adapter-pg`), React 19, Vite 7, React Router 7, Zod 4, Vitest 4 (≥ 4.1.12 por avisos de seguridad en versiones anteriores), ESLint 9. Las versiones exactas quedan en `package-lock.json`. Actualizado el 2026-10-26 (Fase 18): Vite 8.
 
 Estado del stack: APROBADO (ver `docs/decisions/0001-stack.md`).
 
