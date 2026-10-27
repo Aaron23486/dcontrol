@@ -212,11 +212,20 @@ Quinta unidad del plan PSES 2.0. Decisión en ADR 0016.
 - [x] Prueba manual: ejecutado sobre la base de desarrollo (sin tocar la cuenta existente) e inicio de sesión en el navegador con ambas cuentas (panel con gente dentro y visita olvidada; Auditoría con 37 registros)
 - [x] Revisión del responsable: aprobada y unida a `main` (pull request #22)
 
-## Fase 20 — Segunda ronda de Dependabot  🔄 EN REVISIÓN
+## Fase 20 — Segunda ronda de Dependabot  ✅ APROBADA (2026-10-27)
 Sexta unidad del plan PSES 2.0. Decisiones en ADR 0015.
 - [x] Unidos a `main` con CI en verde: nestjs-pino 5 (#19; admite NestJS 11 y 12) y concurrently 10 (#21)
 - [x] Cerrados: TypeScript 7 (#17: `npm ci` falla, typescript-eslint aún no lo admite) y NestJS 12 por piezas (#18 `@nestjs/common`, #20 `@nestjs/core`: la API no arranca)
 - [x] `dependabot.yml`: se ignoran las versiones mayores de `@nestjs/*` y `typescript` (además de `@types/node`); se retira el grupo `nestjs`, que no evitó los PR por piezas
 - [x] Verificado en `main` tras unirlos: `npm ci`, lint, tipos, build, `npm audit` (0 vulnerabilidades), 202 unitarias, 126 de integración, E2E 19 (1 omitida) y `npm run dev` arranca
 - Pendiente detectado: Vite 8 avisa que `optimizeDeps.esbuildOptions` está obsoleto (lo fija un plugin; no afecta al build)
+- [x] Revisión del responsable: aprobada y unida a `main` (pull request #23)
+
+## Fase 21 — README y licencia en inglés  🔄 EN REVISIÓN
+Séptima unidad del plan PSES 2.0.
+- [x] README en inglés con las 17 secciones del estándar del portafolio, el mismo contenido, glosario de los términos de la interfaz (en español), capturas en el orden del flujo y la URL real del repositorio
+- [x] Cifras medidas el 2026-10-27: 347 pruebas (202 unitarias, 126 de integración, 19 E2E); cobertura API ≈ 98 % de líneas, lógica de la web ≈ 92 %
+- [x] Licencia MIT (Aaron23486) y campo `license` en los paquetes
+- [x] Verificado: los 24 enlaces e imágenes del README apuntan a archivos existentes; `format:check`; `npm ci`
+- Pendiente: los documentos de `docs/` siguen en español (unidad SDD)
 - [ ] Revisión del responsable
