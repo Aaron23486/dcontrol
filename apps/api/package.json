@@ -14,6 +14,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy && tsx scripts/db-app-user.ts",
     "db:seed": "tsx prisma/seed.ts",
+    "demo:setup": "tsx scripts/demo-setup.ts",
     "create-admin": "tsx scripts/users.ts create --role ADMIN",
     "users": "tsx scripts/users.ts",
     "test:coverage": "vitest run --config vitest.coverage.config.ts --coverage",

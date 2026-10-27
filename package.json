@@ -27,6 +27,7 @@
     "db:migrate": "npm run db:migrate -w @cedi/api",
     "db:deploy": "npm run db:deploy -w @cedi/api",
     "db:seed": "npm run db:seed -w @cedi/api",
+    "demo:setup": "npm run demo:setup -w @cedi/api",
     "create-admin": "npm run create-admin -w @cedi/api",
     "users": "npm run users -w @cedi/api --",
     "test:coverage": "npm run test:coverage --workspaces --if-present",

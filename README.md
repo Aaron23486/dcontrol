@@ -106,9 +106,11 @@ cp .env.example .env      # y completa los valores (ver Configuración)
 npm install               # también compila el paquete compartido y genera el cliente de Prisma
 npm run db:up             # PostgreSQL en Docker (crea también la base de pruebas)
 npm run db:deploy         # aplica las migraciones y crea el usuario de la API (sin privilegios)
-npm run create-admin      # crea el primer administrador
+npm run demo:setup        # cuentas de demostración (una por rol) y datos ficticios
 npm run dev               # API en :3000 y web en http://localhost:5173
 ```
+
+`demo:setup` muestra una sola vez las contraseñas generadas de `seguridad@demo.cedi.test` y `admin@demo.cedi.test`; si las pierdes, vuelve a ejecutarlo. Se niega en producción (ADR 0016). Para una instalación real, crea el administrador con `npm run create-admin` (ver Usuario inicial).
 
 ## Configuración
 
@@ -140,6 +142,7 @@ Nunca subas `.env` al repositorio.
 npm run db:deploy    # migraciones pendientes + usuario de la API (desarrollo y producción)
 npm run db:migrate   # crea una migración nueva tras cambiar schema.prisma (solo desarrollo)
 npm run db:seed      # empresas de demostración (no crea usuarios; se niega en producción)
+npm run demo:setup   # cuentas y datos de demostración (ADR 0016; se niega en producción)
 ```
 
 Algunas restricciones (índice parcial, `CHECK`, extensión `pg_trgm`) están en SQL dentro de las migraciones, porque Prisma no las expresa: hay que conservarlas.

@@ -1,22 +1,14 @@
 /**
  * Datos de demostración para desarrollo. Idempotente y sin datos sensibles:
  * los usuarios se crean con `npm run create-admin`, nunca aquí (D14).
+ * Para cuentas y visitas de demostración: `npm run demo:setup` (ADR 0016).
  *
  *   npm run db:seed
  */
-import { normalizeCompanyName } from '@cedi/shared';
+import { DEMO_COMPANIES, ensureDemoCompanies } from '../scripts/lib/demo-companies';
 import { databaseUrlSchema } from '../src/config/app-config';
 import { loadEnvFile } from '../src/config/load-env-file';
 import { PrismaService } from '../src/prisma/prisma.service';
-
-const DEMO_COMPANIES = [
-  'Transportes del Norte S.A.',
-  'Servicios Industriales Rivera',
-  'Mantenimiento Integral MX',
-  'Limpieza Total',
-  // Para visitantes que no vienen en nombre de una empresa (la empresa es obligatoria, D9).
-  'Particular',
-];
 
 async function main(): Promise<void> {
   loadEnvFile();
@@ -27,11 +19,7 @@ async function main(): Promise<void> {
     databaseUrl: databaseUrlSchema.parse(process.env.DATABASE_URL),
   });
   try {
-    // Solo inserta (sin UPDATE): el usuario de la API no puede modificar empresas (ADR 0012).
-    await prisma.company.createMany({
-      data: DEMO_COMPANIES.map((name) => ({ name, nameNormalized: normalizeCompanyName(name) })),
-      skipDuplicates: true,
-    });
+    await ensureDemoCompanies(prisma);
     console.log(`Seed completado: ${DEMO_COMPANIES.length} empresas de demostración.`);
   } finally {
     await prisma.$disconnect();
