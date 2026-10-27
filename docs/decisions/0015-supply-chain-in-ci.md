@@ -27,4 +27,4 @@ The security review found that CI did not check dependencies for known vulnerabi
 
 - A newly published high-severity vulnerability makes CI fail until the dependency is updated or the exception is documented.
 - Pinned actions do not pick up fixes on their own; Dependabot proposes the new commit.
-- GitHub's own secret scanning and push protection are repository settings, enabled in Settings → Code security.
+- GitHub's own secret scanning and push protection, and CodeQL code scanning, are enabled in the repository settings since it became public (2026-10-27).
