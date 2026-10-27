@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-/** Acciones auditadas (spec §19). */
+/** Acciones auditadas (FR-13). */
 export const AuditAction = {
   PERSON_CREATED: 'PERSON_CREATED',
   PERSON_UPDATED: 'PERSON_UPDATED',

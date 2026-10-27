@@ -8,7 +8,7 @@ import {
   visitColumnsFor,
 } from './person-sections';
 
-describe('secciones por tipo (spec §15)', () => {
+describe('secciones por tipo (FR-9)', () => {
   it('hay una sección por cada tipo de persona', () => {
     expect(PERSON_SECTIONS.map((section) => section.type).sort()).toEqual([...PERSON_TYPES].sort());
   });
@@ -20,7 +20,7 @@ describe('secciones por tipo (spec §15)', () => {
     expect(DEFAULT_SECTION.type).toBe(PersonType.EXTERNAL_WORKER);
   });
 
-  it('cada tipo muestra solo sus columnas (spec §7)', () => {
+  it('cada tipo muestra solo sus columnas (FR-2)', () => {
     expect(visitColumnsFor(PersonType.EXTERNAL_WORKER)).toEqual({
       purpose: false,
       area: false,

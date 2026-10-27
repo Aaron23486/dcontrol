@@ -1,4 +1,4 @@
-// Modelo de datos de CEDI Control. Ver docs/plan.md §3 y docs/decisions/.
+// Modelo de datos de CEDI Control. Ver docs/architecture.md y docs/decisions/.
 // Lo que Prisma no puede expresar (índice único parcial, CHECK, extensión pg_trgm)
 // está en SQL dentro de las migraciones; no lo borres al generar una nueva.
 

@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 /**
- * Pruebas e2e del flujo de la caseta (constitution: «E2E del flujo de escaneo»).
+ * Pruebas e2e del flujo de la caseta (docs/architecture.md: «Tested rules»).
  * Levantan su propia API (:3100) y web (:5174) contra la base de pruebas, así no interfieren
  * con el servidor de desarrollo (:3000 / :5173) ni con sus datos.
  */

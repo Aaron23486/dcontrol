@@ -16,7 +16,7 @@ import { VisitRecord, VisitsRepository } from './visits.repository';
 import { VisitsService } from './visits.service';
 
 /**
- * Decide qué significa ingresar una cédula (spec §10-11, ADR 0006):
+ * Decide qué significa ingresar una cédula (FR-5-11, ADR 0006):
  * registrar a alguien nuevo, registrar su salida o preparar su entrada.
  */
 @Injectable()

@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   await login(page, 'guard');
 });
 
-test('cédula nueva: registra a la persona y su primera entrada (spec §10)', async ({ page }) => {
+test('cédula nueva: registra a la persona y su primera entrada (FR-5)', async ({ page }) => {
   await enterIdentification(page, 'e2e-nueva-1');
 
   await expect(page.getByRole('heading', { name: 'Cédula no registrada' })).toBeVisible();
@@ -19,7 +19,7 @@ test('cédula nueva: registra a la persona y su primera entrada (spec §10)', as
   await page.getByRole('option', { name: 'Acme Logística' }).click();
   await page.getByRole('button', { name: 'Continuar' }).click();
 
-  // Visitante: motivo y área que visita (spec §7).
+  // Visitante: motivo y área que visita (FR-2).
   await page.getByLabel('Motivo').fill('Entrevista');
   await page.getByLabel('Área que visita').fill('Recursos humanos');
   await page.getByRole('button', { name: 'Registrar persona y entrada' }).click();
@@ -57,7 +57,7 @@ test('persona registrada: prellena motivo y área de su visita anterior (D1)', a
   await expect(banner(page)).toContainText('Rosa Prellenado');
 });
 
-test('técnico: la salida muestra las herramientas a revisar (Fase 7)', async ({ page }) => {
+test('técnico: la salida muestra las herramientas a revisar (FR-12)', async ({ page }) => {
   await enterIdentification(page, 'E2E0002');
 
   await expect(banner(page)).toContainText('SALIDA registrada');
@@ -83,7 +83,7 @@ test('visita olvidada: se cierra con la hora real y se registra la nueva entrada
   await expect(banner(page)).toContainText('Olga Olvidada');
 });
 
-test('el historial muestra las visitas de hoy con sus datos (spec §16)', async ({ page }) => {
+test('el historial muestra las visitas de hoy con sus datos (FR-10)', async ({ page }) => {
   await page.getByRole('link', { name: 'Historial' }).click();
   await page.getByRole('link', { name: 'Visitantes' }).click();
 

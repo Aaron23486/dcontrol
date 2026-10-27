@@ -3,29 +3,28 @@
 Aplicación web interna (portafolio). Flujo: ESCANEAR → IDENTIFICAR → REGISTRAR ENTRADA → DENTRO → ESCANEAR → REGISTRAR SALIDA.
 
 ## Antes de hacer cualquier cosa
-1. Lee `docs/constitution.md` (reglas no negociables).
-2. Lee la fase actual en `docs/tasks.md`.
-3. Consulta `docs/spec.md` (requisitos) y `docs/plan.md` (decisiones técnicas) solo cuando la tarea los necesite.
+1. Lee `docs/requirements.md` (requisitos, reglas R1-R20) y `docs/architecture.md` (principios, arquitectura, decisiones D1-D15) cuando la tarea los necesite.
+2. Revisa el ADR correspondiente en `docs/decisions/` antes de cambiar una decisión existente.
 
-Fuentes de verdad, en orden: `spec.md` > decisiones aprobadas en `plan.md` > `constitution.md`.
+Fuentes de verdad, en orden: `docs/requirements.md` > ADR y decisiones de `docs/architecture.md` > principios de `docs/architecture.md`.
 Si hay conflicto o falta información: pregunta. No asumas requisitos.
 
 ## Estado
-Fase 1 (análisis) **aprobada** el 2026-10-23: D1-D14, R11-R16 y el stack de `docs/plan.md` están APROBADOS.
-Fase 2 (base del proyecto) **aprobada** el 2026-10-23. Cada decisión importante tiene su ADR en `docs/decisions/`. Fase 3 (personas) **aprobada** el 2026-10-23. Fase 4 (ingreso y salida) **aprobada** el 2026-10-23. Fase 5 (dashboard) **aprobada** el 2026-10-23. Fase 6 (historial) **aprobada** el 2026-10-23. Fase 7 (herramientas) **aprobada** el 2026-10-23. Fase 8 (auditoría) **aprobada** el 2026-10-23. Fase 9 (testing) **aprobada** el 2026-10-23. Fase 10 (UI/UX) **aprobada** el 2026-10-23. Fase 11 (producción) **aprobada** el 2026-10-23: **el desarrollo planificado está completo**. Fase 12 (rediseño de la interfaz, ADR 0011) **aprobada** el 2026-10-23. Fase 13 (seguridad, Etapa 1: SEC-01 a SEC-03, ADR 0012) **aprobada** el 2026-10-24. Fase 14 (seguridad, Etapa 2: SEC-04 a SEC-06 y SEC-12, ADR 0013) **aprobada** el 2026-10-25. Fase 15 (seguridad, Etapa 3: SEC-07 a SEC-10, SEC-13, I1 e I3, ADR 0014) **aprobada** el 2026-10-26; fue la primera unidad del plan PSES 2.0 de portafolio. Fase 16 (cadena de suministro en CI: SEC-11, ADR 0015) **aprobada** el 2026-10-26. Fase 17 (resultados paginados compartidos, DRY) **aprobada** el 2026-10-26. Fase 18 (primeras actualizaciones de Dependabot y reglas en ADR 0015) **aprobada** el 2026-10-26. Fase 19 (acceso de demostración `demo:setup`, ADR 0016) **aprobada** el 2026-10-27. Fase 20 (segunda ronda de Dependabot; versiones mayores de NestJS y TypeScript solo a propósito) **aprobada** el 2026-10-27. Fase 21 (README en inglés y licencia MIT) **aprobada** el 2026-10-27. Fase 22 (E2E independientes de la hora) **aprobada** el 2026-10-27. Fase 23 (tercera ronda de Dependabot) **aprobada** el 2026-10-27. Fase 24 (documentación SDD en inglés; `docs/` ya está en inglés, este archivo sigue en español) **en revisión**. Cambios nuevos: documentar primero en spec, plan o ADR y agregar sus pruebas a `docs/testing.md`.
+Producto completo; en preparación para portafolio con el estándar PSES 2.0 (README y `docs/` en inglés; este archivo sigue en español a propósito). Historial por etapas en `CHANGELOG.md`. Última unidad: reorganización profesional de la documentación (requisitos, arquitectura, ADR con nombres en inglés, CHANGELOG), **en revisión**. Pendiente hacia v1.0.0: prueba desde clon limpio, revisión final (quality gates y matriz), protección de `main` y release.
+Cambios nuevos: documentar primero en `docs/requirements.md`, `docs/architecture.md` o un ADR nuevo, y agregar sus pruebas a `docs/testing.md`. Las referencias en código usan los IDs estables (FR-n, NFR-n, Rn, Dn, SEC-nn).
 
 ## Reglas críticas (nunca violar)
 - El campo «Persona que autoriza» NO existe en ninguna parte: ni formularios, ni API, ni BD, ni filtros, ni reportes. No sustituirlo por otro campo equivalente sin consultar.
 - Solo dos roles (`SECURITY`, `ADMIN`). Sin registro público, sin OAuth. Sin pantalla de usuarios: se gestionan con `npm run users` (ADR 0008).
-- No existe gafete: la persona se identifica por su cédula (spec §9, ADR 0008).
-- Los datos que se piden y guardan dependen del tipo de persona (tabla de spec §7, ADR 0009). No pedir ni guardar campos que no correspondan al tipo. La empresa es obligatoria para todos.
+- No existe gafete: la persona se identifica por su cédula (FR-4, ADR 0008).
+- Los datos que se piden y guardan dependen del tipo de persona (tabla de FR-2, ADR 0009). No pedir ni guardar campos que no correspondan al tipo. La empresa es obligatoria para todos.
 - Sin lógica de negocio en componentes de UI. Colores, radios y sombras solo con los tokens de `apps/web/src/index.css` (ADR 0011); nada de colores sueltos.
 - Toda regla de negocio lleva su test. Una persona nunca puede tener dos visitas abiertas (garantizado también en BD).
 - No guardar secretos ni credenciales en el repo.
 
 ## Forma de trabajo
 Por fase: analizar → explicar → identificar riesgos → implementar → probar → verificar que nada se rompió → resumir → indicar pendientes.
-No avances de fase si hay una decisión arquitectónica sin resolver. Al cerrar una fase, actualiza `docs/tasks.md`.
+No avances de fase si hay una decisión arquitectónica sin resolver. Al cerrar una unidad, actualiza `CHANGELOG.md` si el cambio es notable.
 
 ## Comandos
 Monorepo con npm workspaces (`packages/shared`, `apps/api`, `apps/web`). Node ≥ 22.12. Todo se ejecuta desde la raíz.

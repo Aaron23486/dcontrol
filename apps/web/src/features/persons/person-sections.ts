@@ -1,6 +1,6 @@
 import { PersonType, VISIT_FIELDS_BY_TYPE } from '@cedi/shared';
 
-/** Una sección (pestaña) por tipo de persona, para no mezclar información (spec §15). */
+/** Una sección (pestaña) por tipo de persona, para no mezclar información (FR-9). */
 export interface PersonSection {
   type: PersonType;
   slug: string;
@@ -30,7 +30,7 @@ export const sectionBySlug = (slug: string | undefined) =>
 export const sectionByType = (type: PersonType) =>
   PERSON_SECTIONS.find((section) => section.type === type) ?? DEFAULT_SECTION;
 
-/** Columnas extra de cada sección, derivadas de los campos de visita de su tipo (spec §7). */
+/** Columnas extra de cada sección, derivadas de los campos de visita de su tipo (FR-2). */
 export function visitColumnsFor(type: PersonType) {
   const fields: readonly string[] = VISIT_FIELDS_BY_TYPE[type];
   return {

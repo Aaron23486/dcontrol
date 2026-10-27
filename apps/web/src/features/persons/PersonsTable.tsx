@@ -10,7 +10,7 @@ interface PersonsTableProps {
   persons: PersonSummary[];
 }
 
-/** Tabla de una sección: columnas comunes más las propias de su tipo (spec §7 y §15). */
+/** Tabla de una sección: columnas comunes más las propias de su tipo (FR-2 y FR-9). */
 export function PersonsTable({ type, persons }: PersonsTableProps) {
   const columns = visitColumnsFor(type);
   return (

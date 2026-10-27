@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { CompanySummary } from './companies';
 import { PersonType } from './enums';
 
-/** Campos de la visita que corresponden a cada tipo de persona (spec §7, R18, R19). */
+/** Campos de la visita que corresponden a cada tipo de persona (FR-2, R18, R19). */
 export const VISIT_FIELDS_BY_TYPE = {
   [PersonType.EXTERNAL_WORKER]: [],
   [PersonType.CONTRACTOR]: ['purpose', 'area'],
@@ -95,7 +95,7 @@ export type VisitStatusFilter = (typeof VisitStatusFilter)[keyof typeof VisitSta
 export const VISITS_PAGE_SIZE_MAX = 100;
 
 /**
- * Consulta del historial de visitas de un tipo (spec §16). `from` y `to` son días del CEDI
+ * Consulta del historial de visitas de un tipo (FR-10). `from` y `to` son días del CEDI
  * (AAAA-MM-DD, inclusivos) sobre la hora de entrada; sin ellos no se filtra por fecha.
  */
 export const visitListQuerySchema = z

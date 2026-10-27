@@ -10,7 +10,7 @@ import { clearDatabase, createTestPrisma, testDatabaseUrl } from './test-databas
 
 const PASSWORD = 'contraseña-de-prueba-1';
 const prisma = createTestPrisma();
-// El mismo servicio que usa `npm run users`, sobre la base real (spec §34: administrar usuarios).
+// El mismo servicio que usa `npm run users`, sobre la base real (NFR-8: administrar usuarios).
 const accounts = new UserAccountsService(new PrismaUsersRepository(prisma), new PasswordHasher());
 
 describe('Cuentas de usuario contra PostgreSQL (npm run users)', () => {

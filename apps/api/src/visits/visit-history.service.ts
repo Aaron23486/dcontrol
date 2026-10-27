@@ -6,7 +6,7 @@ import { APP_CONFIG, AppConfig } from '../config/app-config';
 import { searchTermsOf } from '../persons/person-search';
 import { VisitHistoryRepository } from './visit-history.repository';
 
-/** Historial de visitas (spec §16). Las fechas son días del CEDI (D6). */
+/** Historial de visitas (FR-10). Las fechas son días del CEDI (D6). */
 @Injectable()
 export class VisitHistoryService {
   constructor(

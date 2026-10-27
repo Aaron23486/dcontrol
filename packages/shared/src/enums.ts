@@ -1,4 +1,4 @@
-/** Roles del sistema. Solo existen estos dos (spec §5). */
+/** Roles del sistema. Solo existen estos dos (FR-1). */
 export const Role = {
   SECURITY: 'SECURITY',
   ADMIN: 'ADMIN',
@@ -6,7 +6,7 @@ export const Role = {
 export type Role = (typeof Role)[keyof typeof Role];
 export const ROLES = Object.values(Role);
 
-/** Tipos de persona externa (spec §7). */
+/** Tipos de persona externa (FR-2). */
 export const PersonType = {
   EXTERNAL_WORKER: 'EXTERNAL_WORKER',
   CONTRACTOR: 'CONTRACTOR',

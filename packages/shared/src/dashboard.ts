@@ -4,7 +4,7 @@ import type { PersonType } from './enums';
 /** Actualización de las vistas en vivo: cada 10 s más invalidación tras cada operación (D11). */
 export const LIVE_REFRESH_MS = 10_000;
 
-/** Visita abierta, tal como la muestra «Personas dentro» (spec §17). */
+/** Visita abierta, tal como la muestra «Personas dentro» (FR-11). */
 export interface InsideVisit {
   visitId: string;
   person: { id: string; fullName: string; identification: string };
@@ -27,7 +27,7 @@ export interface ActivityItem {
   company: CompanySummary;
 }
 
-/** Resumen del día del CEDI (spec §14). «Hoy» se cuenta en la zona horaria del CEDI (D6). */
+/** Resumen del día del CEDI (FR-8). «Hoy» se cuenta en la zona horaria del CEDI (D6). */
 export interface DashboardSummary {
   insideCount: number;
   entriesToday: number;

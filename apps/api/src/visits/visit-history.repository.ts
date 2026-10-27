@@ -18,7 +18,7 @@ export interface VisitHistoryFilter {
   pageSize: number;
 }
 
-/** Lecturas del historial de visitas (spec §16). */
+/** Lecturas del historial de visitas (FR-10). */
 export abstract class VisitHistoryRepository {
   abstract findPage(filter: VisitHistoryFilter): Promise<Page<VisitListItem>>;
   abstract findDetail(visitId: string): Promise<VisitDetail | null>;

@@ -5,7 +5,7 @@ import { visitDetailsSchema, type VisitSummary } from './visits';
 /** D2: una operación contraria dentro de este intervalo se considera un posible doble escaneo. */
 export const DOUBLE_SCAN_WINDOW_SECONDS = 60;
 
-/** Lo que Seguridad envía al ingresar una cédula (spec §9, ADR 0006). */
+/** Lo que Seguridad envía al ingresar una cédula (FR-4, ADR 0006). */
 export const scanSchema = z.object({
   identification: identificationSchema,
   /** El guarda ya confirmó un doble escaneo (D2) o una visita olvidada (D3). */

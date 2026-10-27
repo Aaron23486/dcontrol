@@ -120,7 +120,7 @@ describe('Personas y empresas (HTTP contra PostgreSQL)', () => {
     });
   });
 
-  describe('secciones por tipo (spec §15)', () => {
+  describe('secciones por tipo (FR-9)', () => {
     beforeEach(async () => {
       await createPerson({ fullName: 'José Pérez', identification: '1000001' }).expect(201);
       await createPerson({

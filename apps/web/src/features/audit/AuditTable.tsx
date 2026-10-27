@@ -10,7 +10,7 @@ import { Icon, type IconName } from '../../components/atoms/Icon';
 import { DataTable, Td, Th } from '../../components/molecules/DataTable';
 import { formatDateTime } from '../../lib/format';
 
-/** Ícono y color de cada acción: ayudan a distinguirlas, el texto siempre las nombra (spec §28). */
+/** Ícono y color de cada acción: ayudan a distinguirlas, el texto siempre las nombra (NFR-5). */
 const ACTION_STYLE: Record<AuditAction, { icon: IconName; color: string }> = {
   [AuditAction.PERSON_CREATED]: { icon: 'userPlus', color: 'text-primary' },
   [AuditAction.PERSON_UPDATED]: { icon: 'edit', color: 'text-ink-muted' },
@@ -45,7 +45,7 @@ function TargetCell({ target }: { target: AuditLogItem['target'] }) {
   );
 }
 
-/** Registro de auditoría: quién, qué, cuándo y sobre qué (spec §19, D12). */
+/** Registro de auditoría: quién, qué, cuándo y sobre qué (FR-13, D12). */
 export function AuditTable({ items }: { items: AuditLogItem[] }) {
   return (
     <DataTable

@@ -29,7 +29,7 @@ interface PersonFormProps {
 }
 
 /**
- * Datos de la persona, iguales para los cuatro tipos (spec §7). Todos son obligatorios.
+ * Datos de la persona, iguales para los cuatro tipos (FR-2). Todos son obligatorios.
  * En dos columnas cuando el formulario tiene espacio (consulta de contenedor), en una si no.
  */
 export function PersonForm({

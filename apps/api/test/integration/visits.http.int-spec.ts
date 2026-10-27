@@ -79,7 +79,7 @@ describe('Ingreso y salida por cédula (HTTP contra PostgreSQL)', () => {
     await prisma.$disconnect();
   });
 
-  describe('persona no registrada (spec §10)', () => {
+  describe('persona no registrada (FR-5)', () => {
     it('informa que la cédula no existe, ya normalizada', async () => {
       expect((await scan('001-123-4567')).body).toEqual({
         result: ScanResultCode.PERSON_NOT_FOUND,
@@ -261,7 +261,7 @@ describe('Ingreso y salida por cédula (HTTP contra PostgreSQL)', () => {
       ]);
     });
 
-    it('Fase 7: al registrar la salida devuelve las herramientas con que entró', async () => {
+    it('FR-12: al registrar la salida devuelve las herramientas con que entró', async () => {
       await post('/visits', {
         newPerson: newPerson(PersonType.MAINTENANCE_TECHNICIAN),
         details: detailsFor(PersonType.MAINTENANCE_TECHNICIAN, {

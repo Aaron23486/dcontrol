@@ -1,23 +1,22 @@
-# Decisions (ADR)
+# Architecture decision records
 
-One file per important decision. Format: Context → Decision → Consequences.
-A new decision, or a change to an existing one, is recorded here **before** it is implemented. File names keep their original Spanish slugs so that existing links stay valid.
+Each significant decision has a short record with its context, the decision, the alternatives I considered and its consequences. A new decision, or a change to an existing one, gets a record before it is implemented; superseded parts stay visible and point to the record that replaced them.
 
-| ADR                                        | Decision                                                                                                                              | Origin                     | Status             |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | ------------------ |
-| [0001](0001-stack.md)                      | TypeScript stack: NestJS + Prisma + PostgreSQL + React/Vite                                                                           | plan §4                    | APPROVED           |
-| [0002](0002-visita-abierta-unica.md)       | Single open visit enforced in the database                                                                                            | R1, plan §3                | APPROVED           |
-| [0003](0003-estado-calculado.md)           | Visit status computed, not stored                                                                                                     | D5, D6                     | APPROVED           |
-| [0004](0004-autenticacion.md)              | Session in an `httpOnly` cookie with a shift-long JWT and database verification                                                       | plan §4, R14               | APPROVED           |
-| [0005](0005-tiempo-real-polling.md)        | Real time through 10-second polling                                                                                                   | D11                        | APPROVED           |
-| [0006](0006-escaner.md)                    | Scanner behind `ScannerSource` and a single `POST /scans` operation                                                                   | D1, D2, plan §7            | APPROVED           |
-| [0007](0007-gafete-y-catalogos.md)         | Area, type and purpose as free text (the badge part was superseded by 0008)                                                           | D7, D8                     | APPROVED (amended) |
-| [0008](0008-cedula-sin-gafete.md)          | Identification by ID number, no badge; history with company and type per visit; users from the terminal                              | spec §5, §7, §9            | APPROVED           |
-| [0009](0009-campos-por-tipo.md)            | Fields by person type; company required; no "visit type"                                                                              | spec §7                    | APPROVED           |
-| [0010](0010-despliegue.md)                 | One container with API and web; migrations on startup                                                                                 | spec §6, §30               | APPROVED           |
-| [0011](0011-sistema-de-diseno.md)          | Design system: tokens, Inter, custom icons and a full-screen "Ingreso y salida"                                                       | UI redesign                | APPROVED           |
-| [0012](0012-rol-de-base-de-datos.md)       | The API runs with an unprivileged database role; migrations run separately as the table owner                                        | SEC-02                     | APPROVED           |
-| [0013](0013-eventos-de-seguridad.md)       | Security events in the log with an alert and a temporary per-account lockout                                                          | SEC-04, SEC-05             | APPROVED           |
-| [0014](0014-endurecimiento-etapa-3.md)     | Per-user request limit, guessable passwords, strict token and CSP, logs without searches; no inactivity timeout                       | SEC-07..10, SEC-13, I1, I3 | APPROVED           |
-| [0015](0015-cadena-de-suministro.md)       | CI with dependency audit, gitleaks over the whole history, actions pinned by commit and Dependabot that only proposes                 | SEC-11                     | APPROVED           |
-| [0016](0016-acceso-de-demostracion.md)     | Demo access: `demo:setup` with one account per role, generated passwords shown once and fictitious data; refuses to run in production | PSES 2.0                   | APPROVED           |
+| ADR                                               | Decision                                                                                                      | Status                                  |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| [0001](0001-technology-stack.md)                  | TypeScript monorepo: NestJS, Prisma and PostgreSQL, React with Vite                                           | Accepted                                |
+| [0002](0002-single-open-visit.md)                 | A single open visit per person, enforced by the database                                                      | Accepted                                |
+| [0003](0003-computed-visit-status.md)             | Visit status computed from the exit time, never stored                                                        | Accepted                                |
+| [0004](0004-authentication-and-session.md)        | Session in an `httpOnly` cookie, one shift long, verified against the database on every request               | Accepted                                |
+| [0005](0005-polling-for-live-data.md)             | Live data through 10-second polling                                                                           | Accepted                                |
+| [0006](0006-scanner-and-scan-operation.md)        | Scanner behind `ScannerSource` and a single scan operation                                                    | Accepted, amended by 0008               |
+| [0007](0007-badge-and-free-text-catalogs.md)      | Free-text purpose and area, company as a table                                                                | Badge part superseded by 0008           |
+| [0008](0008-id-number-identification.md)          | Identification by ID number, history with type and company per visit, users managed from the terminal         | Accepted                                |
+| [0009](0009-fields-by-person-type.md)             | Fields by person type, enforced by the database; company required                                             | Accepted                                |
+| [0010](0010-single-container-deployment.md)       | One container serving API and web app                                                                         | Accepted, migrations part superseded by 0012 |
+| [0011](0011-design-system.md)                     | Design tokens, self-hosted Inter, custom icons and a full-window entry and exit screen                        | Accepted                                |
+| [0012](0012-unprivileged-database-role.md)        | The API runs with an unprivileged database role; migrations run separately                                    | Accepted                                |
+| [0013](0013-security-events-and-lockout.md)       | Security events in the log, with an alert and a temporary lockout per account                                 | Accepted                                |
+| [0014](0014-hardening-limits-passwords-tokens.md) | Per-user request limits, guessable-password rejection, strict tokens and CSP; no inactivity timeout           | Accepted                                |
+| [0015](0015-supply-chain-in-ci.md)                | Dependency audit, secret scanning, pinned actions and reviewed Dependabot updates                            | Accepted                                |
+| [0016](0016-demo-access.md)                       | Reproducible demo access with generated passwords and fictitious data                                         | Accepted                                |

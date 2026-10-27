@@ -10,7 +10,7 @@ interface PersonTypeTabsProps {
   className?: string;
 }
 
-/** Una pestaña por tipo de persona, para no mezclar información (spec §15, ADR 0009). */
+/** Una pestaña por tipo de persona, para no mezclar información (FR-9, ADR 0009). */
 export function PersonTypeTabs({ basePath, search = '', className = '' }: PersonTypeTabsProps) {
   return (
     <nav

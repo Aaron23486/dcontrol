@@ -8,7 +8,7 @@ const STYLES: Record<ScanFeedback['kind'], { box: string; icon: IconName }> = {
   error: { box: 'border-danger/30 bg-danger-soft text-danger-strong', icon: 'alert' },
 };
 
-/** Mensaje grande y claro de lo que se registró (spec §25). */
+/** Mensaje grande y claro de lo que se registró (NFR-2). */
 export function ScanFeedbackBanner({ feedback }: { feedback: ScanFeedback }) {
   const style = STYLES[feedback.kind];
   return (
@@ -40,7 +40,7 @@ export function ScanFeedbackBanner({ feedback }: { feedback: ScanFeedback }) {
   );
 }
 
-/** Fase 7: herramientas con que entró el técnico, para verificar que salgan con él. */
+/** FR-12: herramientas con que entró el técnico, para verificar que salgan con él. */
 function ExitToolsCheck({ tools }: { tools: Parameters<typeof formatToolLabel>[0][] }) {
   return (
     <div className="mt-2 rounded-lg border border-warning/40 bg-warning-soft px-4 py-2.5 text-warning-strong">

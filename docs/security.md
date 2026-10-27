@@ -1,6 +1,8 @@
 # Security
 
-Review from Phase 11, kept up to date since. Each measure states where it lives and which test covers it (see also `docs/testing.md`).
+Security measures of CEDI Control, where each one lives and which test covers it (see also [testing.md](testing.md)).
+
+Before preparing the project for production I ran an evidence-based security review guided by the OWASP Top 10 (2025), the OWASP API Security Top 10 and ASVS 5.0. It found no critical or high issues; the 4 medium, 9 low and 8 informational findings were fixed in three stages, or documented as accepted risks. The identifiers in this document (SEC-01…SEC-13, I1, I3) refer to those findings, and the decisions behind the fixes are in ADRs [0012](decisions/0012-unprivileged-database-role.md) to [0015](decisions/0015-supply-chain-in-ci.md).
 
 ## Implemented measures
 
