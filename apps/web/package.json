@@ -16,8 +16,8 @@
   "dependencies": {
     "@cedi/shared": "*",
     "@fontsource-variable/inter": "^5.3.0",
-    "@hookform/resolvers": "^6.0.0",
-    "@tanstack/react-query": "^5.90.0",
+    "@hookform/resolvers": "^6.0.2",
+    "@tanstack/react-query": "^5.105.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.91.0",
